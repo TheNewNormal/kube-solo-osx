@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e -o pipefail
+#set -e -o pipefail
 
 OPTIND=1
 while getopts ":f:" opt; do

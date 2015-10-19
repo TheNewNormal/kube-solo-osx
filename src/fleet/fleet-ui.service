@@ -6,11 +6,11 @@ Requires=docker.service
 [Service]
 User=core
 TimeoutStartSec=0
-EnvironmentFile=/etc/environment
+EnvironmentFile=/etc/network-environment
 ExecStartPre=/usr/bin/docker pull purpleworks/fleet-ui:latest
 ExecStartPre=-/usr/bin/docker rm fleet_ui
 ExecStart=/usr/bin/docker run --rm --name fleet_ui --memory="128m" \
--p 3000:3000 -e ETCD_PEER=http://172.19.17.99:2379 \
+-p 3000:3000 -e ETCD_PEER=http://172.17.42.1:2379 \
  -v /home/core/.ssh/id_rsa:/root/id_rsa \
  purpleworks/fleet-ui
 #
@@ -21,5 +21,3 @@ TimeoutStartSec=900s
 Restart=always
 RestartSec=10s
 
-[X-Fleet]
-MachineMetadata=role=kube
