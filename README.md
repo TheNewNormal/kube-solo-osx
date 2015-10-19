@@ -1,62 +1,74 @@
-CoreOS-Vagrant Kubernetes Solo GUI for OS X
+Kubernetes Solo cluster for OS X
 ============================
 
 ![k8s-solo](k8s-singlenode.png)
 
-`CoreOS-Vagrant Kubernetes Solo GUI for Mac OS X` is a Mac Status bar App which works like a wrapper around [coreos-vagrant](https://github.com/coreos/coreos-vagrant) command line tool and bootstraps Kubernetes on one standalone  machine.
+`Kube-Solo for Mac OS X` is a Mac Status bar App which works like a wrapper around the [coreos-xhyve](https://github.com/coreos/coreos-xhyve) command line tool and bootstraps Kubernetes on a standalone [CoreOS](https://coreos.com) VM machine.
 
-Fully supports etcd2 in all CoresOS channels. 
-
-
-[CoreOS](https://coreos.com) is a Linux distribution made specifically to run [Docker](https://www.docker.io/) containers.
-[CoreOS-Vagrant](https://github.com/coreos/coreos-vagrant) is made to run on VirtualBox and VMWare VMs.
-
-![CoreOS-Vagrant-Kubernetes-Solo-GUI](coreos-vagrant-k8s-solo-gui.png "CoreOS-Vagrant-Kubernetes-Solo-GUI")
+![Kube-Solo](kube-solo-osx.png "Kubernetes-Solo")
 
 Download
 --------
-Head over to the [Releases Page](https://github.com/rimusz/coreos-osx-gui-kubernetes-solo/releases) to grab the latest release.
+Head over to the [Releases Page](https://github.com/rimusz/kube-solo-osx/releases) to grab the latest release.
 
 
-How to install
+How to install Kube-Solo
 ----------
 
-Required software:
-* [VirtualBox](https://www.virtualbox.org/wiki/Downloads), [Vagrant](http://www.vagrantup.com/downloads.html) and [iTerm 2](http://www.iterm2.com/#/section/downloads)
-* Open downloaded App dmg file and drag it e.g. to your Desktop.
-* Start the `CoreOS k8s Solo` App and from menu `Setup` and choose: `Initial setup of CoreOS-Vagrant k8s Solo`
+**WARNING**
+ -----------
+  - You must be running OS X 10.10.3 Yosemite or later and 2010 or later Mac for this to work.
 
-The install will do the following:
+  - If you are, or were, running any version of VirtualBox, prior to 4.3.30 or 5.0,
+and attempt to run xhyve your system will immediately crash as a kernel panic is
+triggered. This is due to a VirtualBox bug (that got fixed in newest VirtualBox
+versions) as VirtualBox wasn't playing nice with OSX's Hypervisor.framework used
+by [xhyve](https://github.com/mist64/xhyve). 
 
-* All dependent files/folders will be put under `coreos-k8s-solo` folder in the user's home folder
-* It will clone latest coreos-vagrant from git
-* user-data files will have fleet, etcd and flannel set
-* VM machine will be set with IP `172.19.17.99`
-* It will download latest vagrant VBox and run `vagrant up` to initialise VM
-* When you first time install or do 'Up' after destroying k8s Solo setup, k8s binary files (with the version which was available when the App was built) get copied to CoreOS VM, this speeds up Kubernetes setup. To update Kubernetes just run from menu 'Updates' - Update Kubernetes and OS X kubectl.
-* It will install `fleetctl, etcdctl and kubectl` to `~/coreos-k8s-solo/bin/`
-* Kubernetes services will be installed with fleet units which are placed in `~/coreos-k8s-solo/fleet`, this allows very easy updates to fleet units if needed.
+####Required software:
+* The only required software is [iTerm 2](http://www.iterm2.com/#/section/downloads) 
+
+
+###Install:
+
+Start the `Kube-Solo` and from menu `Setup` choose `Initial setup of Kube-Solo` and the install will do the following:
+
+* All dependent files/folders will be put under `kube-solo` folder in the user's home folder e.g /Users/someuser/kube-solo
+* User's Mac password will be stored in `/Users/someuser/coreos-xhyve-ui/.env/password` and encrypted with `base64`, it will be used to pass to `sudo` command which needs to be used starting VM with xhyve
+* ISO images are stored under ~/.coreos-xhyve/imgs and symlinked to it from ~/kube-solo/imgs
+That allows to share the same images between different coreos-xhyve Apps and also speeds up this App's reinstall
+* user-data file will have fleet, etcd, and Docker Socket for the API enabled
+* Will download latest CoreOS ISO image and run `xhyve` to initialise VM 
+* When you first time do install or 'Up' after destroying k8s Solo setup, k8s binary files (with the version which was available when the App was built) get copied to CoreOS VM, this speeds up Kubernetes setup. To update Kubernetes just run from menu 'Updates' - Update Kubernetes and OS X kubectl.
+* It will install `fleetctl, etcdctl and kubectl` to `~/kube-solo/bin/`
+* Kubernetes services will be installed with fleet units which are placed in `~/kube-solo/fleet`, this allows very easy updates to fleet units if needed.
+* [Fleet-UI](http://fleetui.com) via unit file will be installed to check running fleet units
+* [Kubernetes UI](http://kubernetes.io/v1.0/docs/user-guide/ui.html) will be instlled as an add-on
 * Also [DNS Add On](https://github.com/GoogleCloudPlatform/kubernetes/tree/master/cluster/addons/dns) will be installed
+* Via assigned static IP (it will be shown in first boot and will survive VM's reboots) you can access any port on CoreOS VM
+* Root persistant disk for VM will be created and mounted to `/` so data will survive VM reboots. 
 
 How it works
 ------------
 
-Just start `CoreOS k8s Solo` application and you will find a small icon with the Kubernetes logo with (S) which means for Kubernetes Solo in the Status Bar.
+Just start `Kube-Solo` application and you will find a small icon with the CoreOS logo with `h`in the Status Bar.
 
-* There you can `Up`, `Suspend`, `Halt`, `Reload` CoreOS vagrant VM
-* Under `Up` (first does 'vagrant up') and `OS Shell` OS Shell (terminal) will have such environment set:
+* There you can `Up`, `Halt`, `Reload` CoreOS VM
+* `SSH to k8solo-01` will open VM shell192.168.64.xxx
+* `Attach to VM's console` will open VM console
+* Under `Up` OS Shell will be opened when VM boot finishes up and it will have such environment pre-set:
+
 ````
-1) kubernetes master - export KUBERNETES_MASTER=http://172.19.17.99:8080
-2) etcd endpoint - export ETCDCTL_PEERS=http://172.19.17.99:2379
-3) fleetctl endpoint - export FLEETCTL_ENDPOINT=http://172.19.17.99:2379
+1) kubernetes master - export KUBERNETES_MASTER=http://192.168.64.xxx:8080
+2) etcd endpoint - export ETCDCTL_PEERS=http://192.168.64.xxx:2379
+3) fleetctl endpoint - export FLEETCTL_ENDPOINT=http://192.168.64.xxx:2379
 4) fleetctl driver - export FLEETCTL_DRIVER=etcd
-5) Path to ~/coreos-osx-solo/bin where etcdctl, fleetctl and kubernetes binaries are stored
+5) Path to ~/kube-solo/bin where etcdctl, fleetctl and kubernetes binaries are stored
 ````
 
 * `Updates/Update Kubernetes and OS X kubectl` will update to latest version of Kubernetes.
 * `Updates/Update OS X fleetctl, etcdclt and fleet units` will update fleetctl, etcdclt clients to the same versions as CoreOS VM run and to latest fleet units if the new version of App is used.
-* `Updates/Force CoreOS update` will be run `sudo update_engine_client -update` on CoreOS VM.
-* `Updates/Check updates for CoreOS vbox` will update CoreOS VM vagrant box.
+* `Fetch latest CoreOS ISO` will download latest ISO file of CoreOS VM.
 *
 * `SSH to k8solo-01` menu option will open VM shell
 * `k8solo-01 cAdvisor` will open cAdvisor URL in default browser
@@ -67,29 +79,28 @@ Just start `CoreOS k8s Solo` application and you will find a small icon with the
 Example ouput of succesfull CoreOS + Kubernetes Solo install:
 
 ````
-etcd cluster:
+etcd cluster:192.168.64.2
 /coreos.com
 /registry
 
 fleetctl list-machines:
 MACHINE		IP		METADATA
-c576b883...	172.19.17.99	role=kube
+c576b883...	192.168.64.2	role=kube
 
 fleetctl list-units:
 UNIT									MACHINE				ACTIVE	SUB
-fleet-ui.service				c576b883.../172.19.17.99	active	running
-kube-apiserver.service			c576b883.../172.19.17.99	active	running
-kube-controller-manager.service	c576b883.../172.19.17.99	active	running
-kube-kubelet.service			c576b883.../172.19.17.99	active	running
-kube-proxy.service				c576b883.../172.19.17.99	active	running
-kube-scheduler.service			c576b883.../172.19.17.99	active	running
+fleet-ui.service				c576b883.../192.168.64.2	active	running
+kube-apiserver.service			c576b883.../192.168.64.2	active	running
+kube-controller-manager.service	c576b883.../192.168.64.2	active	running
+kube-kubelet.service			c576b883.../192.168.64.2	active	running
+kube-proxy.service				c576b883.../192.168.64.2	active	running
+kube-scheduler.service			c576b883.../192.168.64.2	active	running
 
 kubectl get nodes:
 NAME           LABELS         STATUS
-172.19.17.99   node=worker1   Ready
+192.168.64.2   node=worker1   Ready
 
 ````
-
 
 
 
@@ -104,8 +115,7 @@ Other links
 -----------
 * Cluster one with Kubernetes CoreOS VM App can be found here [CoreOS-Vagrant Kubernetes Cluster GUI for OS X](https://github.com/rimusz/coreos-osx-gui-kubernetes-cluster).
 
-* A standalone CoreOS VM version App can be found here [CoreOS-Vagrant GUI](https://github.com/rimusz/coreos-osx-gui).
+* A standalone CoreOS VM version App can be found here [CoreOS-xhyve UI](https://github.com/rimusz/coreos-xhyve-ui).
 
-* Cluster one without Kubernetes CoreOS VM App can be found here [CoreOS-Vagrant Cluster GUI](https://github.com/rimusz/coreos-osx-gui-cluster).
-
+* CoreOS Cluster one without Kubernetes CoreOS VM App can be found here [CoreOS-Vagrant Cluster GUI](https://github.com/rimusz/coreos-osx-gui-cluster).
 
