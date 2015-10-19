@@ -1,0 +1,113 @@
+#cloud-config
+
+hostname: core-01
+
+coreos:
+  update:
+    reboot-strategy: off
+  etcd2:
+    name: core-01
+    initial-advertise-peer-urls: http://127.0.0.1:2380
+    initial-cluster-token: core-01_etcd
+    initial-cluster: core-01=http://127.0.0.1:2380
+    initial-cluster-state: new
+    listen-peer-urls: http://0.0.0.0:2380,http://0.0.0.0:7001
+    listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
+    advertise-client-urls:  http://0.0.0.0:2379,http://0.0.0.0:4001
+  units:
+    - name: etcd2.service
+      command: start
+    - name: fleet.service
+      command: start
+    - name: docker-tcp.socket
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=Docker Socket for the API
+
+        [Socket]
+        ListenStream=2375
+        BindIPv6Only=both
+        Service=docker.service
+
+        [Install]
+        WantedBy=sockets.target
+    - name: docker.service
+      command: start
+      drop-ins:
+        - name: 50-insecure-registry.conf
+          content: |
+            [Unit]
+            [Service]
+            Environment=DOCKER_OPTS='--insecure-registry="0.0.0.0/0"'
+    - name: setup-network-environment.service
+      command: start
+      content: |
+        [Unit]
+        Description=Setup Network Environment
+        Documentation=https://github.com/kelseyhightower/setup-network-environment
+        Requires=network-online.target
+        After=network-online.target
+        [Service]
+        ExecStartPre=/usr/bin/mkdir -p /opt/bin
+        ExecStartPre=/usr/bin/wget -P /opt/bin https://github.com/kelseyhightower/setup-network-environment/releases/download/v1.0.0/setup-network-environment
+        ExecStartPre=/usr/bin/chmod +x /opt/bin/setup-network-environment
+        ExecStart=/opt/bin/setup-network-environment
+        RemainAfterExit=yes
+        Type=oneshot
+
+write-files:
+ - path: /etc/conf.d/nfs
+   permissions: '0644'
+   content: |
+     OPTS_RPC_MOUNTD=""
+ - path: /opt/bin/ip2host
+   permissions: '0755'
+   content: |
+     #!/bin/bash
+     UUID=$(sudo cat /sys/devices/virtual/dmi/id/product_uuid)
+     USER=$(cat /proc/cmdline | sed -e 's,.*localUser=,,' -e 's, .*,,')
+     DATADIR=/Users/${USER}/.coreos-xhyve
+     [[ -d "${DATADIR}" ]] || mkdir -p "${DATADIR}"
+     [[ $# -eq 0 ]] && \
+        ip route get 8.8.8.8 | \
+        awk 'NR==1 {print $NF}' > "${DATADIR}/${UUID}" || \
+        rm -rf "${DATADIR}/${UUID}"
+
+ - path: /home/core/.ssh/id_rsa
+   permissions: '0600'
+   owner: core:core
+   content: |
+     -----BEGIN RSA PRIVATE KEY-----
+     MIIEowIBAAKCAQEA18VKh3nRpHTOC+AAyg+YB1P0SSISR/2TjHG89c7ZhPTGCXr5
+     P60H5vU/YOrV8sQR542inDwxfAvhn86yHe/w8dX/g4krNDB+0NFL1fbQ9BktGsao
+     Apg5bWMGjBgVTp8WJlDfW7zYqJQu/wjZ90oz6EpL4+DhzAn/W0JUXWiFgCUpKDHJ
+     zZIZzebywLcJ/8jngMhxpae9OSDIkR9i5QNkeqLZhR0kB65Bq/8KbtFibduxAUyG
+     qxXnou3QB5VH9c4Ura8vzhMqsBCohKPuH5OLz2V4jcijZJY7vyNahXG3PB8Gw1c0
+     7XZUAlEUDuJaLA5kIBXSOMM9X5Tjq7Cvtfrz2wIDAQABAoIBAC3R0pLUVqWCvGKf
+     Leu6xgEAXgbNum4ZNiUD3imgxGZMiGVo/Nb9yojMGapeFBLaeibe1+Ivkh6Sc1Y5
+     UW+0DUl9tSXckhUiGzwCxgToxdSgKAjgmLr8Um2dMr27O4MXm1+FmvjjMGsUFKrJ
+     2Wd/FWjFpjn8/lYS5WweuMWhNYBRf8lwA4VdjU/pnlPDro8PqMysf4h+tRw26nJb
+     NXzqzJ5zQGfBJ0wIYuZSa25SF9l9gRWEUM/KxL36S/SpwuXSdBv/GtqKB21ogyOn
+     S3UZZjfTlkX0KvaLG0eVXptSRjqSJbZkzBbDX1WsBEJIvV1XqeJcptNtO6Ez7Kou
+     NqE4cfkCgYEA/IX2AZCLBmCfYsQm1M6WaQ/hgaWFrcimr/huNbASuc3fE4e5vFSR
+     Dh6jFikDg5t6Q8nUTySpRXovCHEfnvYFrS5s4tPOe/2JqBwK63KqjpeC/JPNGC1E
+     sXPEttiFo49kkTOOh1ImCbqHJT2EIPEIuXE3RUXlTk/+MwOwYL2HaHUCgYEA2r3K
+     5O1gf7Cfws3lRxOdS+eK+m4z8oF92tcX7sEVphJTG6wqRR0z2Llj8SsyGbFWSYfK
+     zalFkk66zr55MzTrOhJ35+LyJUx+IBAcYkQLTtTsp54JlJ8CMD1EcRPASYTg3L8R
+     Rf8+cgfcSslBiL/nyhnTN0hmyjVJp7ucvbep4Q8CgYEAhFn99xH4G86WmyBtrcnd
+     QZGGQvorF0t8Oey+brsrBWFmkwjnC1NTd5ANMDcs1VSu/0qQUS7I3VZNwmHwDdOq
+     Y/taLISQy6G1/Xs9Kew+gl/c0l7w9sP7JfqkVqUjXfdw4T2hbUFcGGtAG/+i+dT7
+     Gp7BNjiNF7+LXteHIR0VFGUCgYAaMorfOhLJmDS6FwCzr4SyN4vsjFBKZfnVwNcL
+     8DIQjrdHZCo31tSDy0hN9PduHlAQRGQkl3ZOnIFBC4zmdhsJ/HZB3mtTzkJ4wpUz
+     q6STD2s8c+//zb9sWZod1Ni9tV1c8sE12ej3rTtT9aCUqS8whEFIqLIu24zzusN9
+     8UY2PwKBgHWyekUzaQRcteEYsCWsl9KeX777EdtbK6bGh5JlD9rK5YVK3Ogq24Ts
+     9+yKbdYPv6KjXbAnb3ywDeifIx9vna+4jtXZ8cUuZQcj4nmBtKfeaxZeN7OlHv0d
+     LwDeOM4DDptEENhfzc0sPYHyGqUsfH6c4kq5KwtDAoY9MCS5/dGN
+     -----END RSA PRIVATE KEY-----
+ - path: /home/core/.ssh/id_rsa.pub
+   permissions: '0600'
+   owner: core:core
+   content: |
+     ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXxUqHedGkdM4L4ADKD5gHU/RJIhJH/ZOMcbz1ztmE9MYJevk/rQfm9T9g6tXyxBHnjaKcPDF8C+GfzrId7/Dx1f+DiSs0MH7Q0UvV9tD0GS0axqgCmDltYwaMGBVOnxYmUN9bvNiolC7/CNn3SjPoSkvj4OHMCf9bQlRdaIWAJSkoMcnNkhnN5vLAtwn/yOeAyHGlp705IMiRH2LlA2R6otmFHSQHrkGr/wpu0WJt27EBTIarFeei7dAHlUf1zhStry/OEyqwEKiEo+4fk4vPZXiNyKNklju/I1qFcbc8HwbDVzTtdlQCURQO4losDmQgFdI4wz1flOOrsK+1+vPb core@core-01

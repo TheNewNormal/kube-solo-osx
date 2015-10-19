@@ -1,0 +1,13 @@
+[Unit]
+Description=Kubernetes API Server
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+
+[Service]
+#ExecStartPre=/opt/bin/wupiao 127.0.0.1:8080
+ExecStart=/opt/bin/kube-scheduler --master=127.0.0.1:8080
+
+Restart=always
+RestartSec=10
+
+[X-Fleet]
+MachineOf=kube-apiserver.service

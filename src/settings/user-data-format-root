@@ -1,0 +1,16 @@
+#cloud-config
+
+hostname: core-01
+
+coreos:
+  units:
+    - name: format-ephemeral.service
+      command: start
+      content: |
+        [Unit]
+        Description=Formats the ephemeral drive
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/bin/sh -c '/usr/sbin/mkfs.ext4 /dev/vda'
+        ExecStartPost=/bin/sh -c 'sudo reboot'

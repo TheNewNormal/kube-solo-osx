@@ -1,0 +1,14 @@
+#!/bin/bash -x
+#
+
+# get App's Resources folder
+res_folder=$(cat ~/kube-solo/.env/resouces_path)
+
+# get mac address
+mac_address=$(cat ~/kube-solo/.env/mac_address)
+
+# run till mac2ip returns IP /24 address
+until "${res_folder}"/bin/mac2ip $mac_address | grep 192.168.64 >/dev/null 2>&1; do sleep .1; done
+
+# write IP address to file
+"${res_folder}"/bin/mac2ip $mac_address | tr -d '\n\' > ~/kube-solo/.env/ip_address

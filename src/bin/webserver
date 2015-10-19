@@ -1,0 +1,27 @@
+#!/bin/bash
+# webserver for coreos-xhyve to serve cloud-init file
+
+start() {
+    nohup python -m SimpleHTTPServer 18001 >/dev/null 2>&1 &
+}
+
+stop() {
+    kill $(ps aux | grep "[p]ython -m SimpleHTTPServer 18001" | awk {'print $2'})
+}
+
+usage() {
+    echo "Usage: webserver start|stop"
+}
+
+case "$1" in
+        start)
+                start
+                ;;
+        stop)
+                stop
+                ;;
+        *)
+                usage
+                ;;
+esac
+
