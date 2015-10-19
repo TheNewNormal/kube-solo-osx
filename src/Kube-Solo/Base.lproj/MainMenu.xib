@@ -681,14 +681,14 @@
                 <menuItem title="Attach to VM's console" id="y6z-Tq-2lg" userLabel="Attach to VM's console">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
-                        <action selector="Pause:" target="494" id="5QM-gj-gcu"/>
+                        <action selector="attachConsole:" target="494" id="mXu-yH-sCl"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="B1N-0s-OFg"/>
                 <menuItem title="OS shell" id="YiP-H1-GtD" userLabel="OS shell">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
-                        <action selector="open_shell:" target="494" id="Y99-xn-ZUH"/>
+                        <action selector="runShell:" target="494" id="jN7-v8-FoZ"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="g1q-tp-f1W"/>
@@ -719,7 +719,7 @@
                             <menuItem title="Update Kubernetes and OS X kubectl" id="sEE-aC-0Ob">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="update_k8s:" target="494" id="sO4-8I-toa"/>
+                                    <action selector="update_k8s:" target="494" id="fWf-tj-ePG"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Q48-Nq-5bm"/>
@@ -733,7 +733,7 @@
                             <menuItem title="Fetch latest CoreOS ISO" id="KYE-xq-LpJ" userLabel="Force CoreOS update">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="force_coreos_update:" target="494" id="0IT-Vl-bUB"/>
+                                    <action selector="fetchLatestISO:" target="494" id="z9S-Pq-sjA"/>
                                 </connections>
                             </menuItem>
                         </items>

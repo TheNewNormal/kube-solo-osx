@@ -100,13 +100,13 @@ echo " "
 
 #
 
-echo "Installation has finished, CoreOS VM is up and running !!!"
+echo "Installation has finished, Kube Solo VM is up and running !!!"
 echo " "
 echo "Assigned static VM's IP: $vm_ip"
 echo " "
-echo "Enjoy CoreOS-xhyve VM on your Mac !!!"
+echo "Enjoy Kube Solo on your Mac !!!"
 echo " "
-echo "Run from menu 'OS Shell' to open a terninal window with rkt, docker, fleetctl and etcdctl pre-set !!!"
+echo "Run from menu 'OS Shell' to open a terninal window with fleetctl, etcdctl and kubectl pre-set !!!"
 echo " "
 pause 'Press [Enter] key to continue...'
 
