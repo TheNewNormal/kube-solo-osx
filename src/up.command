@@ -41,9 +41,6 @@ spin='-\|/'
 i=0
 while ! ping -c1 $vm_ip >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 
-# Set the environment variable for the docker daemon
-export DOCKER_HOST=tcp://$vm_ip:2375
-
 # path to the bin folder where we store our binary files
 export PATH=${HOME}/kube-solo/bin:$PATH
 
@@ -72,9 +69,26 @@ sleep 1
 echo "fleetctl list-machines:"
 fleetctl list-machines
 echo " "
+echo "fleetctl list-units:"
+fleetctl list-units
+echo " "
 
-# deploy fleet units from ~/kube-solo/fleet
-deploy_fleet_units
+# set kubernetes master
+export KUBERNETES_MASTER=http://$vm_ip:8080
+echo Waiting for Kubernetes cluster to be ready. This can take a few minutes...
+spin='-\|/'
+i=1
+until ~/kube-solo/bin/kubectl version | grep 'Server Version' >/dev/null 2>&1; do printf "\b${spin:i++%${#sp}:1}"; sleep .1; done
+i=0
+until ~/kube-solo/bin/kubectl get nodes | grep $vm_ip >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+echo " "
+#
+echo " "
+echo "k8s nodes list:"
+~/kube-solo/bin/kubectl get nodes
+echo " "
+#
+
 #
 
 cd ~/

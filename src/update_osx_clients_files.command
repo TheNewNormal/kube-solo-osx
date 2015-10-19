@@ -22,7 +22,7 @@ cp -f "${res_folder}"/files/* ~/kube-solo/bin
 cp -f "${res_folder}"/bin/xhyve ~/kube-solo/bin
 chmod 755 ~/kube-solo/bin/*
 
-# download latest versions of fleetctl and docker clients
+# download latest version of fleetctl client
 download_osx_clients
 #
 

@@ -38,6 +38,7 @@
 		1329DEB41BD4FB5F008AA719 /* start_VM.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEA91BD4FB5F008AA719 /* start_VM.command */; settings = {ASSET_TAGS = (); }; };
 		1329DEB51BD4FB5F008AA719 /* up.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEAA1BD4FB5F008AA719 /* up.command */; settings = {ASSET_TAGS = (); }; };
 		1329DEB61BD4FB5F008AA719 /* update_osx_clients_files.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEAB1BD4FB5F008AA719 /* update_osx_clients_files.command */; settings = {ASSET_TAGS = (); }; };
+		1329DEB81BD526A3008AA719 /* update_k8s.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEB71BD526A3008AA719 /* update_k8s.command */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -81,6 +82,7 @@
 		1329DEA91BD4FB5F008AA719 /* start_VM.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = start_VM.command; sourceTree = "<group>"; };
 		1329DEAA1BD4FB5F008AA719 /* up.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = up.command; sourceTree = "<group>"; };
 		1329DEAB1BD4FB5F008AA719 /* update_osx_clients_files.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = update_osx_clients_files.command; sourceTree = "<group>"; };
+		1329DEB71BD526A3008AA719 /* update_k8s.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = update_k8s.command; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -190,6 +192,7 @@
 				1329DEA61BD4FB5F008AA719 /* halt.command */,
 				1329DEA71BD4FB5F008AA719 /* reload.command */,
 				1329DEA41BD4FB5F008AA719 /* fetch_latest_iso.command */,
+				1329DEB71BD526A3008AA719 /* update_k8s.command */,
 				1329DEAB1BD4FB5F008AA719 /* update_osx_clients_files.command */,
 			);
 			name = Scripts;
@@ -278,6 +281,7 @@
 				011146541A7D848C008E0FB2 /* icon2.png in Resources */,
 				1329DEAF1BD4FB5F008AA719 /* fetch_latest_iso.command in Resources */,
 				01D3685918E5C184006510B5 /* icon.icns in Resources */,
+				1329DEB81BD526A3008AA719 /* update_k8s.command in Resources */,
 				1329DEB11BD4FB5F008AA719 /* halt.command in Resources */,
 				1329DE9A1BD4FA58008AA719 /* kube-solo-install.command in Resources */,
 				01E285B818A6D7F400BC630D /* icon.png in Resources */,

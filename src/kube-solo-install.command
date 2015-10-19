@@ -11,6 +11,9 @@
     mkdir ~/kube-solo/cloud-init
     mkdir ~/kube-solo/fleet
     mkdir ~/kube-solo/my_fleet
+    mkdir ~/kube-solo/kubernetes
+    mkdir -p ~/kube-solo/kube
+    mkdir -p ~/kube-solo/settings
     ln -s ~/.coreos-xhyve/imgs ~/kube-solo/imgs
 
     # cd to App's Resources folder
@@ -29,6 +32,17 @@
     # copy custom.conf
     cp -f "$1"/settings/custom.conf ~/kube-solo
     cp -f "$1"/settings/custom-format-root.conf ~/kube-solo
+
+    # copy k8s files
+    "$1"/k8s/kubectl ~/kube-solo/bin
+    chmod 755 ~/kube-solo/bin/kubectl
+    cp "$1"/k8s/*.yaml ~/kube-solo/kubernetes
+    # linux binaries
+    cp "$1"/k8s/kube.tgz ~/kube-solo/kube
+
+    # copy fleet units
+    cp -R "$1"/fleet/ ~/kube-solo/fleet
+    #
 
     # initial init
     open -a "$1"/iTerm.app "$1"/first-init.command

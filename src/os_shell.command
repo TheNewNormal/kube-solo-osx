@@ -11,9 +11,6 @@ res_folder=$(cat ~/kube-solo/.env/resouces_path)
 # get VM IP
 vm_ip=$(<~/kube-solo/.env/ip_address)
 
-# Set the environment variable for the docker daemon
-export DOCKER_HOST=tcp://$vm_ip:2375
-
 # path to the bin folder where we store our binary files
 export PATH=${HOME}/kube-solo/bin:$PATH
 

@@ -85,8 +85,16 @@ i=0
 while ! ping -c1 $vm_ip >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 #
 
+# install k8s files on to VM
+echo "Installing latest version of Kubernetes ..."
+cd ~/kube-solo/kube
+scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no kube.tgz core@$vm_ip:/home/core
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no core@$vm_ip 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
+echo "Done with k8solo-01 "
 echo " "
-# download latest versions of etcdctl, fleetctl and docker clients
+#
+
+# download latest version fleetctl client
 download_osx_clients
 #
 
@@ -97,9 +105,51 @@ export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
 echo "fleetctl list-machines:"
 fleetctl list-machines
 echo " "
+#
+echo "Installing fleet units from '~/kube-solo/fleet' folder:"
+cd ~/kube-solo/fleet
+~/kube-solo/bin/fleetctl submit *.service
+~/kube-solo/bin/fleetctl start *.service
+echo "Finished installing fleet units"
+~/kube-solo/bin/fleetctl list-units
+echo " "
 
+# set kubernetes master
+export KUBERNETES_MASTER=http://$vm_ip:8080
+#
+echo Waiting for Kubernetes cluster to be ready. This can take a few minutes...
+spin='-\|/'
+i=1
+until ~/kube-solo/bin/kubectl version | grep 'Server Version' >/dev/null 2>&1; do printf "\b${spin:i++%${#sp}:1}"; sleep .1; done
+i=0
+until ~/kube-solo/bin/kubectl get nodes | grep $vm_ip >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+echo " "
+# attach label to the node
+~/kube-solo/bin/kubectl label nodes $vm_ip node=worker1
+#
+echo " "
+echo "Installing SkyDNS ..."
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/skydns-rc.yaml
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/skydns-svc.yaml
+# clean up kubernetes folder
+rm -f ~/kube-solo/kubernetes/skydns-rc.yaml
+rm -f ~/kube-solo/kubernetes/skydns-svc.yaml
+#
+echo " "
+echo "Installing Kubernetes UI ..."
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-ui-rc.yaml
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-ui-svc.yaml
+# clean up kubernetes folder
+rm -f ~/kube-solo/kubernetes/kube-ui-rc.yaml
+rm -f ~/kube-solo/kubernetes/kube-ui-svc.yaml
 #
 
+#
+echo " "
+echo "kubectl get nodes:"
+~/kube-solo/bin/kubectl get nodes
+echo " "
+#
 echo "Installation has finished, Kube Solo VM is up and running !!!"
 echo " "
 echo "Assigned static VM's IP: $vm_ip"

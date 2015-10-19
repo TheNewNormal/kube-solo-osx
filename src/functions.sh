@@ -131,38 +131,56 @@ rm -f fleet.zip
 echo "fleetctl was copied to ~/kube-solo/bin "
 #
 
+}
+
+
+function download_k8s_files() {
+#
+cd ~/kube-solo/tmp
+
+# get latest k8s version
+function get_latest_version_number {
+    local -r latest_url="https://storage.googleapis.com/kubernetes-release/release/latest.txt"
+    curl -Ss ${latest_url}
+}
+
+K8S_VERSION=$(get_latest_version_number)
+
+# download latest version of kubectl for OS X
+cd ~/kube-solo/tmp
+echo "Downloading kubectl $K8S_VERSION for OS X"
+curl -k -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/darwin/amd64/kubectl >  ~/kube-solo/bin/kubectl
+chmod 755 ~/kube-solo/bin/kubectl
+echo "kubectl was copied to ~/kube-solo/bin"
 echo " "
-# download docker file
-DOCKER_VERSION=$(ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no core@$vm_ip  'docker version' | grep 'Server version:' | cut -d " " -f 3- | tr -d '\r' | sed 's/^[ \t]*//;s/[ \t]*$//' )
 
-if [ "$DOCKER_VERSION" = "" ]
-then
-    DOCKER_VERSION=$(ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no core@$vm_ip  'docker version' | grep 'Version:' | cut -d " " -f 3- | tr -d '\r' | head -1 | sed 's/^[ \t]*//;s/[ \t]*$//' )
-fi
+# clean up tmp folder
+rm -rf ~/kube-solo/tmp/*
 
-CHECK_DOCKER_RC=$(echo $DOCKER_VERSION | grep rc)
-if [ -n "$CHECK_DOCKER_RC" ]
-then
-    # docker RC release
-    if [ -n "$(curl -s --head https://test.docker.com/builds/Darwin/x86_64/docker-$DOCKER_VERSION | head -n 1 | grep "HTTP/1.[01] [23].." | grep 200)" ]
-    then
-        # we check if RC is still available
-        echo "Downloading docker $DOCKER_VERSION client for OS X"
-        curl -o ~/kube-solo/bin/docker https://test.docker.com/builds/Darwin/x86_64/docker-$DOCKER_VERSION
-    else
-        # RC is not available anymore, so we download stable release
-        DOCKER_VERSION_STABLE=$(echo $DOCKER_VERSION | cut -d"-" -f1)
-        echo "Downloading docker $DOCKER_VERSION_STABLE client for OS X"
-        curl -o ~/kube-solo/bin/docker https://get.docker.com/builds/Darwin/x86_64/docker-$DOCKER_VERSION_STABLE
-    fi
-else
-    # docker stable release
-    echo "Downloading docker $DOCKER_VERSION client for OS X"
-    curl -o ~/kube-solo/bin/docker https://get.docker.com/builds/Darwin/x86_64/docker-$DOCKER_VERSION
-fi
-# Make it executable
-chmod +x ~/kube-solo/bin/docker
-echo "docker was copied to ~/kube-solo/bin"
+# download latest version of k8s for CoreOS
+echo "Downloading latest version of Kubernetes"
+bins=( kubectl kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
+for b in "${bins[@]}"; do
+    curl -k -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/$b > ~/kube-solo/tmp/$b
+done
+#
+tar czvf kube.tgz *
+cp -f kube.tgz ~/kube-solo/kube/
+# clean up tmp folder
+rm -rf ~/kube-solo/tmp/*
+echo " "
+
+# get VM IP
+vm_ip=$(cat ~/kube-solo/.env/ip_address)
+
+# install k8s files
+echo "Installing latest version of Kubernetes ..."
+cd ~/kube-solo/kube
+scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no kube.tgz core@$vm_ip:/home/core
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no core@$vm_ip 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
+echo "Done with k8solo-01 "
+echo " "
+
 }
 
 
