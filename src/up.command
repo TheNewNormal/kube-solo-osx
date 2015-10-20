@@ -20,10 +20,13 @@ chmod 755 ~/kube-solo/bin/xhyve
 # Check if set channel's images are present
 check_for_images
 
+new_vm=0
 # check if root disk exists, if not create it
 if [ ! -f $HOME/kube-solo/root.img ]; then
+    echo " "
     echo "ROOT disk does not exits, it will be created now ..."
     create_root_disk
+    new_vm=1
 fi
 
 # Start VM
@@ -66,12 +69,22 @@ export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
 #
 sleep 1
 
+#
 echo "fleetctl list-machines:"
 fleetctl list-machines
-echo " "
-echo "fleetctl list-units:"
-fleetctl list-units
-echo " "
+#
+if [ $new_vm = 1 ]
+then
+    # install k8s files on to VM
+    install_k8s_files
+    echo "  "
+    deploy_fleet_units
+else
+    echo "  "
+    echo "fleetctl list-units:"
+    fleetctl list-units
+    echo " "
+fi
 
 # set kubernetes master
 export KUBERNETES_MASTER=http://$vm_ip:8080
@@ -84,14 +97,14 @@ until ~/kube-solo/bin/kubectl get nodes | grep $vm_ip >/dev/null 2>&1; do i=$(( 
 echo " "
 #
 echo " "
-echo "k8s nodes list:"
+echo "kubernetes nodes list:"
 ~/kube-solo/bin/kubectl get nodes
 echo " "
 #
 
 #
 
-cd ~/
+cd ~/kube-solo/kubernetes
 
 # open bash shell
 /bin/bash

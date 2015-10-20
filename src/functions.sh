@@ -43,8 +43,8 @@ do
         VALID_MAIN=1
         sed -i "" "s/CHANNEL=stable/CHANNEL=alpha/" ~/kube-solo/custom.conf
         sed -i "" "s/CHANNEL=beta/CHANNEL=alpha/" ~/kube-solo/custom.conf
-        sed -i "" "s/CHANNEL=stable/CHANNEL=alpha/" ~/kube-solo/custom-format-root.conf
-        sed -i "" "s/CHANNEL=beta/CHANNEL=alpha/" ~/kube-solo/custom-format-root.conf
+#        sed -i "" "s/CHANNEL=stable/CHANNEL=alpha/" ~/kube-solo/custom-format-root.conf
+#        sed -i "" "s/CHANNEL=beta/CHANNEL=alpha/" ~/kube-solo/custom-format-root.conf
         channel="Alpha"
         LOOP=0
     fi
@@ -54,8 +54,8 @@ do
         VALID_MAIN=1
         sed -i "" "s/CHANNEL=alpha/CHANNEL=beta/" ~/kube-solo/custom.conf
         sed -i "" "s/CHANNEL=stable/CHANNEL=beta/" ~/kube-solo/custom.conf
-        sed -i "" "s/CHANNEL=alpha/CHANNEL=beta/" ~/kube-solo/custom-format-root.conf
-        sed -i "" "s/CHANNEL=stable/CHANNEL=beta/" ~/kube-solo/custom-format-root.conf
+#        sed -i "" "s/CHANNEL=alpha/CHANNEL=beta/" ~/kube-solo/custom-format-root.conf
+#        sed -i "" "s/CHANNEL=stable/CHANNEL=beta/" ~/kube-solo/custom-format-root.conf
         channel="Beta"
         LOOP=0
     fi
@@ -65,8 +65,8 @@ do
         VALID_MAIN=1
         sed -i "" "s/CHANNEL=alpha/CHANNEL=stable/" ~/kube-solo/custom.conf
         sed -i "" "s/CHANNEL=beta/CHANNEL=stable/" ~/kube-solo/custom.conf
-        sed -i "" "s/CHANNEL=alpha/CHANNEL=stable/" ~/kube-solo/custom-format-root.conf
-        sed -i "" "s/CHANNEL=beta/CHANNEL=stable/" ~/kube-solo/custom-format-root.conf
+#        sed -i "" "s/CHANNEL=alpha/CHANNEL=stable/" ~/kube-solo/custom-format-root.conf
+#        sed -i "" "s/CHANNEL=beta/CHANNEL=stable/" ~/kube-solo/custom-format-root.conf
         channel="Stable"
         LOOP=0
     fi
@@ -94,6 +94,7 @@ else
 echo "Creating "$disk_size"GB disk ..."
 dd if=/dev/zero of=root.img bs=1024 count=0 seek=$[1024*$disk_size*1024]
 fi
+echo " "
 #
 
 ### format ROOT disk
@@ -107,10 +108,24 @@ echo -e "$my_password\n" | sudo -S ls > /dev/null 2>&1
 
 # Start VM
 echo "Waiting for VM to boot up for ROOT disk to be formated ... "
+echo " "
 cd ~/kube-solo
 export XHYVE=~/kube-solo/bin/xhyve
-"${res_folder}"/bin/coreos-xhyve-run -f custom-format-root.conf kube-solo
 
+# enable format mode
+sed -i "" "s/user-data/user-data-format-root/" ~/kube-solo/custom.conf
+sed -i "" "s/ROOT_HDD=/#ROOT_HDD=/" ~/kube-solo/custom.conf
+sed -i "" "s/#IMG_HDD=/IMG_HDD=/" ~/kube-solo/custom.conf
+#
+"${res_folder}"/bin/coreos-xhyve-run -f custom.conf kube-solo
+#
+# disable format mode
+sed -i "" "s/user-data-format-root/user-data/" ~/kube-solo/custom.conf
+sed -i "" "s/IMG_HDD=/#IMG_HDD=/" ~/kube-solo/custom.conf
+sed -i "" "s/#ROOT_HDD=/ROOT_HDD=/" ~/kube-solo/custom.conf
+#
+
+echo " "
 echo "ROOT disk got created and formated... "
 echo " "
 
@@ -174,12 +189,7 @@ echo " "
 vm_ip=$(cat ~/kube-solo/.env/ip_address)
 
 # install k8s files
-echo "Installing latest version of Kubernetes ..."
-cd ~/kube-solo/kube
-scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no kube.tgz core@$vm_ip:/home/core
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no core@$vm_ip 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
-echo "Done with k8solo-01 "
-echo " "
+install_k8s_files
 
 }
 
@@ -203,8 +213,8 @@ function deploy_fleet_units() {
 if [ "$(ls ~/kube-solo/fleet | grep -o -m 1 service)" = "service" ]
 then
     cd ~/kube-solo/fleet
-    echo " "
     echo "Starting all fleet units in ~/kube-solo/fleet:"
+    fleetctl submit *.service
     fleetctl start *.service
     echo " "
     echo "fleetctl list-units:"
@@ -213,4 +223,15 @@ then
 fi
 }
 
+
+function install_k8s_files {
+# install k8s files on to VM
+echo " "
+echo "Installing Kubernetes files on to VM..."
+cd ~/kube-solo/kube
+scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no kube.tgz core@$vm_ip:/home/core
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no core@$vm_ip 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
+echo "Done with k8solo-01 "
+echo " "
+}
 

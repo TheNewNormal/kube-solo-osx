@@ -86,12 +86,7 @@ while ! ping -c1 $vm_ip >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:
 #
 
 # install k8s files on to VM
-echo "Installing latest version of Kubernetes ..."
-cd ~/kube-solo/kube
-scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no kube.tgz core@$vm_ip:/home/core
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no core@$vm_ip 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
-echo "Done with k8solo-01 "
-echo " "
+install_k8s_files
 #
 
 # download latest version fleetctl client
@@ -106,12 +101,7 @@ echo "fleetctl list-machines:"
 fleetctl list-machines
 echo " "
 #
-echo "Installing fleet units from '~/kube-solo/fleet' folder:"
-cd ~/kube-solo/fleet
-~/kube-solo/bin/fleetctl submit *.service
-~/kube-solo/bin/fleetctl start *.service
-echo "Finished installing fleet units"
-~/kube-solo/bin/fleetctl list-units
+deploy_fleet_units
 echo " "
 
 # set kubernetes master
@@ -158,7 +148,8 @@ echo "Enjoy Kube Solo on your Mac !!!"
 echo " "
 echo "Run from menu 'OS Shell' to open a terninal window with fleetctl, etcdctl and kubectl pre-set !!!"
 echo " "
-pause 'Press [Enter] key to continue...'
+
+sleep 50
 
 
 

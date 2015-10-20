@@ -343,12 +343,12 @@
 - (IBAction)About:(id)sender {
     
     NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    NSString *build = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
-    NSString *app_version = [NSString stringWithFormat:@"%@%@.%@", @"v", version, build];
-//    NSString *app_version = [NSString stringWithFormat:@"%@", version];
+//    NSString *build = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+//    NSString *app_version = [NSString stringWithFormat:@"%@%@.%@", @"v", version, build];
+    NSString *app_version = [NSString stringWithFormat:@"%@%@", @"v", version];
     
     NSString *mText = [NSString stringWithFormat:@"%@ %@", @"Kube-Solo for OS X", app_version];
-    NSString *infoText = @"It is a simple wrapper around the CoreOS-Vagrant, which allows to control Kube-Solo via Status Bar !!!";
+    NSString *infoText = @"It is a simple wrapper around xhyve + CoreOS VM, which allows to control Kube-Solo via Status Bar !!!";
     [self displayWithMessage:mText infoText:infoText];
 }
 //

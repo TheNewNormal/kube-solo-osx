@@ -11,10 +11,8 @@
     mkdir ~/kube-solo/bin
     mkdir ~/kube-solo/cloud-init
     mkdir ~/kube-solo/fleet
-    mkdir ~/kube-solo/my_fleet
     mkdir ~/kube-solo/kubernetes
-    mkdir -p ~/kube-solo/kube
-    mkdir -p ~/kube-solo/settings
+    mkdir ~/kube-solo/kube
 
     # cd to App's Resources folder
     cd "$1"
@@ -31,7 +29,7 @@
 
     # copy custom.conf
     cp -f "$1"/settings/custom.conf ~/kube-solo
-    cp -f "$1"/settings/custom-format-root.conf ~/kube-solo
+#    cp -f "$1"/settings/custom-format-root.conf ~/kube-solo
 
     # copy k8s files
     cp "$1"/k8s/kubectl ~/kube-solo/bin
