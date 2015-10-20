@@ -54,10 +54,10 @@ That allows to share the same images between different coreos-xhyve Apps and als
 How it works
 ------------
 
-Just start `Kube-Solo` application and you will find a small icon with the CoreOS logo with `h`in the Status Bar.
+Just start `Kube-Solo` application and you will find a small icon of Kubernetes logo with `S` in the Status Bar.
 
 * There you can `Up`, `Halt`, `Reload` CoreOS VM
-* `SSH to k8solo-01` will open VM shell192.168.64.xxx
+* `SSH to k8solo-01` will open VM shell
 * `Attach to VM's console` will open VM console
 * Under `Up` OS Shell will be opened when VM boot finishes up and it will have such environment pre-set:
 
