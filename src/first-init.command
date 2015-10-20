@@ -33,12 +33,7 @@ fi
 #
 
 # save user password to file
-echo "  "
-echo "Your Mac user password will be saved to '~/kube-solo/.env/password' "
-echo "and later one used for 'sudo' commnand to start VM !!!"
-echo "Please type your Mac user's password followed by [ENTER]:"
-read -s password
-echo -n ${password} | base64 > ~/kube-solo/.env/password
+save_password
 #
 
 # Set release channel

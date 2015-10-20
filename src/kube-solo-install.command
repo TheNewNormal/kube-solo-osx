@@ -29,7 +29,6 @@
 
     # copy custom.conf
     cp -f "$1"/settings/custom.conf ~/kube-solo
-#    cp -f "$1"/settings/custom-format-root.conf ~/kube-solo
 
     # copy k8s files
     cp "$1"/k8s/kubectl ~/kube-solo/bin

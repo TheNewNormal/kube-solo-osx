@@ -43,8 +43,6 @@ do
         VALID_MAIN=1
         sed -i "" "s/CHANNEL=stable/CHANNEL=alpha/" ~/kube-solo/custom.conf
         sed -i "" "s/CHANNEL=beta/CHANNEL=alpha/" ~/kube-solo/custom.conf
-#        sed -i "" "s/CHANNEL=stable/CHANNEL=alpha/" ~/kube-solo/custom-format-root.conf
-#        sed -i "" "s/CHANNEL=beta/CHANNEL=alpha/" ~/kube-solo/custom-format-root.conf
         channel="Alpha"
         LOOP=0
     fi
@@ -54,8 +52,6 @@ do
         VALID_MAIN=1
         sed -i "" "s/CHANNEL=alpha/CHANNEL=beta/" ~/kube-solo/custom.conf
         sed -i "" "s/CHANNEL=stable/CHANNEL=beta/" ~/kube-solo/custom.conf
-#        sed -i "" "s/CHANNEL=alpha/CHANNEL=beta/" ~/kube-solo/custom-format-root.conf
-#        sed -i "" "s/CHANNEL=stable/CHANNEL=beta/" ~/kube-solo/custom-format-root.conf
         channel="Beta"
         LOOP=0
     fi
@@ -64,9 +60,7 @@ do
     then
         VALID_MAIN=1
         sed -i "" "s/CHANNEL=alpha/CHANNEL=stable/" ~/kube-solo/custom.conf
-        sed -i "" "s/CHANNEL=beta/CHANNEL=stable/" ~/kube-solo/custom.conf
-#        sed -i "" "s/CHANNEL=alpha/CHANNEL=stable/" ~/kube-solo/custom-format-root.conf
-#        sed -i "" "s/CHANNEL=beta/CHANNEL=stable/" ~/kube-solo/custom-format-root.conf
+        sed -i "" "s/CHANNEL=beta/CHANNEL=stable/" ~/kube-solo/custom.confs
         channel="Stable"
         LOOP=0
     fi
@@ -83,16 +77,16 @@ create_root_disk() {
 # create persistent disk
 cd ~/kube-solo/
 echo "  "
-echo "Please type ROOT disk size in GB followed by [ENTER]:"
+echo "Please type ROOT disk size in GBs followed by [ENTER]:"
 echo -n [default is 5]:
 read disk_size
 if [ -z "$disk_size" ]
 then
-echo "Creating 5GB disk ..."
-dd if=/dev/zero of=root.img bs=1024 count=0 seek=$[1024*5120]
+    echo "Creating 5GB disk ..."
+    dd if=/dev/zero of=root.img bs=1024 count=0 seek=$[1024*5120]
 else
-echo "Creating "$disk_size"GB disk ..."
-dd if=/dev/zero of=root.img bs=1024 count=0 seek=$[1024*$disk_size*1024]
+    echo "Creating "$disk_size"GB disk ..."
+    dd if=/dev/zero of=root.img bs=1024 count=0 seek=$[1024*$disk_size*1024]
 fi
 echo " "
 #
@@ -235,3 +229,13 @@ echo "Done with k8solo-01 "
 echo " "
 }
 
+function save_password {
+# save user password to file
+echo "  "
+echo "Your Mac user password will be saved to '~/kube-solo/.env/password' "
+echo "and later one used for 'sudo' commnand to start VM !!!"
+echo "Please type your Mac user's password followed by [ENTER]:"
+read -s password
+echo -n ${password} | base64 > ~/kube-solo/.env/password
+echo " "
+}

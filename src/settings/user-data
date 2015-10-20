@@ -1,12 +1,12 @@
 #cloud-config
 
-hostname: core-01
+hostname: k8solo-01
 
 coreos:
   update:
     reboot-strategy: off
   etcd2:
-    name: core-01
+    name: k8solo-01
     initial-advertise-peer-urls: http://127.0.0.1:2380
     initial-cluster-token: core-01_etcd
     initial-cluster: core-01=http://127.0.0.1:2380

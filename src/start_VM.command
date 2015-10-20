@@ -23,7 +23,7 @@ cd ~/kube-solo/cloud-init
 "${res_folder}"/bin/webserver start
 
 # Start VM
-echo "Waiting for VM to boot up... "
+#echo "Waiting for VM to boot up... "
 cd ~/kube-solo
 export XHYVE=~/kube-solo/bin/xhyve
 "${res_folder}"/bin/coreos-xhyve-run -f custom.conf kube-solo

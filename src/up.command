@@ -10,12 +10,15 @@ source "${DIR}"/functions.sh
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
-# get VM IP
-vm_ip=$(cat ~/kube-solo/.env/ip_address)
-
 # copy xhyve to bin folder
 cp -f "${res_folder}"/bin/xhyve ~/kube-solo/bin
 chmod 755 ~/kube-solo/bin/xhyve
+
+# check for password file
+if [ ! -f ~/kube-solo/.env/password ]
+then
+    save_password
+fi
 
 # Check if set channel's images are present
 check_for_images
@@ -41,9 +44,15 @@ echo "You can connect to VM console from menu 'Attach to VM's console' "
 echo "When you done with console just close it's window/tab with CMD+W "
 echo "Waiting for VM to boot up..."
 spin='-\|/'
-i=0
+i=1
+while [ ! -f ~/kube-solo/.env/ip_address ]; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+# get VM IP
+vm_ip=$(cat ~/kube-solo/.env/ip_address);
+# wait for VM to be ready
+i=1
 while ! ping -c1 $vm_ip >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 
+# Set the environment variables
 # path to the bin folder where we store our binary files
 export PATH=${HOME}/kube-solo/bin:$PATH
 
@@ -53,7 +62,7 @@ export ETCDCTL_PEERS=http://$vm_ip:2379
 echo " "
 echo "Waiting for VM to be ready..."
 spin='-\|/'
-i=0
+i=1
 until curl -o /dev/null http://$vm_ip:2379 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 #
 echo " "
@@ -75,7 +84,7 @@ fleetctl list-machines
 #
 if [ $new_vm = 1 ]
 then
-    # install k8s files on to VM
+    # install k8s files on to VM§
     install_k8s_files
     echo "  "
     deploy_fleet_units
@@ -91,17 +100,16 @@ export KUBERNETES_MASTER=http://$vm_ip:8080
 echo Waiting for Kubernetes cluster to be ready. This can take a few minutes...
 spin='-\|/'
 i=1
+until curl -o /dev/null http://$vm_ip:8080 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+i=1
 until ~/kube-solo/bin/kubectl version | grep 'Server Version' >/dev/null 2>&1; do printf "\b${spin:i++%${#sp}:1}"; sleep .1; done
-i=0
+i=1
 until ~/kube-solo/bin/kubectl get nodes | grep $vm_ip >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-echo " "
 #
 echo " "
 echo "kubernetes nodes list:"
 ~/kube-solo/bin/kubectl get nodes
 echo " "
-#
-
 #
 
 cd ~/kube-solo/kubernetes
