@@ -40,7 +40,7 @@ do
             echo " "
             echo "Waiting for VM to shutdown..."
             spin='-\|/'
-            i=0
+            i=1
             until "${res_folder}"/check_vm_status.command | grep "VM is stopped" >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
         fi
 

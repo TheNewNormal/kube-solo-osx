@@ -14,9 +14,13 @@ res_folder=$(cat ~/kube-solo/.env/resouces_path)
 cp -f "${res_folder}"/bin/xhyve ~/kube-solo/bin
 chmod 755 ~/kube-solo/bin/xhyve
 
+# Stop webserver just in case it was left running
+"${res_folder}"/bin/webserver stop
+
 # check for password file
 if [ ! -f ~/kube-solo/.env/password ]
 then
+    echo "File with saved password is not found: "
     save_password
 fi
 
@@ -27,7 +31,7 @@ new_vm=0
 # check if root disk exists, if not create it
 if [ ! -f $HOME/kube-solo/root.img ]; then
     echo " "
-    echo "ROOT disk does not exits, it will be created now ..."
+    echo "ROOT disk does not exist, it will be created now ..."
     create_root_disk
     new_vm=1
 fi
@@ -84,8 +88,8 @@ fleetctl list-machines
 #
 if [ $new_vm = 1 ]
 then
-    # install k8s files on to VM§
     install_k8s_files
+    #
     echo "  "
     deploy_fleet_units
 else
@@ -106,7 +110,16 @@ until ~/kube-solo/bin/kubectl version | grep 'Server Version' >/dev/null 2>&1; d
 i=1
 until ~/kube-solo/bin/kubectl get nodes | grep $vm_ip >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 #
-echo " "
+if [ $new_vm = 1 ]
+then
+    # attach label to the node
+    ~/kube-solo/bin/kubectl label nodes $vm_ip node=worker1
+    # copy add-ons files
+    cp "${res_folder}"/k8s/*.yaml ~/kube-solo/kubernetes
+    install_k8s_add_ons
+    #
+fi
+#
 echo "kubernetes nodes list:"
 ~/kube-solo/bin/kubectl get nodes
 echo " "
