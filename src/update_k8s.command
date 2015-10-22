@@ -26,6 +26,10 @@ chmod 755 ~/kube-solo/bin/*
 download_k8s_files
 #
 
+# generate kubeconfig file
+ "${res_folder}"/bin/gen_kubeconfig $vm_ip
+#
+
 # restart fleet units
 echo "Restarting fleet units:"
 # set fleetctl tunnel

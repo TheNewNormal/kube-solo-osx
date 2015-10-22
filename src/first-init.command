@@ -104,6 +104,10 @@ echo " "
 deploy_fleet_units
 #
 
+# generate kubeconfig file
+"${res_folder}"/bin/gen_kubeconfig $vm_ip
+#
+
 # set kubernetes master
 export KUBERNETES_MASTER=http://$vm_ip:8080
 #

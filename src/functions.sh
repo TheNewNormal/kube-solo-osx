@@ -157,9 +157,9 @@ K8S_VERSION=$(get_latest_version_number)
 # download latest version of kubectl for OS X
 cd ~/kube-solo/tmp
 echo "Downloading kubectl $K8S_VERSION for OS X"
-curl -k -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/darwin/amd64/kubectl >  ~/kube-solo/bin/kubectl
-chmod 755 ~/kube-solo/bin/kubectl
-echo "kubectl was copied to ~/kube-solo/bin"
+curl -k -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/darwin/amd64/kubectl >  ~/kube-solo/kube/kubectl
+chmod 755 ~/kube-solo/kube/kubectl
+echo "kubectl was copied to ~/kube-solo/kube"
 echo " "
 
 # clean up tmp folder
@@ -240,8 +240,8 @@ function install_k8s_files {
 echo " "
 echo "Installing Kubernetes files on to VM..."
 cd ~/kube-solo/kube
-scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no kube.tgz core@$vm_ip:/home/core
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no core@$vm_ip 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
+scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet kube.tgz core@$vm_ip:/home/core
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet core@$vm_ip 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
 echo "Done with k8solo-01 "
 echo " "
 }
