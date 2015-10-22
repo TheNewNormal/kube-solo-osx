@@ -778,7 +778,7 @@
                 <menuItem title="Quit" id="zsR-Hu-nBe">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
-                        <action selector="terminate:" target="-3" id="INS-Gw-nva"/>
+                        <action selector="quit:" target="494" id="wDG-D5-Osh"/>
                     </connections>
                 </menuItem>
             </items>

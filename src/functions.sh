@@ -99,6 +99,7 @@ cd ~/kube-solo/cloud-init
 # Get password
 my_password=$(cat ~/kube-solo/.env/password | base64 --decode )
 echo -e "$my_password\n" | sudo -S ls > /dev/null 2>&1
+echo -e "$my_password\n" | sudo -S ls > /dev/null 2>&1
 
 # Start VM
 echo "Waiting for VM to boot up for ROOT disk to be formated ... "
@@ -118,10 +119,8 @@ sed -i "" "s/user-data-format-root/user-data/" ~/kube-solo/custom.conf
 sed -i "" "s/IMG_HDD=/#IMG_HDD=/" ~/kube-solo/custom.conf
 sed -i "" "s/#ROOT_HDD=/ROOT_HDD=/" ~/kube-solo/custom.conf
 #
-
 echo " "
 echo "ROOT disk got created and formated... "
-echo " "
 
 # Stop webserver
 "${res_folder}"/bin/webserver stop
@@ -158,9 +157,9 @@ K8S_VERSION=$(get_latest_version_number)
 # download latest version of kubectl for OS X
 cd ~/kube-solo/tmp
 echo "Downloading kubectl $K8S_VERSION for OS X"
-curl -k -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/darwin/amd64/kubectl >  ~/kube-solo/bin/kubectl
-chmod 755 ~/kube-solo/bin/kubectl
-echo "kubectl was copied to ~/kube-solo/bin"
+curl -k -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/darwin/amd64/kubectl >  ~/kube-solo/kube/kubectl
+chmod 755 ~/kube-solo/kube/kubectl
+echo "kubectl was copied to ~/kube-solo/kube"
 echo " "
 
 # clean up tmp folder
@@ -188,6 +187,26 @@ install_k8s_files
 }
 
 
+function install_k8s_add_ons {
+echo " "
+echo "Installing SkyDNS ..."
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/skydns-rc.yaml
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/skydns-svc.yaml
+# clean up kubernetes folder
+rm -f ~/kube-solo/kubernetes/skydns-rc.yaml
+rm -f ~/kube-solo/kubernetes/skydns-svc.yaml
+#
+echo " "
+echo "Installing Kubernetes UI ..."
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-ui-rc.yaml
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-ui-svc.yaml
+# clean up kubernetes folder
+rm -f ~/kube-solo/kubernetes/kube-ui-rc.yaml
+rm -f ~/kube-solo/kubernetes/kube-ui-svc.yaml
+#
+
+}
+
 function check_for_images() {
 # Check if set channel's images are present
 CHANNEL=$(cat ~/kube-solo/custom.conf | grep CHANNEL= | head -1 | cut -f2 -d"=")
@@ -204,17 +223,15 @@ fi
 
 function deploy_fleet_units() {
 # deploy fleet units from ~/kube-solo/fleet
-if [ "$(ls ~/kube-solo/fleet | grep -o -m 1 service)" = "service" ]
-then
-    cd ~/kube-solo/fleet
-    echo "Starting all fleet units in ~/kube-solo/fleet:"
-    fleetctl submit *.service
-    fleetctl start *.service
-    echo " "
-    echo "fleetctl list-units:"
-    fleetctl list-units
-    echo " "
-fi
+cd ~/kube-solo/fleet
+echo "Starting all fleet units in ~/kube-solo/fleet:"
+fleetctl submit *.service
+fleetctl start *.service
+echo " "
+echo "fleetctl list-units:"
+fleetctl list-units
+echo " "
+
 }
 
 
@@ -223,11 +240,32 @@ function install_k8s_files {
 echo " "
 echo "Installing Kubernetes files on to VM..."
 cd ~/kube-solo/kube
-scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no kube.tgz core@$vm_ip:/home/core
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no core@$vm_ip 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
+scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet kube.tgz core@$vm_ip:/home/core
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet core@$vm_ip 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
 echo "Done with k8solo-01 "
 echo " "
 }
+
+
+function install_k8s_add_ons {
+echo " "
+echo "Installing SkyDNS ..."
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/skydns-rc.yaml
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/skydns-svc.yaml
+# clean up kubernetes folder
+rm -f ~/kube-solo/kubernetes/skydns-rc.yaml
+rm -f ~/kube-solo/kubernetes/skydns-svc.yaml
+#
+echo " "
+echo "Installing Kubernetes UI ..."
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-ui-rc.yaml
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-ui-svc.yaml
+# clean up kubernetes folder
+rm -f ~/kube-solo/kubernetes/kube-ui-rc.yaml
+rm -f ~/kube-solo/kubernetes/kube-ui-svc.yaml
+echo " "
+}
+
 
 function save_password {
 # save user password to file
@@ -237,5 +275,7 @@ echo "and later one used for 'sudo' commnand to start VM !!!"
 echo "Please type your Mac user's password followed by [ENTER]:"
 read -s password
 echo -n ${password} | base64 > ~/kube-solo/.env/password
+chmod 600 ~/kube-solo/.env/password
 echo " "
 }
+
