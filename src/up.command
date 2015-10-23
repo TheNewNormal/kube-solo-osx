@@ -68,10 +68,6 @@ echo "Waiting for VM to be ready..."
 spin='-\|/'
 i=1
 until curl -o /dev/null http://$vm_ip:2379 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-#
-echo " "
-echo "etcdctl ls /:"
-etcdctl --no-sync ls /
 echo " "
 #
 
@@ -92,13 +88,9 @@ then
     #
     echo "  "
     deploy_fleet_units
-else
-    echo "  "
-    echo "fleetctl list-units:"
-    fleetctl list-units
-    echo " "
 fi
 
+echo " "
 # set kubernetes master
 export KUBERNETES_MASTER=http://$vm_ip:8080
 echo Waiting for Kubernetes cluster to be ready. This can take a few minutes...
@@ -120,6 +112,7 @@ then
     #
 fi
 #
+echo " "
 echo "kubernetes nodes list:"
 ~/kube-solo/bin/kubectl get nodes
 echo " "
