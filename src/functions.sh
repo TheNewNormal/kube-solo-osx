@@ -270,9 +270,9 @@ echo " "
 function save_password {
 # save user password to file
 echo "  "
-echo "Your 'Mac user' password will be saved to '~/kube-solo/.env/password' "
-echo "and later one used for 'sudo' commnand to start VM !!!"
-echo "This not the passoword for the VM access via ssh or console!!!"
+echo "Your Mac user's password will be saved to '~/kube-solo/.env/password' file "
+echo "and later one will be used for 'sudo' command to start VM !!!"
+echo "This is not the password for the VM access via ssh or console !!!"
 echo "Please type your Mac user's password followed by [ENTER]:"
 read -s password
 echo -n ${password} | base64 > ~/kube-solo/.env/password
