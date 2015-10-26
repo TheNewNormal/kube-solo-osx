@@ -280,3 +280,33 @@ chmod 600 ~/kube-solo/.env/password
 echo " "
 }
 
+function clean_up_after_vm {
+sleep 3
+
+# get App's Resources folder
+res_folder=$(cat ~/kube-solo/.env/resouces_path)
+
+# Get password
+my_password=$(cat ~/kube-solo/.env/password | base64 --decode )
+
+# Stop webserver
+kill $(ps aux | grep "[p]ython -m SimpleHTTPServer 18001" | awk {'print $2'})
+
+# kill all kube-solo/bin/xhyve instances
+# ps aux | grep "[k]ube-solo/bin/xhyve" | awk '{print $2}' | sudo -S xargs kill | echo -e "$my_password\n"
+echo -e "$my_password\n" | sudo -S pkill -f [k]ube-solo/bin/xhyve
+#
+echo -e "$my_password\n" | sudo -S pkill -f "${res_folder}"/bin/uuid2mac
+
+# kill all other scripts
+pkill -f [K]ube-Solo.app/Contents/Resources/start_VM.command
+pkill -f [K]ube-Solo.app/Contents/Resources/bin/get_ip
+pkill -f [K]ube-Solo.app/Contents/Resources/bin/get_mac
+pkill -f [K]ube-Solo.app/Contents/Resources/bin/mac2ip
+pkill -f [K]ube-Solo.app/Contents/Resources/fetch_latest_iso.command
+pkill -f [K]ube-Solo.app/Contents/Resources/update_k8s.command
+pkill -f [K]ube-Solo.app/Contents/Resources/update_osx_clients_files.command
+pkill -f [K]ube-Solo.app/Contents/Resources/change_release_channel.command
+
+}
+
