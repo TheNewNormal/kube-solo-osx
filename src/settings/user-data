@@ -109,3 +109,14 @@ write-files:
    owner: core:core
    content: |
      ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXxUqHedGkdM4L4ADKD5gHU/RJIhJH/ZOMcbz1ztmE9MYJevk/rQfm9T9g6tXyxBHnjaKcPDF8C+GfzrId7/Dx1f+DiSs0MH7Q0UvV9tD0GS0axqgCmDltYwaMGBVOnxYmUN9bvNiolC7/CNn3SjPoSkvj4OHMCf9bQlRdaIWAJSkoMcnNkhnN5vLAtwn/yOeAyHGlp705IMiRH2LlA2R6otmFHSQHrkGr/wpu0WJt27EBTIarFeei7dAHlUf1zhStry/OEyqwEKiEo+4fk4vPZXiNyKNklju/I1qFcbc8HwbDVzTtdlQCURQO4losDmQgFdI4wz1flOOrsK+1+vPb core@core-01
+ - path: /opt/bin/wupiao
+   permissions: '0755'
+   content: |
+      #!/bin/bash
+      # [w]ait [u]ntil [p]ort [i]s [a]ctually [o]pen
+      [ -n "$1" ] && \
+        until curl -o /dev/null -sIf http://${1}; do \
+          sleep 1 && echo .;
+        done;
+      exit $?
+

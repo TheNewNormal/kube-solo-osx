@@ -12,7 +12,7 @@ res_folder=$(cat ~/kube-solo/.env/resouces_path)
 vm_ip=$(<~/kube-solo/.env/ip_address)
 
 # Stop VM
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no core@$vm_ip sudo halt
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ConnectTimeout=5 core@$vm_ip sudo halt
 # wait till VM is stopped
 echo " "
 echo "Waiting for VM to shutdown..."
