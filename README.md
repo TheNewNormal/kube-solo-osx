@@ -37,7 +37,7 @@ by [xhyve](https://github.com/mist64/xhyve).
 Start the `Kube-Solo` and from menu `Setup` choose `Initial setup of Kube-Solo` and the install will do the following:
 
 * All dependent files/folders will be put under `kube-solo` folder in the user's home folder e.g /Users/someuser/kube-solo
-* User's Mac password will be stored in `/Users/someuser/coreos-xhyve-ui/.env/password` and encrypted with `base64`, it will be used to pass to `sudo` command which needs to be used starting VM with xhyve
+* User's Mac password will be stored in `/Users/someuser/coreos-xhyve-ui/.env/password` and encoded with `base64`, it will be used to pass to `sudo` command which needs to be used starting VM with xhyve
 * ISO images are stored under ~/.coreos-xhyve/imgs and symlinked to it from ~/kube-solo/imgs
 That allows to share the same images between different coreos-xhyve Apps and also speeds up this App's reinstall
 * user-data file will have fleet, etcd, and Docker Socket for the API enabled
