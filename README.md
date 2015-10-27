@@ -118,7 +118,7 @@ Other links
 -----------
 * Cluster one with Kubernetes CoreOS VM App can be found here [CoreOS-Vagrant Kubernetes Cluster GUI for OS X](https://github.com/rimusz/coreos-osx-gui-kubernetes-cluster).
 
-* A standalone CoreOS VM version App can be found here [CoreOS-xhyve UI](https://github.com/rimusz/coreos-xhyve-ui).
+* Standalone CoreOS VM version App can be found here [CoreOS-xhyve UI](https://github.com/rimusz/coreos-xhyve-ui).
 
 * CoreOS Cluster one App can be found here [CoreOS-Vagrant Cluster GUI](https://github.com/rimusz/coreos-osx-gui-cluster).
 
