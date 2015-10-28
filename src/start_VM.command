@@ -23,7 +23,6 @@ echo -e "$my_password\n" | sudo -S "${res_folder}"/bin/uuid2mac $UUID > ~/kube-s
 # Start webserver
 cd ~/kube-solo/cloud-init
 "${res_folder}"/bin/webserver start
-"${res_folder}"/bin/webserver start
 
 # Start VM
 #echo "Waiting for VM to boot up... "

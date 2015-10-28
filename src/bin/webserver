@@ -3,6 +3,8 @@
 
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
+cd ~/kube-solo/cloud-init
+
 start() {
     nohup "${res_folder}"/bin/kube-solo-web >/dev/null 2>&1 &
 }
