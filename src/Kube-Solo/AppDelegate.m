@@ -67,6 +67,8 @@
     }
 }
 
+#pragma mark - Menu Items
+
 - (IBAction)Start:(id)sender {
     VMStatus vmStatus = [self.vmManager checkVMStatus];
 
@@ -158,7 +160,6 @@
     }
 }
 
-// Updates menu
 - (IBAction)update_k8s:(id)sender {
     VMStatus vmStatus = [self.vmManager checkVMStatus];
 
@@ -178,15 +179,16 @@
 
 - (IBAction)update_k8s_version:(id)sender {
     VMStatus vmStatus = [self.vmManager checkVMStatus];
+
     switch (vmStatus) {
         case VMStatusDown:
-            NSLog (@"VM is Off");
+            NSLog(@"VM is Off");
             [self notifyUserWithText:@"VM is Off !!!"];
             break;
         case VMStatusUp:
-            NSLog (@"VM is On");
+            NSLog(@"VM is On");
             [self notifyUserWithTitle:@"Kube-Solo and" text:@"OS X kubectl version will be changed"];
-            [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"update_k8s_version.command"]];
+            [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"update_k8s_version.command"]];
             break;
     }
 }
@@ -213,7 +215,6 @@
     [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"fetch_latest_iso.command"]];
 }
 
-// Setup menu
 - (IBAction)changeReleaseChannel:(id)sender {
     [self notifyUserWithText:@"CoreOS release channel change"];
     [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"change_release_channel.command"]];
@@ -261,8 +262,6 @@
     }
 }
 
-// Setup menu
-
 - (IBAction)About:(id)sender {
     NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
     NSString *app_version = [NSString stringWithFormat:@"%@%@", @"v", version];
@@ -273,7 +272,6 @@
     [self displayWithMessage:mText infoText:infoText];
 }
 
-// VM console
 - (IBAction)attachConsole:(id)sender {
     VMStatus vmStatus = [self.vmManager checkVMStatus];
 
@@ -291,7 +289,6 @@
     }
 }
 
-// OS shell
 - (IBAction)runShell:(id)sender {
     VMStatus vmStatus = [self.vmManager checkVMStatus];
 
@@ -309,7 +306,6 @@
     }
 }
 
-// ssh to VM
 - (IBAction)runSsh:(id)sender {
     VMStatus vmStatus = [self.vmManager checkVMStatus];
 
@@ -327,7 +323,6 @@
     }
 }
 
-// UI
 - (IBAction)fleetUI:(id)sender {
     VMStatus vmStatus = [self.vmManager checkVMStatus];
 
@@ -421,7 +416,26 @@
     exit(0);
 }
 
-// helping functions
+#pragma mark - NSUserNotificationCenterDelegate
+
+- (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center
+     shouldPresentNotification:(NSUserNotification *)notification {
+    return YES;
+}
+
+#pragma mark - Helpers
+
+- (void)notifyUserWithTitle:(NSString *_Nullable)title text:(NSString *_Nullable)text {
+    NSUserNotification *notification = [[NSUserNotification alloc] init];
+
+    notification.title = title;
+    notification.informativeText = text;
+    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+}
+
+- (void)notifyUserWithText:(NSString *_Nullable)text {
+    [self notifyUserWithTitle:@"Kube Solo" text:text];
+}
 - (void)runScript:(NSString *)scriptName arguments:(NSString *)arguments {
     NSTask *task = [[NSTask alloc] init];
 
@@ -443,27 +457,6 @@
     [alert setMessageText:mText];
     [alert setInformativeText:infoText];
     [alert runModal];
-}
-
-#pragma mark - NSUserNotificationCenterDelegate
-
-- (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center
-     shouldPresentNotification:(NSUserNotification *)notification {
-    return YES;
-}
-
-#pragma mark -
-
-- (void)notifyUserWithTitle:(NSString *_Nullable)title text:(NSString *_Nullable)text {
-    NSUserNotification *notification = [[NSUserNotification alloc] init];
-
-    notification.title = title;
-    notification.informativeText = text;
-    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-}
-
-- (void)notifyUserWithText:(NSString *_Nullable)text {
-    [self notifyUserWithTitle:@"Kube Solo" text:text];
 }
 
 @end
