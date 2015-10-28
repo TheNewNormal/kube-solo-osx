@@ -3,7 +3,7 @@ Kubernetes Solo cluster for OS X
 
 ![k8s-solo](k8s-singlenode.png)
 
-Zero to Kubernetes develepment environment using xhyve + CoreOS
+Zero to Kubernetes development environment using xhyve + CoreOS
 ---------------
 
 **NEW:** Mac user password is not stored to the file system anymore (used to run sudo), `OS X Keychain` is now used to store it !!!
