@@ -74,9 +74,6 @@ done
 
 
 create_root_disk() {
-# Start webserver
-cd ~/kube-solo/cloud-init
-"${res_folder}"/bin/webserver start
 
 # Get password
 my_password=$(security find-generic-password -wa kube-solo-app)
@@ -100,6 +97,10 @@ echo " "
 #
 
 ### format ROOT disk
+# Start webserver
+cd ~/kube-solo/cloud-init
+"${res_folder}"/bin/webserver start
+
 # Start VM
 echo "Waiting for VM to boot up for ROOT disk to be formated ... "
 echo " "
@@ -114,7 +115,7 @@ sed -i "" "s/#IMG_HDD=/IMG_HDD=/" ~/kube-solo/custom.conf
 echo Waiting for webserver to be ready...
 spin='-\|/'
 i=1
-until curl -o /dev/null http://$vm_ip:18001 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+#until curl -o /dev/null http://$vm_ip:18001 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 #
 "${res_folder}"/bin/coreos-xhyve-run -f custom.conf kube-solo
 #
@@ -297,6 +298,7 @@ my_password=$(security find-generic-password -wa kube-solo-app)
 
 # Stop webserver
 kill $(ps aux | grep "[k]ube-solo-web" | awk {'print $2'})
+kill $(ps aux | grep "[p]ython -m SimpleHTTPServer 18001" | awk {'print $2'})
 
 # kill all kube-solo/bin/xhyve instances
 # ps aux | grep "[k]ube-solo/bin/xhyve" | awk '{print $2}' | sudo -S xargs kill | echo -e "$my_password\n"
