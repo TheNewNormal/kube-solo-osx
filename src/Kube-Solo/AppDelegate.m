@@ -29,10 +29,6 @@
     [self.statusItem setImage: [NSImage imageNamed:@"StatusItemIcon"]];
     [self.statusItem setHighlightMode:YES];
     
-    // get the App's main bundle path
-    _resoucesPathFromApp = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@""];
-    NSLog(@"applicationDirectory: '%@'", _resoucesPathFromApp);
-
     NSString *home_folder = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo"];
     
     BOOL isDir;
@@ -40,7 +36,7 @@
     // if kube-solo folder exists
     {
         // set resouces_path
-        NSString *resources_content = _resoucesPathFromApp;
+        NSString *resources_content = [[NSBundle mainBundle] resourcePath];
         NSData *fileContents1 = [resources_content dataUsingEncoding:NSUTF8StringEncoding];
         [[NSFileManager defaultManager] createFileAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/resouces_path"]
                                                 contents:fileContents1
@@ -89,7 +85,7 @@
             if([[NSFileManager defaultManager] fileExistsAtPath:home_folder isDirectory:&isDir] && isDir)
             {
                 [self notifyUserWithTitle:@"Kube Solo will be up shortly" text:@"and OS shell will be opened"];
-                [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"up.command"]];
+                [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"up.command"]];
             }
             else
             {
@@ -161,7 +157,7 @@
         case VMStatusUp:
             NSLog (@"VM is On");
             [self notifyUserWithText:@"VM will be reloaded"];
-            [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"reload.command"]];
+            [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"reload.command"]];
             break;
     }
 }
@@ -177,7 +173,7 @@
         case VMStatusUp:
             NSLog (@"VM is On");
             [self notifyUserWithTitle:@"Kube-Solo and" text:@"OS X kubectl will be updated"];
-            [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"update_k8s.command"]];
+            [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"update_k8s.command"]];
             break;
     }
 }
@@ -207,26 +203,26 @@
         case VMStatusUp:
             NSLog (@"VM is On");
             [self notifyUserWithText:@"OS X clients will be updated"];
-            [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"update_osx_clients_files.command"]];
+            [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"update_osx_clients_files.command"]];
             break;
     }
 }
 
 - (IBAction)fetchLatestISO:(id)sender {
     [self notifyUserWithText:@"CoreOS ISO image will be updated"];
-    [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"fetch_latest_iso.command"]];
+    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"fetch_latest_iso.command"]];
 }
 
 // Setup menu
 - (IBAction)changeReleaseChannel:(id)sender {
     [self notifyUserWithText:@"CoreOS release channel change"];
-    [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"change_release_channel.command"]];
+    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"change_release_channel.command"]];
 }
 
 
 - (IBAction)destroy:(id)sender {
     [self notifyUserWithText:@"VM will be destroyed"];
-    [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"destroy.command"]];
+    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"destroy.command"]];
     [self.vmManager showVMStatus];
 }
 
@@ -258,16 +254,13 @@
                                                 contents:app_version
                                               attributes:nil];
         // set resouces_path
-        NSString *resources_content = _resoucesPathFromApp;
+        NSString *resources_content = [[NSBundle mainBundle] resourcePath];
         NSData *fileContents1 = [resources_content dataUsingEncoding:NSUTF8StringEncoding];
         [[NSFileManager defaultManager] createFileAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/resouces_path"]
                                                 contents:fileContents1
                                               attributes:nil];
         
-        // run install script
-        NSString *scriptName = [[NSString alloc] init];
-        NSString *arguments = [[NSString alloc] init];
-        [self runScript:scriptName = @"kube-solo-install" arguments:arguments = _resoucesPathFromApp ];
+        [self runScript:@"kube-solo-install" arguments:[[NSBundle mainBundle] resourcePath]];
     }
 }
 // Setup menu
@@ -292,7 +285,7 @@
         case VMStatusUp:
             NSLog (@"VM is On");
             [self notifyUserWithText:@"VM's console will be opened"];
-            [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"console.command"]];
+            [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"console.command"]];
             break;
     }
 }
@@ -308,7 +301,7 @@
         case VMStatusUp:
             NSLog (@"VM is On");
             [self notifyUserWithText:@"OS X shell will be opened"];
-            [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"os_shell.command"]];
+            [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"os_shell.command"]];
             break;
     }
 }
@@ -324,7 +317,7 @@
         case VMStatusUp:
             NSLog (@"VM is On");
             [self notifyUserWithText:@"VM ssh shell will be opened"];
-            [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"ssh.command"]];
+            [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"ssh.command"]];
             break;
     }
 }
