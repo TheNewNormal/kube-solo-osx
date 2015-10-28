@@ -27,8 +27,6 @@ spin='-\|/'
 i=1
 until [ ! -e ~/kube-solo/.env/.console ] >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 #
-
-echo " "
 # Check if set channel's images are present
 check_for_images
 #

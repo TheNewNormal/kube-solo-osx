@@ -293,7 +293,6 @@ my_password=$(security find-generic-password -wa kube-solo-app)
 
 # Stop webserver
 kill $(ps aux | grep "[k]ube-solo-web" | awk {'print $2'})
-kill $(ps aux | grep "[p]ython -m SimpleHTTPServer 18001" | awk {'print $2'})
 
 # kill all kube-solo/bin/xhyve instances
 # ps aux | grep "[k]ube-solo/bin/xhyve" | awk '{print $2}' | sudo -S xargs kill | echo -e "$my_password\n"
