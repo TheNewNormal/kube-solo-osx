@@ -34,10 +34,10 @@ do
             echo "Kube Solo is running, it will be  stopped !!!"
 
             # Stop VM
-            ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet -o ConnectTimeout=5 core@$vm_ip sudo halt
+            ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet -o ConnectTimeout=3 core@$vm_ip sudo halt
 
             # just in case run
-            clean_up_after_vm >/dev/null 2>&1
+            kill_xhyve >/dev/null 2>&1
 
             # wait till VM is stopped
             echo " "
@@ -49,6 +49,9 @@ do
 
         # delete root image
         rm -f ~/kube-solo/root.img
+
+        # delete password in keychain
+        security 2>&1 >/dev/null delete-generic-password -a kube-solo-app 2>&1 >/dev/null
 
         echo "-"
         echo "Done, please start VM with 'Up' and the VM will be recreated ..."

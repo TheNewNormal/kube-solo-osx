@@ -3,8 +3,11 @@ Kubernetes Solo cluster for OS X
 
 ![k8s-solo](k8s-singlenode.png)
 
-Zero to Kubernetes dev environment using xhyve + CoreOS
+Zero to Kubernetes develepment environment using xhyve + CoreOS
 ---------------
+
+**NEW:** Mac user password is not stored to the file system anymore (used to run sudo), `OS X Keychain` is now used to store it !!!
+
 
 `Kube-Solo for Mac OS X` is a Mac Status bar App which works like a wrapper around the [coreos-xhyve](https://github.com/coreos/coreos-xhyve) command line tool and bootstraps Kubernetes on a standalone [CoreOS](https://coreos.com) VM machine.
 

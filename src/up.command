@@ -3,6 +3,9 @@
 # up.command
 #
 
+# tidy up after old version
+rm -f ~/kube-solo/.env/password 2>&1 >/dev/null
+
 #
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source "${DIR}"/functions.sh
@@ -14,15 +17,16 @@ res_folder=$(cat ~/kube-solo/.env/resouces_path)
 cp -f "${res_folder}"/bin/xhyve ~/kube-solo/bin
 chmod 755 ~/kube-solo/bin/xhyve
 
-# Stop webserver just in case it was left running
-"${res_folder}"/bin/webserver stop
-
-# check for password file
-if [ ! -f ~/kube-solo/.env/password ]
+# check for password in Keychain
+my_password=$(security 2>&1 >/dev/null find-generic-password -wa kube-solo-app)
+if [ "$my_password" = "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain." ]
 then
-    echo "File with saved password is not found: "
+    echo " "
+    echo "Saved password in 'Keychain' is not found: "
+    # save user password to Keychain
     save_password
 fi
+
 
 # Check if set channel's images are present
 check_for_images
@@ -40,12 +44,14 @@ fi
 rm -f ~/kube-solo/.env/.console
 echo " "
 echo "Starting VM ..."
+echo " "
 "${res_folder}"/bin/dtach -n ~/kube-solo/.env/.console -z "${res_folder}"/start_VM.command
 #
 
 # wait till VM is booted up
 echo "You can connect to VM console from menu 'Attach to VM's console' "
 echo "When you done with console just close it's window/tab with CMD+W "
+echo " "
 echo "Waiting for VM to boot up..."
 spin='-\|/'
 i=1

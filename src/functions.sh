@@ -74,6 +74,14 @@ done
 
 
 create_root_disk() {
+# Start webserver
+cd ~/kube-solo/cloud-init
+"${res_folder}"/bin/webserver start
+
+# Get password
+my_password=$(security find-generic-password -wa kube-solo-app)
+echo -e "$my_password\n" | sudo -S ls > /dev/null 2>&1
+
 # create persistent disk
 cd ~/kube-solo/
 echo "  "
@@ -92,15 +100,6 @@ echo " "
 #
 
 ### format ROOT disk
-# Start webserver
-cd ~/kube-solo/cloud-init
-"${res_folder}"/bin/webserver start
-
-# Get password
-my_password=$(cat ~/kube-solo/.env/password | base64 --decode )
-echo -e "$my_password\n" | sudo -S ls > /dev/null 2>&1
-echo -e "$my_password\n" | sudo -S ls > /dev/null 2>&1
-
 # Start VM
 echo "Waiting for VM to boot up for ROOT disk to be formated ... "
 echo " "
@@ -121,10 +120,11 @@ sed -i "" "s/#ROOT_HDD=/ROOT_HDD=/" ~/kube-solo/custom.conf
 #
 echo " "
 echo "ROOT disk got created and formated... "
+echo "---"
+###
 
 # Stop webserver
 "${res_folder}"/bin/webserver stop
-###
 
 }
 
@@ -268,15 +268,16 @@ echo " "
 
 
 function save_password {
-# save user password to file
+# save user's password to Keychain
 echo "  "
-echo "Your Mac user's password will be saved to '~/kube-solo/.env/password' file "
-echo "and later one will be used for 'sudo' command to start VM !!!"
-echo "This is not the password for the VM access via ssh or console !!!"
+echo "Your Mac user's password will be saved in to 'Keychain' "
+echo "and later one used for 'sudo' command to start VM !!!"
+echo " "
+echo "This is not the password to access VM via ssh or console !!!"
+echo " "
 echo "Please type your Mac user's password followed by [ENTER]:"
 read -s password
-echo -n ${password} | base64 > ~/kube-solo/.env/password
-chmod 600 ~/kube-solo/.env/password
+security add-generic-password -a kube-solo-app -s kube-solo-app -w $password -U
 echo " "
 }
 
@@ -287,10 +288,10 @@ sleep 3
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
 # Get password
-my_password=$(cat ~/kube-solo/.env/password | base64 --decode )
+my_password=$(security find-generic-password -wa kube-solo-app)
 
 # Stop webserver
-kill $(ps aux | grep "[p]ython -m SimpleHTTPServer 18001" | awk {'print $2'})
+kill $(ps aux | grep "[k]ube-solo-web" | awk {'print $2'})
 
 # kill all kube-solo/bin/xhyve instances
 # ps aux | grep "[k]ube-solo/bin/xhyve" | awk '{print $2}' | sudo -S xargs kill | echo -e "$my_password\n"
@@ -307,6 +308,21 @@ pkill -f [K]ube-Solo.app/Contents/Resources/fetch_latest_iso.command
 pkill -f [K]ube-Solo.app/Contents/Resources/update_k8s.command
 pkill -f [K]ube-Solo.app/Contents/Resources/update_osx_clients_files.command
 pkill -f [K]ube-Solo.app/Contents/Resources/change_release_channel.command
+
+}
+
+
+function kill_xhyve {
+sleep 3
+
+# get App's Resources folder
+res_folder=$(cat ~/kube-solo/.env/resouces_path)
+
+# Get password
+my_password=$(security find-generic-password -wa kube-solo-app)
+
+# kill all kube-solo/bin/xhyve instances
+echo -e "$my_password\n" | sudo -S pkill -f [k]ube-solo/bin/xhyve
 
 }
 

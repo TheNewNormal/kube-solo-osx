@@ -164,6 +164,12 @@
                 [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
                 break;
             }
+            else
+            {
+                NSString *scriptName = [[NSString alloc] init];
+                NSString *arguments = [[NSString alloc] init];
+                [self runScript:scriptName = @"kill_VM" arguments:arguments = @""];
+            }
         }
     }
     
@@ -552,6 +558,12 @@
                 [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
                 break;
             }
+            else
+            {
+                NSString *scriptName = [[NSString alloc] init];
+                NSString *arguments = [[NSString alloc] init];
+                [self runScript:scriptName = @"kill_VM" arguments:arguments = @""];
+            }
         }
     }
     
@@ -562,8 +574,6 @@
     
     exit(0);
 }
-
-
 
 
 // UI

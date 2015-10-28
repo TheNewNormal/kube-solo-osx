@@ -10,14 +10,11 @@ source "${DIR}"/functions.sh
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
-# Stop webserver just in case it was left running
-"${res_folder}"/bin/webserver stop
-
 # path to the bin folder where we store our binary files
 export PATH=${HOME}/kube-solo/bin:$PATH
 
 echo " "
-echo "Setting up CoreOS VM on OS X"
+echo "Setting up Kubernetes Solo on OS X"
 
 # add ssh key to custom.conf
 echo " "
@@ -37,7 +34,7 @@ echo "$file found, updating custom.conf..."
 echo "SSHKEY='$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/custom.conf
 #
 
-# save user password to file
+# save user's password to Keychain
 save_password
 #
 
@@ -136,8 +133,8 @@ echo "Enjoy Kube Solo on your Mac !!!"
 echo " "
 echo "Run from menu 'OS Shell' to open a terninal window with fleetctl, etcdctl and kubectl pre-set !!!"
 echo " "
+echo 'You can close this window/tab with CMD + W'
+echo " "
 
-sleep 50
-
-
+sleep 9000
 

@@ -13,6 +13,9 @@ vm_ip=$(<~/kube-solo/.env/ip_address)
 
 # Stop VM
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ConnectTimeout=5 core@$vm_ip sudo halt
+# just in case run
+kill_xhyve
+
 # wait till VM is stopped
 echo " "
 echo "Waiting for VM to shutdown..."
