@@ -1,11 +1,18 @@
 #!/bin/bash
 # webserver for coreos-xhyve to serve cloud-init file
 
+res_folder=$(cat ~/kube-solo/.env/resouces_path)
+
+cd ~/kube-solo/cloud-init
+
+
 start() {
+    ###nohup "${res_folder}"/bin/kube-solo-web >/dev/null 2>&1 &
     nohup python -m SimpleHTTPServer 18001 >/dev/null 2>&1 &
 }
 
 stop() {
+    ###kill $(ps aux | grep "[k]ube-solo-web" | awk {'print $2'}) >/dev/null 2>&1 &
     kill $(ps aux | grep "[p]ython -m SimpleHTTPServer 18001" | awk {'print $2'}) >/dev/null 2>&1
 }
 

@@ -1,0 +1,37 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "C897798FC3328B47913029D5748D8D158ED2849F+++91327FC",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "C897798FC3328B47913029D5748D8D158ED2849F+++5CB702B" : 0,
+    "C897798FC3328B47913029D5748D8D158ED2849F+++91327FC" : 0,
+    "C897798FC3328B47913029D5748D8D158ED2849F+++0BCA7CD" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "02472BB7-2208-4BC4-8D73-D5DB1EF8BF40",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "C897798FC3328B47913029D5748D8D158ED2849F+++5CB702B" : "..\/..\/..\/rimantasmocevicius\/Projects\/kube-solo-osx",
+    "C897798FC3328B47913029D5748D8D158ED2849F+++91327FC" : "kube-solo-osx\/",
+    "C897798FC3328B47913029D5748D8D158ED2849F+++0BCA7CD" : "..\/..\/..\/rimantasmocevicius\/Projects\/kube-solo-osx"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Kube-Solo",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "src\/Kube-Solo.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rimusz\/kube-solo-osx.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "C897798FC3328B47913029D5748D8D158ED2849F+++0BCA7CD"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rimusz\/kube-solo-osx.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "C897798FC3328B47913029D5748D8D158ED2849F+++5CB702B"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/rimusz\/kube-solo-osx.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "C897798FC3328B47913029D5748D8D158ED2849F+++91327FC"
+    }
+  ]
+}

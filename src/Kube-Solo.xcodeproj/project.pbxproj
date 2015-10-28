@@ -11,6 +11,8 @@
 		011BBA3B1A2A842A00AAB35B /* change_release_channel.command in Resources */ = {isa = PBXBuildFile; fileRef = 011BBA3A1A2A842A00AAB35B /* change_release_channel.command */; };
 		01689B731A2D1A260099CB78 /* fleet in Resources */ = {isa = PBXBuildFile; fileRef = 01689B721A2D1A260099CB78 /* fleet */; };
 		01741B63190DB80500BB1F91 /* first-init.command in Resources */ = {isa = PBXBuildFile; fileRef = 01741B62190DB80500BB1F91 /* first-init.command */; };
+		019410661BE119E700723E19 /* go_webserver in Resources */ = {isa = PBXBuildFile; fileRef = 019410651BE119E700723E19 /* go_webserver */; };
+		019410681BE11DFA00723E19 /* kill_VM.command in Resources */ = {isa = PBXBuildFile; fileRef = 019410671BE11DFA00723E19 /* kill_VM.command */; };
 		01BB60D31AB74AE60069BF30 /* k8s in Resources */ = {isa = PBXBuildFile; fileRef = 01BB60D21AB74AE60069BF30 /* k8s */; };
 		01D3685918E5C184006510B5 /* icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 01D3685818E5C184006510B5 /* icon.icns */; };
 		01E2853E18A6C4E300BC630D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01E2853D18A6C4E300BC630D /* Cocoa.framework */; };
@@ -47,6 +49,8 @@
 		0133608F18A70E0C0024B1CB /* Kube-Solo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Kube-Solo.entitlements"; sourceTree = "<group>"; };
 		01689B721A2D1A260099CB78 /* fleet */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fleet; sourceTree = SOURCE_ROOT; };
 		01741B62190DB80500BB1F91 /* first-init.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "first-init.command"; sourceTree = SOURCE_ROOT; };
+		019410651BE119E700723E19 /* go_webserver */ = {isa = PBXFileReference; lastKnownFileType = folder; path = go_webserver; sourceTree = "<group>"; };
+		019410671BE11DFA00723E19 /* kill_VM.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = kill_VM.command; sourceTree = "<group>"; };
 		01BB60D21AB74AE60069BF30 /* k8s */ = {isa = PBXFileReference; lastKnownFileType = folder; path = k8s; sourceTree = SOURCE_ROOT; };
 		01D3685818E5C184006510B5 /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
 		01E2853A18A6C4E300BC630D /* Kube-Solo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Kube-Solo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -178,6 +182,7 @@
 		01E285B918A6E23C00BC630D /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
+				019410651BE119E700723E19 /* go_webserver */,
 				1329DE9D1BD4FAB3008AA719 /* xhyve */,
 				1329DE9F1BD4FAC0008AA719 /* bin */,
 				1329DEA91BD4FB5F008AA719 /* start_VM.command */,
@@ -185,6 +190,7 @@
 				1329DEA11BD4FB5F008AA719 /* check_vm_status.command */,
 				011BBA3A1A2A842A00AAB35B /* change_release_channel.command */,
 				1329DEA31BD4FB5F008AA719 /* destroy.command */,
+				019410671BE11DFA00723E19 /* kill_VM.command */,
 				1329DEAA1BD4FB5F008AA719 /* up.command */,
 				1329DEA81BD4FB5F008AA719 /* ssh.command */,
 				01F0282B1A7C54C8008C37AA /* os_shell.command */,
@@ -294,10 +300,12 @@
 				01689B731A2D1A260099CB78 /* fleet in Resources */,
 				01BB60D31AB74AE60069BF30 /* k8s in Resources */,
 				01E2854E18A6C4E300BC630D /* Credits.rtf in Resources */,
+				019410681BE11DFA00723E19 /* kill_VM.command in Resources */,
 				1329DE921BD4F974008AA719 /* files in Resources */,
 				1329DE901BD4F95F008AA719 /* settings in Resources */,
 				01E2855418A6C4E300BC630D /* MainMenu.xib in Resources */,
 				01F0282C1A7C54C8008C37AA /* os_shell.command in Resources */,
+				019410661BE119E700723E19 /* go_webserver in Resources */,
 				1329DEB61BD4FB5F008AA719 /* update_osx_clients_files.command in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
