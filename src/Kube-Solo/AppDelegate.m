@@ -79,193 +79,121 @@
 
 
 - (IBAction)Start:(id)sender {
-    VMStatus vm_status=[self.vmManager checkVMStatus];
-    //NSLog (@"VM status:\n%d", vm_status);
-    
-    if (vm_status == 0) {
-        NSLog (@"VM is Off");
-        ////
-        NSString *home_folder = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo"];
-        
-        BOOL isDir;
-        if([[NSFileManager defaultManager]
-            fileExistsAtPath:home_folder isDirectory:&isDir] && isDir)
-        {
-            // send a notification on to the screen
-            NSUserNotification *notification = [[NSUserNotification alloc] init];
-            notification.title = @"Kube Solo will be up shortly";
-            notification.informativeText = @"and OS shell will be opened";
-            [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+    VMStatus vmStatus = [self.vmManager checkVMStatus];
+    switch (vmStatus) {
+        case VMStatusDown: {
+            NSLog (@"VM is Off");
+            NSString *home_folder = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo"];
             
-            NSString *appName = [[NSString alloc] init];
-            NSString *arguments = [[NSString alloc] init];
-            [self runApp:appName = @"iTerm" arguments:arguments = [_resoucesPathFromApp stringByAppendingPathComponent:@"up.command"]];
-        }
-        else
-        {
-            NSAlert *alert = [[NSAlert alloc] init];
-            [alert addButtonWithTitle:@"OK"];
-            [alert addButtonWithTitle:@"Cancel"];
-            [alert setMessageText:@"Kube Solo was not set."];
-            [alert setInformativeText:@"Do you want to set it up?"];
-            [alert setAlertStyle:NSWarningAlertStyle];
-            
-            if ([alert runModal] == NSAlertFirstButtonReturn) {
-                // OK clicked
-                [self initialInstall:self];
+            BOOL isDir;
+            if([[NSFileManager defaultManager] fileExistsAtPath:home_folder isDirectory:&isDir] && isDir)
+            {
+                [self notifyUserWithTitle:@"Kube Solo will be up shortly" text:@"and OS shell will be opened"];
+                [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"up.command"]];
             }
             else
             {
-                // Cancel clicked
-                NSString *msg = [NSString stringWithFormat:@"%@ ", @" 'Initial setup of Kube Solo' at any time later one !!! "];
-                [self displayWithMessage:@"You can set VM from menu 'Setup':" infoText:msg];
+                NSAlert *alert = [[NSAlert alloc] init];
+                [alert addButtonWithTitle:@"OK"];
+                [alert addButtonWithTitle:@"Cancel"];
+                [alert setMessageText:@"Kube Solo was not set."];
+                [alert setInformativeText:@"Do you want to set it up?"];
+                [alert setAlertStyle:NSWarningAlertStyle];
+                
+                if ([alert runModal] == NSAlertFirstButtonReturn) {
+                    // OK clicked
+                    [self initialInstall:self];
+                }
+                else
+                {
+                    // Cancel clicked
+                    NSString *msg = [NSString stringWithFormat:@"%@ ", @" 'Initial setup of Kube Solo' at any time later one !!! "];
+                    [self displayWithMessage:@"You can set VM from menu 'Setup':" infoText:msg];
+                }
             }
+            break;
         }
+        case VMStatusUp:
+            NSLog (@"VM is On");
+            [self notifyUserWithText:@"VM is already running !!!"];
+            break;
     }
-    else
-    {
-        NSLog (@"VM is On");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"VM is already running !!!";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-    }
-    
 }
-
 
 - (IBAction)Stop:(id)sender {
-    VMStatus vm_status = [self.vmManager checkVMStatus];
-    //NSLog (@"VM status:\n%d", vm_status);
-    
-    if (vm_status == 0) {
-        NSLog (@"VM is Off");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"VM is already Off !!!";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-    }
-    else
-    {
-        NSLog (@"VM is On");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"VM will be stopped";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-        
-        NSString *scriptName = [[NSString alloc] init];
-        NSString *arguments = [[NSString alloc] init];
-        [self runScript:scriptName = @"halt" arguments:arguments = @""];
-        
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"VM is stopping !!!";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-        
-        VMStatus vm_status_check = 1;
-        while (vm_status_check == 1 ) {
-            vm_status_check = [self.vmManager checkVMStatus];
-            if (vm_status_check == 0) {
-                notification.title = @"Kube Solo";
-                notification.informativeText = @"VM is OFF !!!";
-                [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-                break;
-            }
-            else
-            {
-                NSString *scriptName = [[NSString alloc] init];
-                NSString *arguments = [[NSString alloc] init];
-                [self runScript:scriptName = @"kill_VM" arguments:arguments = @""];
-            }
-        }
-    }
-    
-}
+    VMStatus vmStatus = [self.vmManager checkVMStatus];
+    switch (vmStatus) {
+        case VMStatusDown:
+            NSLog (@"VM is Off");
+            [self notifyUserWithText:@"VM is already Off !!!"];
+            break;
+        case VMStatusUp:
+            NSLog (@"VM is On");
+            [self notifyUserWithText:@"VM will be stopped"];
 
+            [self runScript:@"halt" arguments:@""];
+
+            [self notifyUserWithText:@"VM is stopping !!!"];
+
+            VMStatus vmStatusCheck = VMStatusUp;
+            while (vmStatusCheck == VMStatusUp) {
+                vmStatusCheck = [self.vmManager checkVMStatus];
+                if (vmStatusCheck == VMStatusDown) {
+                    [self notifyUserWithText:@"VM is OFF !!!"];
+                    break;
+                }
+                else
+                {
+                    [self runScript:@"kill_VM" arguments:@""];
+                }
+            }
+            break;
+    }
+}
 
 - (IBAction)Restart:(id)sender {
-    VMStatus vm_status=[self.vmManager checkVMStatus];
-    //NSLog (@"VM status:\n%d", vm_status);
-    
-    if (vm_status == 0) {
-        NSLog (@"VM is Off");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"VM is Off !!!";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-    }
-    else
-    {
-        NSLog (@"VM is On");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"VM will be reloaded";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-        
-        NSString *appName = [[NSString alloc] init];
-        NSString *arguments = [[NSString alloc] init];
-        [self runApp:appName = @"iTerm" arguments:arguments = [_resoucesPathFromApp stringByAppendingPathComponent:@"reload.command"]];
+    VMStatus vmStatus=[self.vmManager checkVMStatus];
+    switch (vmStatus) {
+        case VMStatusDown:
+            NSLog (@"VM is Off");
+            [self notifyUserWithText:@"VM is Off !!!"];
+            break;
+        case VMStatusUp:
+            NSLog (@"VM is On");
+            [self notifyUserWithText:@"VM will be reloaded"];
+            [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"reload.command"]];
+            break;
     }
 }
-
 
 // Updates menu
 - (IBAction)update_k8s:(id)sender {
-    VMStatus vm_status=[self.vmManager checkVMStatus];
-    //NSLog (@"VM status:\n%d", vm_status);
-    
-    if (vm_status == 0) {
-        NSLog (@"VM is Off");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"VM is Off !!!";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-    }
-    else
-    {
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube-Solo and";
-        notification.informativeText = @"OS X kubectl will be updated";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-    
-        NSString *appName = [[NSString alloc] init];
-        NSString *arguments = [[NSString alloc] init];
-        [self runApp:appName = @"iTerm" arguments:arguments = [_resoucesPathFromApp stringByAppendingPathComponent:@"update_k8s.command"]];
-        //     NSLog(@"Apps arguments: '%@'", [_resoucesPathFromApp stringByAppendingPathComponent:@"update.command"]);
+    VMStatus vmStatus=[self.vmManager checkVMStatus];
+    switch (vmStatus) {
+        case VMStatusDown:
+            NSLog (@"VM is Off");
+            [self notifyUserWithText:@"VM is Off !!!"];
+            break;
+        case VMStatusUp:
+            NSLog (@"VM is On");
+            [self notifyUserWithTitle:@"Kube-Solo and" text:@"OS X kubectl will be updated"];
+            [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"update_k8s.command"]];
+            break;
     }
 }
 
-
 - (IBAction)update_k8s_version:(id)sender {
-    int vm_status=[self checkVMStatus];
-    //NSLog (@"VM status:\n%d", vm_status);
-    
-    if (vm_status == 0) {
-        NSLog (@"VM is Off");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"VM is Off !!!";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-    }
-    else
-    {
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube-Solo and";
-        notification.informativeText = @"OS X kubectl version will be changed";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-        
-        NSString *appName = [[NSString alloc] init];
-        NSString *arguments = [[NSString alloc] init];
-        [self runApp:appName = @"iTerm" arguments:arguments = [_resoucesPathFromApp stringByAppendingPathComponent:@"update_k8s_version.command"]];
-        //     NSLog(@"Apps arguments: '%@'", [_resoucesPathFromApp stringByAppendingPathComponent:@"update.command"]);
+    VMStatus vmStatus = [self.vmManager checkVMStatus];
+    switch (vmStatus) {
+        case VMStatusDown:
+            NSLog (@"VM is Off");
+            [self notifyUserWithText:@"VM is Off !!!"];
+            break;
+        case VMStatusUp:
+            NSLog (@"VM is On");
+            [self notifyUserWithTitle:@"Kube-Solo and" text:@"OS X kubectl version will be changed"];
+            [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"update_k8s_version.command"]];
+            break;
     }
 }
 
@@ -274,68 +202,31 @@
     switch (vmStatus) {
         case VMStatusDown:
             NSLog (@"VM is Off");
-            // send a notification on to the screen
-            NSUserNotification *notification = [[NSUserNotification alloc] init];
-            notification.title = @"Kube Solo";
-            notification.informativeText = @"VM is Off !!!";
-            [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+            [self notifyUserWithText:@"VM is Off !!!"];
             break;
         case VMStatusUp:
             NSLog (@"VM is On");
-            // send a notification on to the screen
-            NSUserNotification *notification = [[NSUserNotification alloc] init];
-            notification.title = @"Kube Solo";
-            notification.informativeText = @"OS X clients will be updated";
-            [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-            
-            NSString *appName = [[NSString alloc] init];
-            NSString *arguments = [[NSString alloc] init];
-            [self runApp:appName = @"iTerm" arguments:arguments = [_resoucesPathFromApp stringByAppendingPathComponent:@"update_osx_clients_files.command"]];
+            [self notifyUserWithText:@"OS X clients will be updated"];
+            [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"update_osx_clients_files.command"]];
             break;
     }
 }
 
-
-
 - (IBAction)fetchLatestISO:(id)sender {
-    // send a notification on to the screen
-    NSUserNotification *notification = [[NSUserNotification alloc] init];
-    notification.title = @"Kube Solo";
-    notification.informativeText = @"CoreOS ISO image will be updated";
-    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-    
-    NSString *appName = [[NSString alloc] init];
-    NSString *arguments = [[NSString alloc] init];
-    [self runApp:appName = @"iTerm" arguments:arguments = [_resoucesPathFromApp stringByAppendingPathComponent:@"fetch_latest_iso.command"]];
+    [self notifyUserWithText:@"CoreOS ISO image will be updated"];
+    [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"fetch_latest_iso.command"]];
 }
-// Updates menu
-
 
 // Setup menu
 - (IBAction)changeReleaseChannel:(id)sender {
-    // send a notification on to the screen
-    NSUserNotification *notification = [[NSUserNotification alloc] init];
-    notification.title = @"Kube Solo";
-    notification.informativeText = @"CoreOS release channel change";
-    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-    
-    NSString *appName = [[NSString alloc] init];
-    NSString *arguments = [[NSString alloc] init];
-    [self runApp:appName = @"iTerm" arguments:arguments = [_resoucesPathFromApp stringByAppendingPathComponent:@"change_release_channel.command"]];
+    [self notifyUserWithText:@"CoreOS release channel change"];
+    [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"change_release_channel.command"]];
 }
 
 
 - (IBAction)destroy:(id)sender {
-    // send a notification on to the screen
-    NSUserNotification *notification = [[NSUserNotification alloc] init];
-    notification.title = @"Kube Solo";
-    notification.informativeText = @"VM will be destroyed";
-    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-    
-    NSString *appName = [[NSString alloc] init];
-    NSString *arguments = [[NSString alloc] init];
-    [self runApp:appName = @"iTerm" arguments:arguments = [_resoucesPathFromApp stringByAppendingPathComponent:@"destroy.command"]];
-    
+    [self notifyUserWithText:@"VM will be destroyed"];
+    [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"destroy.command"]];
     [self.vmManager showVMStatus];
 }
 
@@ -382,237 +273,148 @@
 // Setup menu
 
 - (IBAction)About:(id)sender {
-    
     NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-//    NSString *build = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
-//    NSString *app_version = [NSString stringWithFormat:@"%@%@.%@", @"v", version, build];
     NSString *app_version = [NSString stringWithFormat:@"%@%@", @"v", version];
     
     NSString *mText = [NSString stringWithFormat:@"%@ %@", @"Kube-Solo for OS X", app_version];
     NSString *infoText = @"It is a simple wrapper around xhyve + CoreOS VM, which allows to control Kube-Solo via Status Bar !!!";
     [self displayWithMessage:mText infoText:infoText];
 }
-//
 
 // VM console
 - (IBAction)attachConsole:(id)sender {
-    VMStatus vm_status=[self.vmManager checkVMStatus];
-    //NSLog (@"VM status:\n%d", vm_status);
-    
-    if (vm_status == 0) {
-        NSLog (@"VM is Off");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"VM is Off !!!";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-    }
-    else
-    {
-        NSLog (@"VM is On");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"VM's console will be opened";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-        
-        NSString *appName = [[NSString alloc] init];
-        NSString *arguments = [[NSString alloc] init];
-        [self runApp:appName = @"iTerm" arguments:arguments = [_resoucesPathFromApp stringByAppendingPathComponent:@"console.command"]];
+    VMStatus vmStatus=[self.vmManager checkVMStatus];
+    switch (vmStatus) {
+        case VMStatusDown:
+            NSLog (@"VM is Off");
+            [self notifyUserWithText:@"VM is Off !!!"];
+            break;
+        case VMStatusUp:
+            NSLog (@"VM is On");
+            [self notifyUserWithText:@"VM's console will be opened"];
+            [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"console.command"]];
+            break;
     }
 }
-
 
 // OS shell
 - (IBAction)runShell:(id)sender{
-    VMStatus vm_status=[self.vmManager checkVMStatus];
-    //NSLog (@"VM status:\n%d", vm_status);
-    
-    if (vm_status == 0) {
-        NSLog (@"VM is Off");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"VM is Off !!!";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-    }
-    else
-    {
-        NSLog (@"VM is On");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"OS X shell will be opened";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-        
-        NSString *appName = [[NSString alloc] init];
-        NSString *arguments = [[NSString alloc] init];
-        [self runApp:appName = @"iTerm" arguments:arguments = [_resoucesPathFromApp stringByAppendingPathComponent:@"os_shell.command"]];
+    VMStatus vmStatus=[self.vmManager checkVMStatus];
+    switch (vmStatus) {
+        case VMStatusDown:
+            NSLog (@"VM is Off");
+            [self notifyUserWithText:@"VM is Off !!!"];
+            break;
+        case VMStatusUp:
+            NSLog (@"VM is On");
+            [self notifyUserWithText:@"OS X shell will be opened"];
+            [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"os_shell.command"]];
+            break;
     }
 }
-
 
 // ssh to VM
 - (IBAction)runSsh:(id)sender {
-    VMStatus vm_status=[self.vmManager checkVMStatus];
-    //NSLog (@"VM status:\n%d", vm_status);
-    
-    if (vm_status == 0) {
-        NSLog (@"VM is Off");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"VM is Off !!!";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-    }
-    else
-    {
-        NSLog (@"VM is On");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"VM ssh shell will be opened";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-        
-        NSString *appName = [[NSString alloc] init];
-        NSString *arguments = [[NSString alloc] init];
-        [self runApp:appName = @"iTerm" arguments:arguments = [_resoucesPathFromApp stringByAppendingPathComponent:@"ssh.command"]];
+    VMStatus vmStatus=[self.vmManager checkVMStatus];
+    switch (vmStatus) {
+        case VMStatusDown:
+            NSLog (@"VM is Off");
+            [self notifyUserWithText:@"VM is Off !!!"];
+            break;
+        case VMStatusUp:
+            NSLog (@"VM is On");
+            [self notifyUserWithText:@"VM ssh shell will be opened"];
+            [self runApp:@"iTerm" arguments:[_resoucesPathFromApp stringByAppendingPathComponent:@"ssh.command"]];
+            break;
     }
 }
-// ssh to VM
-
-
 
 // UI
 - (IBAction)fleetUI:(id)sender {
-    VMStatus vm_status=[self.vmManager checkVMStatus];
-    //NSLog (@"VM status:\n%d", vm_status);
-    
-    if (vm_status == 0) {
-        NSLog (@"VM is Off");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"VM is Off !!!";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-    }
-    else
-    {
-        NSLog (@"VM is On");
-        NSString *file_path = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/ip_address"];
-        // read IP from file
-        NSString *vm_ip = [NSString stringWithContentsOfFile:file_path
-                                                    encoding:NSUTF8StringEncoding
-                                                       error:NULL];
-        NSString *url = [@[@"http://",vm_ip,@":3000"] componentsJoinedByString:@""];
-        [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
+    VMStatus vmStatus=[self.vmManager checkVMStatus];
+    switch (vmStatus) {
+        case VMStatusDown:
+            NSLog (@"VM is Off");
+            [self notifyUserWithText:@"VM is Off !!!"];
+            break;
+        case VMStatusUp:
+            NSLog (@"VM is On");
+            NSString *file_path = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/ip_address"];
+            // read IP from file
+            NSString *vm_ip = [NSString stringWithContentsOfFile:file_path encoding:NSUTF8StringEncoding error:NULL];
+            NSString *url = [@[@"http://",vm_ip,@":3000"] componentsJoinedByString:@""];
+            [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
+            break;
     }
 }
 
-
 - (IBAction)KubernetesUI:(id)sender {
-    VMStatus vm_status=[self.vmManager checkVMStatus];
-    //NSLog (@"VM status:\n%d", vm_status);
-    
-    if (vm_status == 0) {
-        NSLog (@"VM is Off");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"VM is Off !!!";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-    }
-    else
-    {
-        NSLog (@"VM is On");
-        NSString *file_path = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/ip_address"];
-        // read IP from file
-        NSString *vm_ip = [NSString stringWithContentsOfFile:file_path
-                                                    encoding:NSUTF8StringEncoding
-                                                       error:NULL];
-        NSString *url = [@[@"http://",vm_ip,@":8080/ui"] componentsJoinedByString:@""];
-        [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
+    VMStatus vmStatus=[self.vmManager checkVMStatus];
+    switch (vmStatus) {
+        case VMStatusDown:
+            NSLog (@"VM is Off");
+            [self notifyUserWithText:@"VM is Off !!!"];
+            break;
+        case VMStatusUp:
+            NSLog (@"VM is On");
+            NSString *file_path = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/ip_address"];
+            // read IP from file
+            NSString *vm_ip = [NSString stringWithContentsOfFile:file_path encoding:NSUTF8StringEncoding error:NULL];
+            NSString *url = [@[@"http://",vm_ip,@":8080/ui"] componentsJoinedByString:@""];
+            [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
+            break;
     }
 }
 
 - (IBAction)node1_cAdvisor:(id)sender {
-    VMStatus vm_status=[self.vmManager checkVMStatus];
-    //NSLog (@"VM status:\n%d", vm_status);
-    
-    if (vm_status == 0) {
-        NSLog (@"VM is Off");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube Solo";
-        notification.informativeText = @"VM is Off !!!";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-    }
-    else
-    {
-        NSLog (@"VM is On");
-        NSString *file_path = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/ip_address"];
-        // read IP from file
-        NSString *vm_ip = [NSString stringWithContentsOfFile:file_path
-                                                    encoding:NSUTF8StringEncoding
-                                                       error:NULL];
-        NSString *url = [@[@"http://",vm_ip,@":4194"] componentsJoinedByString:@""];
-        [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
+    VMStatus vmStatus=[self.vmManager checkVMStatus];
+    switch (vmStatus) {
+        case VMStatusDown:
+            NSLog (@"VM is Off");
+            [self notifyUserWithText:@"VM is Off !!!"];
+            break;
+        case VMStatusUp:
+            NSLog (@"VM is On");
+            NSString *file_path = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/ip_address"];
+            // read IP from file
+            NSString *vm_ip = [NSString stringWithContentsOfFile:file_path encoding:NSUTF8StringEncoding error:NULL];
+            NSString *url = [@[@"http://",vm_ip,@":4194"] componentsJoinedByString:@""];
+            [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
+            break;
     }
 }
 
 - (IBAction)quit:(id)sender {
-    VMStatus vm_status = [self.vmManager checkVMStatus];
-    //NSLog (@"VM status:\n%d", vm_status);
-    
-    if (vm_status == 0) {
-        NSLog (@"VM is Off");
-    }
-    else
-    {
+    VMStatus vmStatus = [self.vmManager checkVMStatus];
+    switch (vmStatus) {
+        case VMStatusDown:
+            NSLog (@"VM is Off");
+            break;
+        case VMStatusUp:
         NSLog (@"VM is On");
-        // send a notification on to the screen
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-        notification.title = @"Kube-Solo";
-        notification.informativeText = @"VM will be stopped";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-        
-        NSString *scriptName = [[NSString alloc] init];
-        NSString *arguments = [[NSString alloc] init];
-        [self runScript:scriptName = @"halt" arguments:arguments = @""];
-        
-        notification.title = @"Kube-Solo";
-        notification.informativeText = @"VM is stopping !!!";
-        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-        
-        VMStatus vm_status_check = 1;
-        while (vm_status_check == 1 ) {
-            vm_status_check = [self.vmManager checkVMStatus];
-            if (vm_status_check == 0) {
-                notification.title = @"Kube-Solo";
-                notification.informativeText = @"VM is OFF !!!";
-                [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-                break;
+            [self notifyUserWithText:@"VM will be stopped"];
+        [self runScript:@"halt" arguments:@""];
+            [self notifyUserWithText:@"VM is stopping !!!"];
+            
+            VMStatus vmStatusCheck = VMStatusUp;
+            while (vmStatusCheck == VMStatusUp) {
+                vmStatusCheck = [self.vmManager checkVMStatus];
+                if (vmStatusCheck == VMStatusDown) {
+                    [self notifyUserWithText:@"VM is OFF !!!"];
+                    break;
+                }
+                else
+                {
+                    [self runScript:@"kill_VM" arguments:@""];
+                }
             }
-            else
-            {
-                NSString *scriptName = [[NSString alloc] init];
-                NSString *arguments = [[NSString alloc] init];
-                [self runScript:scriptName = @"kill_VM" arguments:arguments = @""];
-            }
-        }
+            break;
     }
-    
-    // send a notification on to the screen
-    NSUserNotification *notification = [[NSUserNotification alloc] init];
-    notification.title = @"Quitting Kube-Solo App";
-    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
-    
+
+    [self notifyUserWithTitle:@"Quitting Kube-Solo App" text:@""];
+
     exit(0);
 }
-
-
-// UI
-
 
 // helping functions
 - (void)runScript:(NSString*)scriptName arguments:(NSString*)arguments
@@ -646,6 +448,19 @@
      shouldPresentNotification:(NSUserNotification *)notification
 {
     return YES;
+}
+
+#pragma mark -
+
+- (void)notifyUserWithTitle:(NSString * _Nullable)title text:(NSString * _Nullable)text {
+    NSUserNotification *notification = [[NSUserNotification alloc] init];
+    notification.title = title;
+    notification.informativeText = text;
+    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+}
+
+- (void)notifyUserWithText:(NSString * _Nullable)text {
+    [self notifyUserWithTitle:@"Kube Solo" text:text];
 }
 
 @end
