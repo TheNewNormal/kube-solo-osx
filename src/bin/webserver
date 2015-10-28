@@ -12,7 +12,7 @@ start() {
 }
 
 stop() {
-    ### kill $(ps aux | grep "[k]ube-solo-web" | awk {'print $2'}) >/dev/null 2>&1 &
+    ###kill $(ps aux | grep "[k]ube-solo-web" | awk {'print $2'}) >/dev/null 2>&1 &
     kill $(ps aux | grep "[p]ython -m SimpleHTTPServer 18001" | awk {'print $2'}) >/dev/null 2>&1
 }
 

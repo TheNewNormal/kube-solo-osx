@@ -112,11 +112,6 @@ sed -i "" "s/user-data/user-data-format-root/" ~/kube-solo/custom.conf
 sed -i "" "s/ROOT_HDD=/#ROOT_HDD=/" ~/kube-solo/custom.conf
 sed -i "" "s/#IMG_HDD=/IMG_HDD=/" ~/kube-solo/custom.conf
 #
-echo Waiting for webserver to be ready...
-spin='-\|/'
-i=1
-#until curl -o /dev/null http://$vm_ip:18001 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-#
 "${res_folder}"/bin/coreos-xhyve-run -f custom.conf kube-solo
 #
 # disable format mode

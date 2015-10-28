@@ -31,7 +31,7 @@ do
         status=$(ps aux | grep "[k]ube-solo/bin/xhyve" | awk '{print $2}')
         if [[ $status = *[!\ ]* ]]; then
             echo " "
-            echo "Kube Solo is running, it will be  stopped !!!"
+            echo "Kube Solo is running, it will be stopped !!!"
 
             # Stop VM
             ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet -o ConnectTimeout=3 core@$vm_ip sudo halt
