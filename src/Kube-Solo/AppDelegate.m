@@ -27,24 +27,15 @@
     [self.statusItem setImage: [NSImage imageNamed:@"StatusItemIcon"]];
     [self.statusItem setHighlightMode:YES];
 
-    NSString *home_folder = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo"];
-
+    NSString *homeDirectory = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo"];
     BOOL isDir;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:home_folder isDirectory:&isDir] && isDir) {
-        // if kube-solo folder exists
-        // set resouces_path
-        NSString *resources_content = [[NSBundle mainBundle] resourcePath];
-        NSData *fileContents1 = [resources_content dataUsingEncoding:NSUTF8StringEncoding];
-        [[NSFileManager defaultManager] createFileAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/resouces_path"]
-         contents:fileContents1
-         attributes:nil];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:homeDirectory isDirectory:&isDir] && isDir) {
+        NSData *resourceData = [[[NSBundle mainBundle] resourcePath] dataUsingEncoding:NSUTF8StringEncoding];
+        [[NSFileManager defaultManager] createFileAtPath:[homeDirectory stringByAppendingPathComponent:@".env/resouces_path"] contents:resourceData attributes:nil];
 
-        // write to file App version
         NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-        NSData *app_version = [version dataUsingEncoding:NSUTF8StringEncoding];
-        [[NSFileManager defaultManager] createFileAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/version"]
-         contents:app_version
-         attributes:nil];
+        NSData *appVersion = [version dataUsingEncoding:NSUTF8StringEncoding];
+        [[NSFileManager defaultManager] createFileAtPath:[homeDirectory stringByAppendingPathComponent:@".env/version"] contents:appVersion attributes:nil];
         [self.vmManager checkVMStatus];
     }
     else {
@@ -75,10 +66,10 @@
     switch (vmStatus) {
         case VMStatusDown: {
             NSLog(@"VM is Off");
-            NSString *home_folder = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo"];
+            NSString *homeDirectory = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo"];
 
             BOOL isDir;
-            if ([[NSFileManager defaultManager] fileExistsAtPath:home_folder isDirectory:&isDir] && isDir) {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:homeDirectory isDirectory:&isDir] && isDir) {
                 [self notifyUserWithTitle:@"Kube Solo will be up shortly" text:@"and OS shell will be opened"];
                 [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"up.command"]];
             }
@@ -227,36 +218,24 @@
 }
 
 - (IBAction)initialInstall:(id)sender {
-    NSString *home_folder = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo"];
-
+    NSString *homeDirectory = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo"];
     BOOL isDir;
-
-    if ([[NSFileManager defaultManager]
-         fileExistsAtPath:home_folder isDirectory:&isDir] && isDir) {
-        NSString *msg = [NSString stringWithFormat:@"%@ %@ %@", @"Folder", home_folder, @"exists, please delete or rename that folder !!!"];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:homeDirectory isDirectory:&isDir] && isDir) {
+        NSString *msg = [NSString stringWithFormat:@"%@ %@ %@", @"Folder", homeDirectory, @"exists, please delete or rename that folder !!!"];
         [self displayWithMessage:@"Kube-Solo" infoText:msg];
     }
     else {
-        NSLog(@"Folder does not exist: '%@'", home_folder);
-        // create home folder and .env subfolder
-        NSString *env_folder = [home_folder stringByAppendingPathComponent:@".env"];
-        NSError *error = nil;
-        [[NSFileManager defaultManager] createDirectoryAtPath:env_folder
-         withIntermediateDirectories:YES
-         attributes:nil
-         error:&error];
-        // write to file App version
+        NSLog(@"Folder does not exist: '%@'", homeDirectory);
+        NSString *envDirectory = [homeDirectory stringByAppendingPathComponent:@".env"];
+        NSError *error;
+        [[NSFileManager defaultManager] createDirectoryAtPath:envDirectory withIntermediateDirectories:YES attributes:nil error:&error];
+
         NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-        NSData *app_version = [version dataUsingEncoding:NSUTF8StringEncoding];
-        [[NSFileManager defaultManager] createFileAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/version"]
-         contents:app_version
-         attributes:nil];
-        // set resouces_path
-        NSString *resources_content = [[NSBundle mainBundle] resourcePath];
-        NSData *fileContents1 = [resources_content dataUsingEncoding:NSUTF8StringEncoding];
-        [[NSFileManager defaultManager] createFileAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/resouces_path"]
-         contents:fileContents1
-         attributes:nil];
+        NSData *appVersion = [version dataUsingEncoding:NSUTF8StringEncoding];
+        [[NSFileManager defaultManager] createFileAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/version"] contents:appVersion attributes:nil];
+
+        NSData *resourcesPath = [[[NSBundle mainBundle] resourcePath] dataUsingEncoding:NSUTF8StringEncoding];
+        [[NSFileManager defaultManager] createFileAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/resouces_path"] contents:resourcesPath attributes:nil];
 
         [self runScript:@"kube-solo-install" arguments:[[NSBundle mainBundle] resourcePath]];
     }
@@ -264,12 +243,12 @@
 
 - (IBAction)About:(id)sender {
     NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    NSString *app_version = [NSString stringWithFormat:@"%@%@", @"v", version];
+    NSString *appVersion = [NSString stringWithFormat:@"%@%@", @"v", version];
 
-    NSString *mText = [NSString stringWithFormat:@"%@ %@", @"Kube-Solo for OS X", app_version];
+    NSString *message = [NSString stringWithFormat:@"%@ %@", @"Kube-Solo for OS X", appVersion];
     NSString *infoText = @"It is a simple wrapper around xhyve + CoreOS VM, which allows to control Kube-Solo via Status Bar !!!";
 
-    [self displayWithMessage:mText infoText:infoText];
+    [self displayWithMessage:message infoText:infoText];
 }
 
 - (IBAction)attachConsole:(id)sender {
@@ -334,10 +313,10 @@
 
         case VMStatusUp:
             NSLog(@"VM is On");
-            NSString *file_path = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/ip_address"];
+            NSString *filePath = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/ip_address"];
             // read IP from file
-            NSString *vm_ip = [NSString stringWithContentsOfFile:file_path encoding:NSUTF8StringEncoding error:NULL];
-            NSString *url = [@[@"http://", vm_ip, @":3000"] componentsJoinedByString : @""];
+            NSString *vmIP = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:NULL];
+            NSString *url = [@[@"http://", vmIP, @":3000"] componentsJoinedByString : @""];
             [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
             break;
     }
@@ -354,10 +333,10 @@
 
         case VMStatusUp:
             NSLog(@"VM is On");
-            NSString *file_path = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/ip_address"];
+            NSString *filePath = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/ip_address"];
             // read IP from file
-            NSString *vm_ip = [NSString stringWithContentsOfFile:file_path encoding:NSUTF8StringEncoding error:NULL];
-            NSString *url = [@[@"http://", vm_ip, @":8080/ui"] componentsJoinedByString : @""];
+            NSString *vmIP = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:NULL];
+            NSString *url = [@[@"http://", vmIP, @":8080/ui"] componentsJoinedByString : @""];
             [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
             break;
     }
@@ -374,10 +353,10 @@
 
         case VMStatusUp:
             NSLog(@"VM is On");
-            NSString *file_path = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/ip_address"];
+            NSString *filePath = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/ip_address"];
             // read IP from file
-            NSString *vm_ip = [NSString stringWithContentsOfFile:file_path encoding:NSUTF8StringEncoding error:NULL];
-            NSString *url = [@[@"http://", vm_ip, @":4194"] componentsJoinedByString : @""];
+            NSString *vmIP = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:NULL];
+            NSString *url = [@[@"http://", vmIP, @":4194"] componentsJoinedByString : @""];
             [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
             break;
     }
