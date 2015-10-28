@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "VMManager.h"
+#import "NSURL+KubeSolo.h"
 
 @interface AppDelegate ()
 
@@ -27,15 +28,14 @@
     [self.statusItem setImage: [NSImage imageNamed:@"StatusItemIcon"]];
     [self.statusItem setHighlightMode:YES];
 
-    NSString *homeDirectory = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo"];
     BOOL isDir;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:homeDirectory isDirectory:&isDir] && isDir) {
-        NSData *resourceData = [[[NSBundle mainBundle] resourcePath] dataUsingEncoding:NSUTF8StringEncoding];
-        [[NSFileManager defaultManager] createFileAtPath:[homeDirectory stringByAppendingPathComponent:@".env/resouces_path"] contents:resourceData attributes:nil];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[[NSURL ks_homeURL] path] isDirectory:&isDir] && isDir) {
+        NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+        [resourcePath writeToURL:[NSURL ks_resourcePathURL] atomically:YES encoding:NSUTF8StringEncoding error:nil];
 
         NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-        NSData *appVersion = [version dataUsingEncoding:NSUTF8StringEncoding];
-        [[NSFileManager defaultManager] createFileAtPath:[homeDirectory stringByAppendingPathComponent:@".env/version"] contents:appVersion attributes:nil];
+        [version writeToURL:[NSURL ks_appVersionURL] atomically:YES encoding:NSUTF8StringEncoding error:nil];
+        
         [self.vmManager checkVMStatus];
     }
     else {
@@ -218,24 +218,20 @@
 }
 
 - (IBAction)initialInstall:(id)sender {
-    NSString *homeDirectory = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo"];
     BOOL isDir;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:homeDirectory isDirectory:&isDir] && isDir) {
-        NSString *msg = [NSString stringWithFormat:@"%@ %@ %@", @"Folder", homeDirectory, @"exists, please delete or rename that folder !!!"];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[[NSURL ks_homeURL] path] isDirectory:&isDir] && isDir) {
+        NSString *msg = [NSString stringWithFormat:@"%@ %@ %@", @"Folder", [[NSURL ks_homeURL] path], @"exists, please delete or rename that folder !!!"];
         [self displayWithMessage:@"Kube-Solo" infoText:msg];
     }
     else {
-        NSLog(@"Folder does not exist: '%@'", homeDirectory);
-        NSString *envDirectory = [homeDirectory stringByAppendingPathComponent:@".env"];
-        NSError *error;
-        [[NSFileManager defaultManager] createDirectoryAtPath:envDirectory withIntermediateDirectories:YES attributes:nil error:&error];
+        NSLog(@"Folder does not exist: '%@'", [NSURL ks_homeURL]);
+        [[NSFileManager defaultManager] createDirectoryAtURL:[NSURL ks_envURL] withIntermediateDirectories:YES attributes:nil error:nil];
+
+        NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+        [resourcePath writeToURL:[NSURL ks_resourcePathURL] atomically:YES encoding:NSUTF8StringEncoding error:nil];
 
         NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-        NSData *appVersion = [version dataUsingEncoding:NSUTF8StringEncoding];
-        [[NSFileManager defaultManager] createFileAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/version"] contents:appVersion attributes:nil];
-
-        NSData *resourcesPath = [[[NSBundle mainBundle] resourcePath] dataUsingEncoding:NSUTF8StringEncoding];
-        [[NSFileManager defaultManager] createFileAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/resouces_path"] contents:resourcesPath attributes:nil];
+        [version writeToURL:[NSURL ks_appVersionURL] atomically:YES encoding:NSUTF8StringEncoding error:nil];
 
         [self runScript:@"kube-solo-install" arguments:[[NSBundle mainBundle] resourcePath]];
     }
@@ -313,10 +309,8 @@
 
         case VMStatusUp:
             NSLog(@"VM is On");
-            NSString *filePath = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/ip_address"];
-            // read IP from file
-            NSString *vmIP = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:NULL];
-            NSString *url = [@[@"http://", vmIP, @":3000"] componentsJoinedByString : @""];
+            NSString *vmIP = [NSString stringWithContentsOfURL:[NSURL ks_ipAddressURL] encoding:NSUTF8StringEncoding error:nil];
+            NSString *url = [NSString stringWithFormat:@"http://%@:3000", vmIP];
             [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
             break;
     }
@@ -333,10 +327,8 @@
 
         case VMStatusUp:
             NSLog(@"VM is On");
-            NSString *filePath = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/ip_address"];
-            // read IP from file
-            NSString *vmIP = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:NULL];
-            NSString *url = [@[@"http://", vmIP, @":8080/ui"] componentsJoinedByString : @""];
+            NSString *vmIP = [NSString stringWithContentsOfURL:[NSURL ks_ipAddressURL] encoding:NSUTF8StringEncoding error:nil];
+            NSString *url = [NSString stringWithFormat:@"http://%@:8080/ui", vmIP];
             [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
             break;
     }
@@ -353,10 +345,8 @@
 
         case VMStatusUp:
             NSLog(@"VM is On");
-            NSString *filePath = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo/.env/ip_address"];
-            // read IP from file
-            NSString *vmIP = [NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:NULL];
-            NSString *url = [@[@"http://", vmIP, @":4194"] componentsJoinedByString : @""];
+            NSString *vmIP = [NSString stringWithContentsOfURL:[NSURL ks_ipAddressURL] encoding:NSUTF8StringEncoding error:nil];
+            NSString *url = [NSString stringWithFormat:@"http://%@:4194", vmIP];
             [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
             break;
     }
