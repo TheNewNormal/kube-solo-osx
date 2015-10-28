@@ -17,7 +17,7 @@
     
     self.statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
     [self.statusItem setMenu:self.statusMenu];
-    [self.statusItem setImage: [NSImage imageNamed:@"icon"]];
+    [self.statusItem setImage: [NSImage imageNamed:@"StatusItemIcon"]];
     [self.statusItem setHighlightMode:YES];
     
     // get the App's main bundle path
@@ -669,7 +669,6 @@
 {
     NSAlert *alert = [[NSAlert alloc] init];
     [alert setAlertStyle:NSInformationalAlertStyle];
-    // [alert setIcon:[NSImage imageNamed:@"icon2"]];
     [alert setMessageText:mText];
     [alert setInformativeText:infoText];
     [alert runModal];
