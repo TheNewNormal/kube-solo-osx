@@ -385,7 +385,7 @@
 
     [self notifyUserWithTitle:@"Quitting Kube-Solo App" text:@""];
 
-    exit(0);
+    [[NSApplication sharedApplication] terminate:self];
 }
 
 #pragma mark - NSUserNotificationCenterDelegate
