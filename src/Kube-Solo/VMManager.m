@@ -40,33 +40,74 @@
     }
 }
 
-- (void)showVMStatus {
-    // check vm status and return the shell script output
+- (void)start {
+    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"up.command"]];
+}
+
+- (void)halt {
+    [self runScript:@"halt" arguments:@""];
+}
+
+- (void)kill {
+    [self runScript:@"kill_VM" arguments:@""];
+}
+
+- (void)reload {
+    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"reload.command"]];
+}
+
+- (void)updateKubernetes {
+    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"update_k8s.command"]];
+}
+
+- (void)updateKubernetesVersion {
+    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"update_k8s_version.command"]];
+}
+
+- (void)updateClients {
+    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"update_osx_clients_files.command"]];
+}
+
+- (void)runScript:(NSString *)scriptName arguments:(NSString *)arguments {
     NSTask *task = [[NSTask alloc] init];
-    task.launchPath = [NSString stringWithFormat:@"%@", [[NSBundle mainBundle] pathForResource:@"check_vm_status" ofType:@"command"]];
-    //    task.arguments  = @[@"status"];
 
-    NSPipe *pipe;
-    pipe = [NSPipe pipe];
-    [task setStandardOutput: pipe];
-
-    NSFileHandle *file;
-    file = [pipe fileHandleForReading];
-
+    task.launchPath = [NSString stringWithFormat:@"%@", [[NSBundle mainBundle] pathForResource:scriptName ofType:@"command"]];
+    task.arguments  = @[arguments];
     [task launch];
     [task waitUntilExit];
+}
 
-    NSData *data;
-    data = [file readDataToEndOfFile];
+- (void)runApp:(NSString *)appName arguments:(NSString *)arguments {
+    // lunch an external App from the mainBundle
+    [[NSWorkspace sharedWorkspace] openFile:arguments withApplication:appName];
+}
 
-    NSString *string;
-    string = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
-    //NSLog (@"Returned:\n%@", string);
+- (void)updateISO {
+    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"fetch_latest_iso.command"]];
+}
 
-    // send a notification on to the screen
-    NSUserNotification *notification = [[NSUserNotification alloc] init];
-    notification.informativeText = string;
-    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+- (void)changeReleaseChannel {
+    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"change_release_channel.command"]];
+}
+
+- (void)destroy {
+    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"destroy.command"]];
+}
+
+- (void)install {
+    [self runScript:@"kube-solo-install" arguments:[[NSBundle mainBundle] resourcePath]];
+}
+
+- (void)attachConsole {
+    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"console.command"]];
+}
+
+- (void)runShell {
+    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"os_shell.command"]];
+}
+
+- (void)runSSH {
+    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"ssh.command"]];
 }
 
 @end

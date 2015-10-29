@@ -66,12 +66,10 @@
     switch (vmStatus) {
         case VMStatusDown: {
             NSLog(@"VM is Off");
-            NSString *homeDirectory = [NSHomeDirectory() stringByAppendingPathComponent:@"kube-solo"];
-
             BOOL isDir;
-            if ([[NSFileManager defaultManager] fileExistsAtPath:homeDirectory isDirectory:&isDir] && isDir) {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[[NSURL ks_homeURL] path] isDirectory:&isDir] && isDir) {
                 [self notifyUserWithTitle:@"Kube Solo will be up shortly" text:@"and OS shell will be opened"];
-                [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"up.command"]];
+                [self.vmManager start];
             }
             else {
                 NSAlert *alert = [[NSAlert alloc] init];
@@ -110,13 +108,10 @@
             NSLog(@"VM is Off");
             [self notifyUserWithText:@"VM is already Off !!!"];
             break;
-
         case VMStatusUp:
             NSLog(@"VM is On");
             [self notifyUserWithText:@"VM will be stopped"];
-
-            [self runScript:@"halt" arguments:@""];
-
+            [self.vmManager halt];
             [self notifyUserWithText:@"VM is stopping !!!"];
 
             VMStatus vmStatusCheck = VMStatusUp;
@@ -127,7 +122,7 @@
                     break;
                 }
                 else {
-                    [self runScript:@"kill_VM" arguments:@""];
+                    [self.vmManager kill];
                 }
             }
             break;
@@ -146,7 +141,7 @@
         case VMStatusUp:
             NSLog(@"VM is On");
             [self notifyUserWithText:@"VM will be reloaded"];
-            [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"reload.command"]];
+            [self.vmManager reload];
             break;
     }
 }
@@ -163,7 +158,7 @@
         case VMStatusUp:
             NSLog(@"VM is On");
             [self notifyUserWithTitle:@"Kube-Solo and" text:@"OS X kubectl will be updated"];
-            [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"update_k8s.command"]];
+            [self.vmManager updateKubernetes];
             break;
     }
 }
@@ -179,7 +174,7 @@
         case VMStatusUp:
             NSLog(@"VM is On");
             [self notifyUserWithTitle:@"Kube-Solo and" text:@"OS X kubectl version will be changed"];
-            [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"update_k8s_version.command"]];
+            [self.vmManager updateKubernetesVersion];
             break;
     }
 }
@@ -196,25 +191,33 @@
         case VMStatusUp:
             NSLog(@"VM is On");
             [self notifyUserWithText:@"OS X clients will be updated"];
-            [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"update_osx_clients_files.command"]];
+            [self.vmManager updateClients];
             break;
     }
 }
 
 - (IBAction)fetchLatestISO:(id)sender {
     [self notifyUserWithText:@"CoreOS ISO image will be updated"];
-    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"fetch_latest_iso.command"]];
+    [self.vmManager updateISO];
 }
 
 - (IBAction)changeReleaseChannel:(id)sender {
     [self notifyUserWithText:@"CoreOS release channel change"];
-    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"change_release_channel.command"]];
+    [self.vmManager changeReleaseChannel];
 }
 
 - (IBAction)destroy:(id)sender {
     [self notifyUserWithText:@"VM will be destroyed"];
-    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"destroy.command"]];
-    [self.vmManager showVMStatus];
+    [self.vmManager destroy];
+    VMStatus status = [self.vmManager checkVMStatus];
+    switch (status) {
+        case VMStatusDown:
+            [self notifyUserWithText:@"VM is stopped"];
+            break;
+        case VMStatusUp:
+            [self notifyUserWithText:@"VM is running"];
+            break;
+    }
 }
 
 - (IBAction)initialInstall:(id)sender {
@@ -233,7 +236,7 @@
         NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
         [version writeToURL:[NSURL ks_appVersionURL] atomically:YES encoding:NSUTF8StringEncoding error:nil];
 
-        [self runScript:@"kube-solo-install" arguments:[[NSBundle mainBundle] resourcePath]];
+        [self.vmManager install];
     }
 }
 
@@ -259,7 +262,7 @@
         case VMStatusUp:
             NSLog(@"VM is On");
             [self notifyUserWithText:@"VM's console will be opened"];
-            [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"console.command"]];
+            [self.vmManager attachConsole];
             break;
     }
 }
@@ -276,7 +279,7 @@
         case VMStatusUp:
             NSLog(@"VM is On");
             [self notifyUserWithText:@"OS X shell will be opened"];
-            [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"os_shell.command"]];
+            [self.vmManager runShell];
             break;
     }
 }
@@ -293,7 +296,7 @@
         case VMStatusUp:
             NSLog(@"VM is On");
             [self notifyUserWithText:@"VM ssh shell will be opened"];
-            [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"ssh.command"]];
+            [self.vmManager runSSH];
             break;
     }
 }
@@ -363,7 +366,7 @@
         case VMStatusUp:
             NSLog(@"VM is On");
             [self notifyUserWithText:@"VM will be stopped"];
-            [self runScript:@"halt" arguments:@""];
+            [self.vmManager halt];
             [self notifyUserWithText:@"VM is stopping !!!"];
 
             VMStatus vmStatusCheck = VMStatusUp;
@@ -374,7 +377,7 @@
                     break;
                 }
                 else {
-                    [self runScript:@"kill_VM" arguments:@""];
+                    [self.vmManager kill];
                 }
             }
             break;
@@ -404,19 +407,6 @@
 
 - (void)notifyUserWithText:(NSString *_Nullable)text {
     [self notifyUserWithTitle:@"Kube Solo" text:text];
-}
-- (void)runScript:(NSString *)scriptName arguments:(NSString *)arguments {
-    NSTask *task = [[NSTask alloc] init];
-
-    task.launchPath = [NSString stringWithFormat:@"%@", [[NSBundle mainBundle] pathForResource:scriptName ofType:@"command"]];
-    task.arguments  = @[arguments];
-    [task launch];
-    [task waitUntilExit];
-}
-
-- (void)runApp:(NSString *)appName arguments:(NSString *)arguments {
-    // lunch an external App from the mainBundle
-    [[NSWorkspace sharedWorkspace] openFile:arguments withApplication:appName];
 }
 
 - (void)displayWithMessage:(NSString *)mText infoText:(NSString *)infoText {

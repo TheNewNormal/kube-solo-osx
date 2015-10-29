@@ -16,6 +16,19 @@ typedef NS_ENUM(NSInteger, VMStatus) {
 @interface VMManager : NSObject
 
 - (VMStatus)checkVMStatus;
-- (void)showVMStatus;
+- (void)start;
+- (void)halt;
+- (void)kill;
+- (void)reload;
+- (void)updateKubernetes;
+- (void)updateKubernetesVersion;
+- (void)updateClients;
+- (void)updateISO;
+- (void)changeReleaseChannel;
+- (void)destroy;
+- (void)install;
+- (void)attachConsole;
+- (void)runShell;
+- (void)runSSH;
 
 @end
