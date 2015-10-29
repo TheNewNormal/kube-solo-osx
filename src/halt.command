@@ -3,6 +3,10 @@
 #  halt.command
 # stop VM via ssh
 
+#
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+source "${DIR}"/functions.sh
+
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 

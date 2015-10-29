@@ -138,6 +138,13 @@ curl -L -o fleet.zip "https://github.com/coreos/fleet/releases/download/v$LATEST
 unzip -j -o "fleet.zip" "fleet-v$LATEST_RELEASE-darwin-amd64/fleetctl"
 rm -f fleet.zip
 echo "fleetctl was copied to ~/kube-solo/bin "
+
+# get lastest OS X helm version from bintray
+bin_version=$(curl -I https://bintray.com/deis/helm-ci/helm/_latestVersion | grep "Location:" | sed -n 's/.*git-\([^ ]*\)view/\1/p' | tr -d '/' | tr -d '\r' )
+echo "Downloading latest version of helm for OS X"
+curl -L "https://dl.bintray.com/deis/helm-ci/helm-git-$bin_version-darwin-amd64.zip" -o helm.zip
+unzip -o helm.zip
+rm -f helm.zip
 #
 
 }
