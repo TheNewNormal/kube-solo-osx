@@ -40,10 +40,10 @@
     }
     else {
         NSAlert *alert = [[NSAlert alloc] init];
-        [alert addButtonWithTitle:@"OK"];
-        [alert addButtonWithTitle:@"Cancel"];
-        [alert setMessageText:@"Kube-Solo was not set."];
-        [alert setInformativeText:@"Do you want to set it up?"];
+        [alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];
+        [alert addButtonWithTitle:NSLocalizedString(@"Cancel", nil)];
+        [alert setMessageText:NSLocalizedString(@"NotSetupAlertMessage", nil)];
+        [alert setInformativeText:NSLocalizedString(@"NotSetupAlertInformativeText", nil)];
         [alert setAlertStyle:NSWarningAlertStyle];
 
         if ([alert runModal] == NSAlertFirstButtonReturn) {
@@ -52,8 +52,7 @@
         }
         else {
             // Cancel clicked
-            NSString *msg = [NSString stringWithFormat:@"%@ ", @" 'Initial setup of Kube-Solo' at any time later one !!! "];
-            [self displayWithMessage:@"You can set Kube-Solo from menu 'Setup':" infoText:msg];
+            [self alertWithMessage:NSLocalizedString(@"SetupAlertMessage", nil) infoText:NSLocalizedString(@"SetupAlertInformativeText", nil)];
         }
     }
 }
@@ -67,15 +66,15 @@
         case VMStatusDown: {
             BOOL isDir;
             if ([[NSFileManager defaultManager] fileExistsAtPath:[[NSURL ks_homeURL] path] isDirectory:&isDir] && isDir) {
-                [self notifyUserWithTitle:@"Kube Solo will be up shortly" text:@"and OS shell will be opened"];
+                [self notifyUserWithTitle:NSLocalizedString(@"WillSetupNotificationTitle", nil) text:NSLocalizedString(@"WillSetupNotificationMessage", nil)];
                 [self.vmManager start];
             }
             else {
                 NSAlert *alert = [[NSAlert alloc] init];
-                [alert addButtonWithTitle:@"OK"];
-                [alert addButtonWithTitle:@"Cancel"];
-                [alert setMessageText:@"Kube Solo was not set."];
-                [alert setInformativeText:@"Do you want to set it up?"];
+                [alert addButtonWithTitle:NSLocalizedString(@"OK", nil)];
+                [alert addButtonWithTitle:NSLocalizedString(@"Cancel", nil)];
+                [alert setMessageText:NSLocalizedString(@"NotSetupAlertMessage", nil)];
+                [alert setInformativeText:NSLocalizedString(@"NotSetupAlertInformativeText", nil)];
                 [alert setAlertStyle:NSWarningAlertStyle];
 
                 if ([alert runModal] == NSAlertFirstButtonReturn) {
@@ -84,8 +83,7 @@
                 }
                 else {
                     // Cancel clicked
-                    NSString *msg = [NSString stringWithFormat:@"%@ ", @" 'Initial setup of Kube Solo' at any time later one !!! "];
-                    [self displayWithMessage:@"You can set VM from menu 'Setup':" infoText:msg];
+                    [self alertWithMessage:NSLocalizedString(@"SetupAlertMessage", nil) infoText:NSLocalizedString(@"SetupAlertInformativeText", nil)];
                 }
             }
 
@@ -93,7 +91,7 @@
         }
 
         case VMStatusUp:
-            [self notifyUserWithText:@"VM is already running !!!"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateRunning", nil)];
             break;
     }
 }
@@ -103,18 +101,18 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            [self notifyUserWithText:@"VM is already Off !!!"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateAlreadyOff", nil)];
             break;
         case VMStatusUp:
-            [self notifyUserWithText:@"VM will be stopped"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateWillStop", nil)];
             [self.vmManager halt];
-            [self notifyUserWithText:@"VM is stopping !!!"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateStopping", nil)];
 
             VMStatus vmStatusCheck = VMStatusUp;
             while (vmStatusCheck == VMStatusUp) {
                 vmStatusCheck = [self.vmManager checkVMStatus];
                 if (vmStatusCheck == VMStatusDown) {
-                    [self notifyUserWithText:@"VM is OFF !!!"];
+                    [self notifyUserWithText:NSLocalizedString(@"VMStateOff", nil)];
                     break;
                 }
                 else {
@@ -130,11 +128,11 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            [self notifyUserWithText:@"VM is Off !!!"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateOff", nil)];
             break;
 
         case VMStatusUp:
-            [self notifyUserWithText:@"VM will be reloaded"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateWillReload", nil)];
             [self.vmManager reload];
             break;
     }
@@ -145,11 +143,11 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            [self notifyUserWithText:@"VM is Off !!!"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateOff", nil)];
             break;
 
         case VMStatusUp:
-            [self notifyUserWithTitle:@"Kube-Solo and" text:@"OS X kubectl will be updated"];
+            [self notifyUserWithTitle:NSLocalizedString(@"KubernetesUpdateNotificationTitle", nil) text:NSLocalizedString(@"KubernetedUpdateNotificationMessage", nil)];
             [self.vmManager updateKubernetes];
             break;
     }
@@ -160,12 +158,10 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            NSLog(@"VM is Off");
-            [self notifyUserWithText:@"VM is Off !!!"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateOff", nil)];
             break;
         case VMStatusUp:
-            NSLog(@"VM is On");
-            [self notifyUserWithTitle:@"Kube-Solo and" text:@"OS X kubectl version will be changed"];
+            [self notifyUserWithTitle:NSLocalizedString(@"KubernetesUpdateNotificationTitle", nil) text:NSLocalizedString(@"KubernetesVersionChangeNotificationMessage", nil)];
             [self.vmManager updateKubernetesVersion];
             break;
     }
@@ -176,36 +172,36 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            [self notifyUserWithText:@"VM is Off !!!"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateOff", nil)];
             break;
 
         case VMStatusUp:
-            [self notifyUserWithText:@"OS X clients will be updated"];
+            [self notifyUserWithText:NSLocalizedString(@"ClientsWillBeUpdatedNotificationMessage", nil)];
             [self.vmManager updateClients];
             break;
     }
 }
 
 - (IBAction)fetchLatestISO:(id)sender {
-    [self notifyUserWithText:@"CoreOS ISO image will be updated"];
+    [self notifyUserWithText:NSLocalizedString(@"ISOImageWillBeUpdatedNotificationMessage", nil)];
     [self.vmManager updateISO];
 }
 
 - (IBAction)changeReleaseChannel:(id)sender {
-    [self notifyUserWithText:@"CoreOS release channel change"];
+    [self notifyUserWithText:NSLocalizedString(@"ReleaseChannelChangeNotificationMessage", nil)];
     [self.vmManager changeReleaseChannel];
 }
 
 - (IBAction)destroy:(id)sender {
-    [self notifyUserWithText:@"VM will be destroyed"];
+    [self notifyUserWithText:NSLocalizedString(@"VMStateWillDestroy", nil)];
     [self.vmManager destroy];
     VMStatus status = [self.vmManager checkVMStatus];
     switch (status) {
         case VMStatusDown:
-            [self notifyUserWithText:@"VM is stopped"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateStopped", nil)];
             break;
         case VMStatusUp:
-            [self notifyUserWithText:@"VM is running"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateRunning", nil)];
             break;
     }
 }
@@ -213,8 +209,8 @@
 - (IBAction)initialInstall:(id)sender {
     BOOL isDir;
     if ([[NSFileManager defaultManager] fileExistsAtPath:[[NSURL ks_homeURL] path] isDirectory:&isDir] && isDir) {
-        NSString *msg = [NSString stringWithFormat:@"%@ %@ %@", @"Folder", [[NSURL ks_homeURL] path], @"exists, please delete or rename that folder !!!"];
-        [self displayWithMessage:@"Kube-Solo" infoText:msg];
+        NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"HomeFolderExistsAlertInformativeText", nil), [[NSURL ks_homeURL] path]];
+        [self alertWithMessage:NSLocalizedString(@"AppName", nil) infoText:msg];
     }
     else {
         NSLog(@"Folder does not exist: '%@'", [NSURL ks_homeURL]);
@@ -232,12 +228,10 @@
 
 - (IBAction)About:(id)sender {
     NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    NSString *appVersion = [NSString stringWithFormat:@"%@%@", @"v", version];
+    NSString *message = [NSString stringWithFormat:NSLocalizedString(@"AboutAlertMessage", nil), version];
+    NSString *infoText = NSLocalizedString(@"AboutInformativeText", nil);
 
-    NSString *message = [NSString stringWithFormat:@"%@ %@", @"Kube-Solo for OS X", appVersion];
-    NSString *infoText = @"It is a simple wrapper around xhyve + CoreOS VM, which allows to control Kube-Solo via Status Bar !!!";
-
-    [self displayWithMessage:message infoText:infoText];
+    [self alertWithMessage:message infoText:infoText];
 }
 
 - (IBAction)attachConsole:(id)sender {
@@ -245,11 +239,11 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            [self notifyUserWithText:@"VM is Off !!!"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateOff", nil)];
             break;
 
         case VMStatusUp:
-            [self notifyUserWithText:@"VM's console will be opened"];
+            [self notifyUserWithText:NSLocalizedString(@"ConsoleWillOpenNotificationMessage", nil)];
             [self.vmManager attachConsole];
             break;
     }
@@ -260,11 +254,11 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            [self notifyUserWithText:@"VM is Off !!!"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateOff", nil)];
             break;
 
         case VMStatusUp:
-            [self notifyUserWithText:@"OS X shell will be opened"];
+            [self notifyUserWithText:NSLocalizedString(@"ShellWillOpenNotificationMessage", nil)];
             [self.vmManager runShell];
             break;
     }
@@ -275,11 +269,11 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            [self notifyUserWithText:@"VM is Off !!!"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateOff", nil)];
             break;
 
         case VMStatusUp:
-            [self notifyUserWithText:@"VM ssh shell will be opened"];
+            [self notifyUserWithText:NSLocalizedString(@"SSHShellWillOpenNotificationMessage", nil)];
             [self.vmManager runSSH];
             break;
     }
@@ -290,14 +284,15 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            [self notifyUserWithText:@"VM is Off !!!"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateOff", nil)];
             break;
 
-        case VMStatusUp:
+        case VMStatusUp: {
             NSString *vmIP = [NSString stringWithContentsOfURL:[NSURL ks_ipAddressURL] encoding:NSUTF8StringEncoding error:nil];
             NSString *url = [NSString stringWithFormat:@"http://%@:3000", vmIP];
             [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
             break;
+        }
     }
 }
 
@@ -306,14 +301,15 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            [self notifyUserWithText:@"VM is Off !!!"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateOff", nil)];
             break;
 
-        case VMStatusUp:
+        case VMStatusUp: {
             NSString *vmIP = [NSString stringWithContentsOfURL:[NSURL ks_ipAddressURL] encoding:NSUTF8StringEncoding error:nil];
             NSString *url = [NSString stringWithFormat:@"http://%@:8080/ui", vmIP];
             [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
             break;
+        }
     }
 }
 
@@ -322,14 +318,15 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            [self notifyUserWithText:@"VM is Off !!!"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateOff", nil)];
             break;
 
-        case VMStatusUp:
+        case VMStatusUp: {
             NSString *vmIP = [NSString stringWithContentsOfURL:[NSURL ks_ipAddressURL] encoding:NSUTF8StringEncoding error:nil];
             NSString *url = [NSString stringWithFormat:@"http://%@:4194", vmIP];
             [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
             break;
+        }
     }
 }
 
@@ -341,15 +338,15 @@
             break;
 
         case VMStatusUp:
-            [self notifyUserWithText:@"VM will be stopped"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateWillStop", nil)];
             [self.vmManager halt];
-            [self notifyUserWithText:@"VM is stopping !!!"];
+            [self notifyUserWithText:NSLocalizedString(@"VMStateStopping", nil)];
 
             VMStatus vmStatusCheck = VMStatusUp;
             while (vmStatusCheck == VMStatusUp) {
                 vmStatusCheck = [self.vmManager checkVMStatus];
                 if (vmStatusCheck == VMStatusDown) {
-                    [self notifyUserWithText:@"VM is OFF !!!"];
+                    [self notifyUserWithText:NSLocalizedString(@"VMStateOff", nil)];
                     break;
                 }
                 else {
@@ -359,7 +356,7 @@
             break;
     }
 
-    [self notifyUserWithTitle:@"Quitting Kube-Solo App" text:@""];
+    [self notifyUserWithTitle:NSLocalizedString(@"QuittingNotificationTitle", nil) text:nil];
 
     [[NSApplication sharedApplication] terminate:self];
 }
@@ -382,14 +379,14 @@
 }
 
 - (void)notifyUserWithText:(NSString *_Nullable)text {
-    [self notifyUserWithTitle:@"Kube Solo" text:text];
+    [self notifyUserWithTitle:NSLocalizedString(@"AppName", nil) text:text];
 }
 
-- (void)displayWithMessage:(NSString *)mText infoText:(NSString *)infoText {
+- (void)alertWithMessage:(NSString *)message infoText:(NSString *)infoText {
     NSAlert *alert = [[NSAlert alloc] init];
 
     [alert setAlertStyle:NSInformationalAlertStyle];
-    [alert setMessageText:mText];
+    [alert setMessageText:message];
     [alert setInformativeText:infoText];
     [alert runModal];
 }
