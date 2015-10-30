@@ -18,7 +18,7 @@
 
     NSPipe *pipe;
     pipe = [NSPipe pipe];
-    [task setStandardOutput: pipe];
+    [task setStandardOutput:pipe];
 
     NSFileHandle *file;
     file = [pipe fileHandleForReading];
@@ -30,10 +30,10 @@
     data = [file readDataToEndOfFile];
 
     NSString *string;
-    string = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
-    NSLog (@"Show VM status:\n%@", string);
+    string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSLog(@"Show VM status:\n%@", string);
 
-    if ( [string isEqual: @"VM is stopped"] ) {
+    if ([string isEqual:@"VM is stopped"]) {
         NSLog(@"VM is Off");
         return VMStatusDown;
     } else {
@@ -74,7 +74,7 @@
     NSTask *task = [[NSTask alloc] init];
 
     task.launchPath = [NSString stringWithFormat:@"%@", [[NSBundle mainBundle] pathForResource:scriptName ofType:@"command"]];
-    task.arguments  = @[arguments];
+    task.arguments = @[ arguments ];
     [task launch];
     [task waitUntilExit];
 }
