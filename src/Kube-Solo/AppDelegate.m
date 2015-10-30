@@ -65,7 +65,6 @@
 
     switch (vmStatus) {
         case VMStatusDown: {
-            NSLog(@"VM is Off");
             BOOL isDir;
             if ([[NSFileManager defaultManager] fileExistsAtPath:[[NSURL ks_homeURL] path] isDirectory:&isDir] && isDir) {
                 [self notifyUserWithTitle:@"Kube Solo will be up shortly" text:@"and OS shell will be opened"];
@@ -94,7 +93,6 @@
         }
 
         case VMStatusUp:
-            NSLog(@"VM is On");
             [self notifyUserWithText:@"VM is already running !!!"];
             break;
     }
@@ -105,11 +103,9 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            NSLog(@"VM is Off");
             [self notifyUserWithText:@"VM is already Off !!!"];
             break;
         case VMStatusUp:
-            NSLog(@"VM is On");
             [self notifyUserWithText:@"VM will be stopped"];
             [self.vmManager halt];
             [self notifyUserWithText:@"VM is stopping !!!"];
@@ -134,12 +130,10 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            NSLog(@"VM is Off");
             [self notifyUserWithText:@"VM is Off !!!"];
             break;
 
         case VMStatusUp:
-            NSLog(@"VM is On");
             [self notifyUserWithText:@"VM will be reloaded"];
             [self.vmManager reload];
             break;
@@ -151,12 +145,10 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            NSLog(@"VM is Off");
             [self notifyUserWithText:@"VM is Off !!!"];
             break;
 
         case VMStatusUp:
-            NSLog(@"VM is On");
             [self notifyUserWithTitle:@"Kube-Solo and" text:@"OS X kubectl will be updated"];
             [self.vmManager updateKubernetes];
             break;
@@ -184,12 +176,10 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            NSLog(@"VM is Off");
             [self notifyUserWithText:@"VM is Off !!!"];
             break;
 
         case VMStatusUp:
-            NSLog(@"VM is On");
             [self notifyUserWithText:@"OS X clients will be updated"];
             [self.vmManager updateClients];
             break;
@@ -255,12 +245,10 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            NSLog(@"VM is Off");
             [self notifyUserWithText:@"VM is Off !!!"];
             break;
 
         case VMStatusUp:
-            NSLog(@"VM is On");
             [self notifyUserWithText:@"VM's console will be opened"];
             [self.vmManager attachConsole];
             break;
@@ -272,12 +260,10 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            NSLog(@"VM is Off");
             [self notifyUserWithText:@"VM is Off !!!"];
             break;
 
         case VMStatusUp:
-            NSLog(@"VM is On");
             [self notifyUserWithText:@"OS X shell will be opened"];
             [self.vmManager runShell];
             break;
@@ -289,12 +275,10 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            NSLog(@"VM is Off");
             [self notifyUserWithText:@"VM is Off !!!"];
             break;
 
         case VMStatusUp:
-            NSLog(@"VM is On");
             [self notifyUserWithText:@"VM ssh shell will be opened"];
             [self.vmManager runSSH];
             break;
@@ -306,12 +290,10 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            NSLog(@"VM is Off");
             [self notifyUserWithText:@"VM is Off !!!"];
             break;
 
         case VMStatusUp:
-            NSLog(@"VM is On");
             NSString *vmIP = [NSString stringWithContentsOfURL:[NSURL ks_ipAddressURL] encoding:NSUTF8StringEncoding error:nil];
             NSString *url = [NSString stringWithFormat:@"http://%@:3000", vmIP];
             [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
@@ -324,12 +306,10 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            NSLog(@"VM is Off");
             [self notifyUserWithText:@"VM is Off !!!"];
             break;
 
         case VMStatusUp:
-            NSLog(@"VM is On");
             NSString *vmIP = [NSString stringWithContentsOfURL:[NSURL ks_ipAddressURL] encoding:NSUTF8StringEncoding error:nil];
             NSString *url = [NSString stringWithFormat:@"http://%@:8080/ui", vmIP];
             [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
@@ -342,12 +322,10 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            NSLog(@"VM is Off");
             [self notifyUserWithText:@"VM is Off !!!"];
             break;
 
         case VMStatusUp:
-            NSLog(@"VM is On");
             NSString *vmIP = [NSString stringWithContentsOfURL:[NSURL ks_ipAddressURL] encoding:NSUTF8StringEncoding error:nil];
             NSString *url = [NSString stringWithFormat:@"http://%@:4194", vmIP];
             [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
@@ -360,11 +338,9 @@
 
     switch (vmStatus) {
         case VMStatusDown:
-            NSLog(@"VM is Off");
             break;
 
         case VMStatusUp:
-            NSLog(@"VM is On");
             [self notifyUserWithText:@"VM will be stopped"];
             [self.vmManager halt];
             [self notifyUserWithText:@"VM is stopping !!!"];

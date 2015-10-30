@@ -34,8 +34,10 @@
     NSLog (@"Show VM status:\n%@", string);
 
     if ( [string isEqual: @"VM is stopped"] ) {
+        NSLog(@"VM is Off");
         return VMStatusDown;
     } else {
+        NSLog(@"VM is On");
         return VMStatusUp;
     }
 }
