@@ -19,6 +19,15 @@ coreos:
       command: start
     - name: fleet.service
       command: start
+    - name: flanneld.service
+      command: start
+      drop-ins:
+      - name: 50-network-config.conf
+        content: |
+          [Unit]
+          Requires=etcd2.service
+          [Service]
+          ExecStartPre=/usr/bin/etcdctl mk /coreos.com/network/config '{"Network": "10.244.0.0/16", "SubnetLen": 24, "SubnetMin": "10.244.0.0", "Backend": {"Type": "vxlan"}}'
     - name: docker-tcp.socket
       command: start
       enable: true
