@@ -79,7 +79,7 @@ Just start `Kube-Solo` application and you will find a small icon of Kubernetes 
 * `SSH to k8solo-01` menu option will open VM shell
 * `k8solo-01 cAdvisor` will open cAdvisor URL in default browser
 * [Fleet-UI](http://fleetui.com) dashboard will show running fleet units and etc
-* [Kubernetes-UI](https://github.com/GoogleCloudPlatform/kubernetes/tree/master/www) (contributed by [Kismatic.io](http://kismatic.io/)) will show nice Kubernetes Dashboard, where you can check Node, Pods, Replication Controllers and etc.
+* [Kubernetes-UI](https://github.com/GoogleCloudPlatform/kubernetes/tree/master/www) (contributed by [Kismatic.io](http://kismatic.io/)) will show nice Kubernetes Dashboard, where you can check Nodes, Pods, Replication and Service Controllers and etc.
 
 
 Example ouput of succesfull CoreOS + Kubernetes Solo install:
