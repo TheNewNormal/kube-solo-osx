@@ -716,13 +716,14 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Updates" id="DFA-8C-ne3">
                         <items>
-                            <menuItem title="Update Kubernetes and OS X kubectl" id="sEE-aC-0Ob">
+                            <menuItem isSeparatorItem="YES" id="Q48-Nq-5bm"/>
+                            <menuItem title="Update Kubernetes to latest version" id="sEE-aC-0Ob">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="update_k8s:" target="494" id="fWf-tj-ePG"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="Q48-Nq-5bm"/>
+                            <menuItem isSeparatorItem="YES" id="Shr-i7-gIu"/>
                             <menuItem title="Change Kubernetes version" id="Qad-bF-0gK">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
