@@ -730,7 +730,7 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Um0-uP-0o3"/>
-                            <menuItem title="Update OS X binaries" id="KSz-fW-Vbe">
+                            <menuItem title="Update OS X fleetctl and helm clients" id="KSz-fW-Vbe">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="updates:" target="494" id="Zus-fv-0H4"/>

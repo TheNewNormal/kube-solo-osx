@@ -6,6 +6,8 @@ Kubernetes Solo cluster for OS X
 Zero to Kubernetes development environment using xhyve + CoreOS
 ---------------
 
+**NEW** Includes [Helm](https://github.com/deis/helm) - The Kubernetes Package Manager
+
 **NEW:** Mac user password is not stored to the file system anymore (used to run sudo), `OS X Keychain` is now used to store it !!!
 
 

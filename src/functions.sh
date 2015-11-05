@@ -145,6 +145,7 @@ echo "Downloading latest version of helm for OS X"
 curl -L "https://dl.bintray.com/deis/helm-ci/helm-$bin_version-darwin-amd64.zip" -o helm.zip
 unzip -o helm.zip
 rm -f helm.zip
+echo "helm was copied to ~/kube-solo/bin "
 #
 
 }
