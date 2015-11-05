@@ -195,6 +195,53 @@ install_k8s_files
 }
 
 
+function download_k8s_files_version() {
+#
+cd ~/kube-solo/tmp
+
+# ask for k8s version
+echo "You can install a particular version of Kubernetes you migh want to test..."
+echo "Bear in mind if the version you want is lower than the currently installed, "
+echo "Kubernetes cluster migth not work, so you will need to destroy the cluster first "
+echo " and boot VM again !!! "
+echo " "
+echo "Please type Kubernetes version you want to be installed e.g. 1.0.7"
+echo "followed by [ENTER] or CMD + W to exit:"
+read -s K8S_VERSION
+
+# download required version of kubectl for OS X
+cd ~/kube-solo/tmp
+echo "Downloading kubectl $K8S_VERSION for OS X"
+curl -k -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/darwin/amd64/kubectl >  ~/kube-solo/kube/kubectl
+chmod 755 ~/kube-solo/kube/kubectl
+echo "kubectl was copied to ~/kube-solo/kube"
+echo " "
+
+# clean up tmp folder
+rm -rf ~/kube-solo/tmp/*
+
+# download required version of k8s for CoreOS
+echo "Downloading $K8S_VERSION version of Kubernetes"
+bins=( kubectl kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
+for b in "${bins[@]}"; do
+curl -k -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/$b > ~/kube-solo/tmp/$b
+done
+#
+tar czvf kube.tgz *
+cp -f kube.tgz ~/kube-solo/kube/
+# clean up tmp folder
+rm -rf ~/kube-solo/tmp/*
+echo " "
+
+# get VM IP
+vm_ip=$(cat ~/kube-solo/.env/ip_address)
+
+# install k8s files
+install_k8s_files
+
+}
+
+
 function install_k8s_add_ons {
 echo " "
 echo "Installing SkyDNS ..."

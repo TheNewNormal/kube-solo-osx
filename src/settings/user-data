@@ -48,6 +48,7 @@ coreos:
         - name: 50-insecure-registry.conf
           content: |
             [Unit]
+            Requires=flanneld.service
             [Service]
             Environment=DOCKER_OPTS='--insecure-registry="0.0.0.0/0"'
     - name: setup-network-environment.service

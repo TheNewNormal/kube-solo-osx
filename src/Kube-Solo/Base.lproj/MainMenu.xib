@@ -723,6 +723,13 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Q48-Nq-5bm"/>
+                            <menuItem title="Change Kubernetes version" id="Qad-bF-0gK">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="update_k8s_version:" target="494" id="Aj1-mP-nZv"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="Um0-uP-0o3"/>
                             <menuItem title="Update OS X binaries" id="KSz-fW-Vbe">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>

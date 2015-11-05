@@ -233,6 +233,33 @@
 }
 
 
+- (IBAction)update_k8s_version:(id)sender {
+    int vm_status=[self checkVMStatus];
+    //NSLog (@"VM status:\n%d", vm_status);
+    
+    if (vm_status == 0) {
+        NSLog (@"VM is Off");
+        // send a notification on to the screen
+        NSUserNotification *notification = [[NSUserNotification alloc] init];
+        notification.title = @"Kube Solo";
+        notification.informativeText = @"VM is Off !!!";
+        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+    }
+    else
+    {
+        // send a notification on to the screen
+        NSUserNotification *notification = [[NSUserNotification alloc] init];
+        notification.title = @"Kube-Solo and";
+        notification.informativeText = @"OS X kubectl version will be changed";
+        [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+        
+        NSString *appName = [[NSString alloc] init];
+        NSString *arguments = [[NSString alloc] init];
+        [self runApp:appName = @"iTerm" arguments:arguments = [_resoucesPathFromApp stringByAppendingPathComponent:@"update_k8s_version.command"]];
+        //     NSLog(@"Apps arguments: '%@'", [_resoucesPathFromApp stringByAppendingPathComponent:@"update.command"]);
+    }
+}
+
 - (IBAction)updates:(id)sender {
     int vm_status=[self checkVMStatus];
     //NSLog (@"VM status:\n%d", vm_status);
