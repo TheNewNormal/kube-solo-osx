@@ -94,6 +94,7 @@ download_osx_clients
 export FLEETCTL_ENDPOINT=http://$vm_ip:2379
 export FLEETCTL_DRIVER=etcd
 export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
+echo " "
 echo "fleetctl list-machines:"
 fleetctl list-machines
 echo " "
@@ -111,7 +112,7 @@ export KUBERNETES_MASTER=http://$vm_ip:8080
 echo Waiting for Kubernetes cluster to be ready. This can take a few minutes...
 spin='-\|/'
 i=1
-until ~/kube-solo/bin/kubectl version | grep 'Server Version' >/dev/null 2>&1; do printf "\b${spin:i++%${#sp}:1}"; sleep .1; done
+until ~/kube-solo/bin/kubectl version | grep 'Server Version' >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\b${spin:i++%${#sp}:1}"; sleep .1; done
 i=1
 until ~/kube-solo/bin/kubectl get nodes | grep $vm_ip >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 echo " "
@@ -135,6 +136,9 @@ echo "Run from menu 'OS Shell' to open a terninal window with fleetctl, etcdctl 
 echo " "
 echo 'You can close this window/tab with CMD + W'
 echo " "
-
 sleep 9000
+
+open -a iTerm.app "${res_folder}"/os_shell.command
+
+
 

@@ -167,6 +167,7 @@ K8S_VERSION=$(get_latest_version_number)
 cd ~/kube-solo/tmp
 echo "Downloading kubectl $K8S_VERSION for OS X"
 curl -k -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/darwin/amd64/kubectl >  ~/kube-solo/kube/kubectl
+#        //github.com/kubernetes/kubernetes/releases/download/v1.1.1-beta.1/kubernetes.tar.gz
 chmod 755 ~/kube-solo/kube/kubectl
 echo "kubectl was copied to ~/kube-solo/kube"
 echo " "
@@ -206,12 +207,23 @@ echo "Bear in mind if the version you want is lower than the currently installed
 echo "Kubernetes cluster migth not work, so you will need to destroy the cluster first "
 echo " and boot VM again !!! "
 echo " "
-echo "Please type Kubernetes version you want to be installed e.g. 1.0.7"
+echo "Please type Kubernetes version (stable and beta only) you want to be installed e.g. 1.0.7"
 echo "followed by [ENTER] or CMD + W to exit:"
-read -s K8S_VERSION
+read K8S_VERSION
+
+url=https://storage.googleapis.com/kubernetes-release/release/v$K8S_VERSION/bin/darwin/amd64/kubectl
+if curl --output /dev/null --silent --head --fail "$url"; then
+    echo "URL exists: $url" > /dev/null
+else
+    echo " "
+    echo "There is no such Kubernetes version to download !!!"
+    pause 'Press [Enter] key to continue...'
+    exit 1
+fi
 
 # download required version of kubectl for OS X
 cd ~/kube-solo/tmp
+echo " "
 echo "Downloading kubectl v$K8S_VERSION for OS X"
 curl -k -L https://storage.googleapis.com/kubernetes-release/release/v$K8S_VERSION/bin/darwin/amd64/kubectl >  ~/kube-solo/kube/kubectl
 chmod 755 ~/kube-solo/kube/kubectl
