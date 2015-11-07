@@ -255,26 +255,6 @@ install_k8s_files
 }
 
 
-function install_k8s_add_ons {
-echo " "
-echo "Installing SkyDNS ..."
-~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/skydns-rc.yaml
-~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/skydns-svc.yaml
-# clean up kubernetes folder
-rm -f ~/kube-solo/kubernetes/skydns-rc.yaml
-rm -f ~/kube-solo/kubernetes/skydns-svc.yaml
-#
-echo " "
-echo "Installing Kubernetes UI ..."
-~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-ui-rc.yaml
-~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-ui-svc.yaml
-# clean up kubernetes folder
-rm -f ~/kube-solo/kubernetes/kube-ui-rc.yaml
-rm -f ~/kube-solo/kubernetes/kube-ui-svc.yaml
-#
-
-}
-
 function check_for_images() {
 # Check if set channel's images are present
 CHANNEL=$(cat ~/kube-solo/custom.conf | grep CHANNEL= | head -1 | cut -f2 -d"=")
@@ -316,6 +296,7 @@ echo " "
 
 
 function install_k8s_add_ons {
+sed -i "" "s/_MASTER_IP_/$1/" ~/kube-solo/kubernetes/skydns-rc.yaml
 echo " "
 echo "Installing SkyDNS ..."
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/skydns-rc.yaml

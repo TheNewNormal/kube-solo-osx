@@ -114,7 +114,7 @@ then
     ~/kube-solo/bin/kubectl label nodes $vm_ip node=worker1
     # copy add-ons files
     cp "${res_folder}"/k8s/*.yaml ~/kube-solo/kubernetes
-    install_k8s_add_ons
+    install_k8s_add_ons "$vm_ip"
     #
 fi
 #

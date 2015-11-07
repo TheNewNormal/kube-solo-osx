@@ -119,7 +119,7 @@ echo " "
 # attach label to the node
 ~/kube-solo/bin/kubectl label nodes $vm_ip node=worker1
 #
-install_k8s_add_ons
+install_k8s_add_ons "$vm_ip"
 #
 echo " "
 echo "kubectl get nodes:"
