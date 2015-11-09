@@ -126,4 +126,3 @@ Other links
 * Standalone CoreOS VM version App can be found here [CoreOS-xhyve UI](https://github.com/rimusz/coreos-xhyve-ui).
 
 * CoreOS Cluster one App can be found here [CoreOS-Vagrant Cluster GUI](https://github.com/rimusz/coreos-osx-gui-cluster).
-
