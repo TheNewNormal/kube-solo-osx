@@ -6,7 +6,7 @@ Kubernetes Solo cluster for OS X
 Zero to Kubernetes development environment using xhyve + CoreOS
 ---------------
 
-**NEW:** Includes [Helm](https://github.com/deis/helm) - The Kubernetes Package Manager
+**NEW:** Includes [Helm](https://helm.sh) - The Kubernetes Package Manager
 
 **NEW:** Mac user password is not stored to the file system anymore (used to run sudo), `OS X Keychain` is now used to store it !!!
 
@@ -126,4 +126,3 @@ Other links
 * Standalone CoreOS VM version App can be found here [CoreOS-xhyve UI](https://github.com/rimusz/coreos-xhyve-ui).
 
 * CoreOS Cluster one App can be found here [CoreOS-Vagrant Cluster GUI](https://github.com/rimusz/coreos-osx-gui-cluster).
-
