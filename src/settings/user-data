@@ -27,7 +27,7 @@ coreos:
           [Unit]
           Requires=etcd2.service
           [Service]
-          ExecStartPre=/usr/bin/etcdctl mk /coreos.com/network/config '{"Network": "10.244.0.0/16", "SubnetLen": 24, "SubnetMin": "10.244.0.0", "Backend": {"Type": "vxlan"}}'
+          ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network": "10.244.0.0/16", "SubnetLen": 24, "SubnetMin": "10.244.0.0", "Backend": {"Type": "vxlan"}}'
     - name: docker-tcp.socket
       command: start
       enable: true
@@ -66,6 +66,14 @@ coreos:
         Type=oneshot
 
 write-files:
+ - path: "/etc/rkt/net.d/10-containernet.conf"
+   permissions: "0644"
+   owner: "root"
+   content: |
+     {
+       "name": "default",
+       "type": "flannel"
+     }
  - path: /etc/conf.d/nfs
    permissions: '0644'
    content: |

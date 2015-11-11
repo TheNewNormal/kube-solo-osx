@@ -167,7 +167,6 @@ K8S_VERSION=$(get_latest_version_number)
 cd ~/kube-solo/tmp
 echo "Downloading kubectl $K8S_VERSION for OS X"
 curl -k -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/darwin/amd64/kubectl >  ~/kube-solo/kube/kubectl
-#        //github.com/kubernetes/kubernetes/releases/download/v1.1.1-beta.1/kubernetes.tar.gz
 chmod 755 ~/kube-solo/kube/kubectl
 echo "kubectl was copied to ~/kube-solo/kube"
 echo " "
@@ -175,6 +174,10 @@ echo " "
 # clean up tmp folder
 rm -rf ~/kube-solo/tmp/*
 
+# download setup-network-environment binary
+echo "Downloading setup-network-environment"
+curl -L https://github.com/kelseyhightower/setup-network-environment/releases/download/1.0.1/setup-network-environment > ~/kube-solo/tmp/setup-network-environment
+#
 # download latest version of k8s for CoreOS
 echo "Downloading latest version of Kubernetes"
 bins=( kubectl kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
@@ -207,11 +210,12 @@ echo "Bear in mind if the version you want is lower than the currently installed
 echo "Kubernetes cluster migth not work, so you will need to destroy the cluster first "
 echo " and boot VM again !!! "
 echo " "
-echo "Please type Kubernetes version (stable and beta only) you want to be installed e.g. 1.0.7"
+echo "Please type Kubernetes version you want to be installed e.g. v1.1.1"
 echo "followed by [ENTER] or CMD + W to exit:"
 read K8S_VERSION
 
-url=https://storage.googleapis.com/kubernetes-release/release/v$K8S_VERSION/bin/darwin/amd64/kubectl
+url=https://github.com/kubernetes/kubernetes/releases/download/$K8S_VERSION/kubernetes.tar.gz
+
 if curl --output /dev/null --silent --head --fail "$url"; then
     echo "URL exists: $url" > /dev/null
 else
@@ -221,26 +225,30 @@ else
     exit 1
 fi
 
-# download required version of kubectl for OS X
+# download required version of Kubernetes
 cd ~/kube-solo/tmp
 echo " "
-echo "Downloading kubectl v$K8S_VERSION for OS X"
-curl -k -L https://storage.googleapis.com/kubernetes-release/release/v$K8S_VERSION/bin/darwin/amd64/kubectl >  ~/kube-solo/kube/kubectl
-chmod 755 ~/kube-solo/kube/kubectl
-echo "kubectl was copied to ~/kube-solo/kube"
-echo " "
+echo "Downloading Kubernetes $K8S_VERSION tar.gz from github ..."
+curl -k -L https://github.com/kubernetes/kubernetes/releases/download/$K8S_VERSION/kubernetes.tar.gz >  ~/kube-solo/tmp/kubernetes.tar.gz
+mkdir kube
 
-# clean up tmp folder
-rm -rf ~/kube-solo/tmp/*
-
-# download required version of k8s for CoreOS
-echo "Downloading v$K8S_VERSION version of Kubernetes"
+# download setup-network-environment binary
+echo "Downloading setup-network-environment from github ..."
+curl -L https://github.com/kelseyhightower/setup-network-environment/releases/download/1.0.1/setup-network-environment > ~/kube-solo/tmp/kube/setup-network-environment
+#
+# extracting Kubernetes files
+echo "Extracting Kubernetes $K8S_VERSION files ..."
+tar xvf  kubernetes.tar.gz --strip=4 kubernetes/platforms/darwin/amd64/kubectl
+mv -f kubectl ~/kube-solo/kube
+#
+tar xvf kubernetes.tar.gz --strip=2 kubernetes/server/kubernetes-server-linux-amd64.tar.gz
 bins=( kubectl kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
 for b in "${bins[@]}"; do
-curl -k -L https://storage.googleapis.com/kubernetes-release/release/v$K8S_VERSION/bin/linux/amd64/$b > ~/kube-solo/tmp/$b
+    tar xvf kubernetes-server-linux-amd64.tar.gz -C ~/kube-solo/tmp/kube --strip=3 kubernetes/server/bin/$b
 done
 #
-tar czvf kube.tgz *
+chmod a+x kube/*
+tar czvf kube.tgz -C kube .
 cp -f kube.tgz ~/kube-solo/kube/
 # clean up tmp folder
 rm -rf ~/kube-solo/tmp/*
@@ -273,8 +281,12 @@ function deploy_fleet_units() {
 # deploy fleet units from ~/kube-solo/fleet
 cd ~/kube-solo/fleet
 echo "Starting all fleet units in ~/kube-solo/fleet:"
-fleetctl submit *.service
-fleetctl start *.service
+fleetctl start fleet-ui.service
+fleetctl start kube-apiserver.service
+fleetctl start kube-controller-manager.service
+fleetctl start kube-scheduler.service
+fleetctl start kube-kubelet.service
+fleetctl start kube-proxy.service
 echo " "
 echo "fleetctl list-units:"
 fleetctl list-units

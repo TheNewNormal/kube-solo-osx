@@ -29,7 +29,9 @@ download_k8s_files_version
 #
 
 # generate kubeconfig file
+echo Generate kubeconfig file ...
  "${res_folder}"/bin/gen_kubeconfig $vm_ip
+echo " "
 #
 
 # restart fleet units
@@ -40,10 +42,16 @@ export FLEETCTL_DRIVER=etcd
 export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
 cd ~/kube-solo/fleet
 ~/kube-solo/bin/fleetctl stop *.service
+echo " "
 sleep 5
-~/kube-solo/bin/fleetctl start *.service
+~/kube-solo/bin/fleetctl start fleet-ui.service
+~/kube-solo/bin/fleetctl start kube-apiserver.service
+~/kube-solo/bin/fleetctl start kube-controller-manager.service
+~/kube-solo/bin/fleetctl start kube-scheduler.service
+~/kube-solo/bin/fleetctl start kube-kubelet.service
+~/kube-solo/bin/fleetctl start kube-proxy.service
 #
-sleep 8
+sleep 5
 echo " "
 echo "fleetctl list-units:"
 ~/kube-solo/bin/fleetctl list-units

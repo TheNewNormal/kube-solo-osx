@@ -27,6 +27,7 @@ download_k8s_files
 #
 
 # generate kubeconfig file
+echo Generate kubeconfig file ...
  "${res_folder}"/bin/gen_kubeconfig $vm_ip
 #
 
@@ -38,10 +39,16 @@ export FLEETCTL_DRIVER=etcd
 export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
 cd ~/kube-solo/fleet
 ~/kube-solo/bin/fleetctl stop *.service
+echo " "
 sleep 5
-~/kube-solo/bin/fleetctl start *.service
+~/kube-solo/bin/fleetctl start fleet-ui.service
+~/kube-solo/bin/fleetctl start kube-apiserver.service
+~/kube-solo/bin/fleetctl start kube-controller-manager.service
+~/kube-solo/bin/fleetctl start kube-scheduler.service
+~/kube-solo/bin/fleetctl start kube-kubelet.service
+~/kube-solo/bin/fleetctl start kube-proxy.service
 #
-sleep 8
+sleep 5
 echo " "
 echo "fleetctl list-units:"
 ~/kube-solo/bin/fleetctl list-units
@@ -57,7 +64,6 @@ i=1
 until ~/kube-solo/bin/kubectl get nodes | grep $vm_ip >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 echo " "
 #
-echo " "
 echo "k8s nodes list:"
 ~/kube-solo/bin/kubectl get nodes
 echo " "
