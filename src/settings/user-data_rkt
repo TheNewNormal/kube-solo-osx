@@ -66,6 +66,14 @@ coreos:
         Type=oneshot
 
 write-files:
+ - path: "/etc/rkt/net.d/10-containernet.conf"
+   permissions: "0644"
+   owner: "root"
+   content: |
+     {
+       "name": "default",
+       "type": "flannel"
+     }
  - path: /etc/conf.d/nfs
    permissions: '0644'
    content: |
