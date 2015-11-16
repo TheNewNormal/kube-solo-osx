@@ -78,6 +78,7 @@ echo " "
 #
 
 # set fleetctl endpoint
+export FLEETCTL_TUNNEL=
 export FLEETCTL_ENDPOINT=http://$vm_ip:2379
 export FLEETCTL_DRIVER=etcd
 export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
