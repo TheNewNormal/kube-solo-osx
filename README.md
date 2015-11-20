@@ -121,8 +121,8 @@ Some examples to start with [Kubernetes examples](https://github.com/GoogleCloud
 
 Other links
 -----------
-* Cluster one with Kubernetes CoreOS VM App can be found here [CoreOS-Vagrant Kubernetes Cluster GUI for OS X](https://github.com/rimusz/coreos-osx-gui-kubernetes-cluster).
+* Cluster one with Kubernetes CoreOS VM App can be found here [CoreOS-Vagrant Kubernetes Cluster for OS X](https://github.com/rimusz/coreos-osx-kubernetes-cluster).
 
-* Standalone CoreOS VM version App can be found here [CoreOS-xhyve UI](https://github.com/rimusz/coreos-xhyve-ui).
+* Standalone CoreOS VM version App can be found here [CoreOS OS X](https://github.com/rimusz/coreos-osx).
 
-* CoreOS Cluster one App can be found here [CoreOS-Vagrant Cluster GUI](https://github.com/rimusz/coreos-osx-gui-cluster).
+* CoreOS Cluster one App can be found here [CoreOS-Vagrant Cluster](https://github.com/rimusz/coreos-osx-cluster).
