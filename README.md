@@ -25,7 +25,7 @@ How to install Kube-Solo
 
 **WARNING**
  -----------
-  - You must be running OS X 10.10.3 Yosemite or later and 2010 or later Mac for this to work.
+  - You must be running ***OS X 10.10.3*** Yosemite or later and 2010 or later Mac for this to work.
 
   - If you are, or were, running any version of VirtualBox, prior to 4.3.30 or 5.0,
 and attempt to run xhyve your system will immediately crash as a kernel panic is
