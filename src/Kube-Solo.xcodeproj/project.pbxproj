@@ -423,7 +423,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.linxos.kube-solo-osx";
 				PRODUCT_NAME = "Kube-Solo";
 				PROVISIONING_PROFILE = "";
@@ -445,7 +445,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.linxos.kube-solo-osx";
 				PRODUCT_NAME = "Kube-Solo";
 				PROVISIONING_PROFILE = "";
