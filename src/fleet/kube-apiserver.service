@@ -4,6 +4,12 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
 ExecStart=/opt/bin/kube-apiserver \
+ --client-ca-file=/srv/kubernetes/ca.crt \
+ --tls-cert-file=/srv/kubernetes/server.cert \
+ --tls-private-key-file=/srv/kubernetes/server.key \
+ --admission_control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota \
+ --service_account_key_file=/srv/kubernetes/server.key \
+ --service_account_lookup=false \
  --allow_privileged=true \
  --insecure_bind_address=0.0.0.0 \
  --insecure_port=8080 \

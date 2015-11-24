@@ -118,7 +118,6 @@ then
     #
 fi
 #
-echo " "
 echo "kubernetes nodes list:"
 ~/kube-solo/bin/kubectl get nodes
 echo " "

@@ -4,7 +4,10 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
 ExecStart=/opt/bin/kube-controller-manager \
+ --root-ca-file=/srv/kubernetes/ca.crt \
+ --service-account-private-key-file=/srv/kubernetes/server.key \
  --master=127.0.0.1:8080 \
+ --pod_eviction_timeout=30s \
  --logtostderr=true
 
 Restart=always

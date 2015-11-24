@@ -308,20 +308,25 @@ echo " "
 
 
 function install_k8s_add_ons {
+echo " "
+echo "Creating kube-system namespace ..."
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-system-ns.yaml
+#
 sed -i "" "s/_MASTER_IP_/$1/" ~/kube-solo/kubernetes/skydns-rc.yaml
 echo " "
 echo "Installing SkyDNS ..."
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/skydns-rc.yaml
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/skydns-svc.yaml
-# clean up kubernetes folder
-rm -f ~/kube-solo/kubernetes/skydns-rc.yaml
-rm -f ~/kube-solo/kubernetes/skydns-svc.yaml
 #
 echo " "
 echo "Installing Kubernetes UI ..."
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-ui-rc.yaml
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-ui-svc.yaml
+sleep 1
 # clean up kubernetes folder
+rm -f ~/kube-solo/kubernetes/kube-system-ns.yaml
+rm -f ~/kube-solo/kubernetes/skydns-rc.yaml
+rm -f ~/kube-solo/kubernetes/skydns-svc.yaml
 rm -f ~/kube-solo/kubernetes/kube-ui-rc.yaml
 rm -f ~/kube-solo/kubernetes/kube-ui-svc.yaml
 echo " "
