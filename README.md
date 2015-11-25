@@ -8,10 +8,10 @@ Zero to Kubernetes development environment using xhyve + CoreOS
 
 **NEW:** Includes [Helm](https://helm.sh) - The Kubernetes Package Manager
 
-**NEW:** Mac user password is not stored to the file system anymore (used to run sudo), `OS X Keychain` is now used to store it !!!
+**NEW:** Mac user password (used to run sudo) is now stored in `OS X Keychain` !!!
 
 
-`Kube-Solo for Mac OS X` is a Mac Status bar App which works like a wrapper around the [coreos-xhyve](https://github.com/coreos/coreos-xhyve) command line tool and bootstraps Kubernetes on a standalone [CoreOS](https://coreos.com) VM machine.
+**Kube-Solo for Mac OS X** is a Mac Status bar App which works like a wrapper around the [coreos-xhyve](https://github.com/coreos/coreos-xhyve) command line tool and bootstraps Kubernetes on a standalone [CoreOS](https://coreos.com) VM machine.
 
 ![Kube-Solo](kube-solo-osx.png "Kubernetes-Solo")
 
@@ -25,16 +25,13 @@ How to install Kube-Solo
 
 **WARNING**
  -----------
-  - You must be running ***OS X 10.10.3*** Yosemite or later and 2010 or later Mac for this to work.
+  - You must be running **OS X 10.10.3** Yosemite or later and 2010 or later Mac for this to work.
 
   - If you are, or were, running any version of VirtualBox, prior to 4.3.30 or 5.0,
 and attempt to run xhyve your system will immediately crash as a kernel panic is
 triggered. This is due to a VirtualBox bug (that got fixed in newest VirtualBox
 versions) as VirtualBox wasn't playing nice with OSX's Hypervisor.framework used
 by [xhyve](https://github.com/mist64/xhyve). 
-
-####Required software:
-* The only required software is [iTerm 2](http://www.iterm2.com/#/section/downloads) 
 
 
 ###Install:

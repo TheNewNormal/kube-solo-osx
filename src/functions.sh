@@ -77,7 +77,7 @@ create_root_disk() {
 
 # Get password
 my_password=$(security find-generic-password -wa kube-solo-app)
-echo -e "$my_password\n" | sudo -S ls > /dev/null 2>&1
+echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
 
 # create persistent disk
 cd ~/kube-solo/
@@ -342,10 +342,33 @@ echo " "
 echo "This is not the password to access VM via ssh or console !!!"
 echo " "
 echo "Please type your Mac user's password followed by [ENTER]:"
-read -s password
+read -s my_password
+passwd_ok=0
+
+# check if sudo password is correct
+while [ ! $passwd_ok = 1 ]
+do
+    # reset sudo
+    sudo -k
+    # check sudo
+    echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
+    CAN_I_RUN_SUDO=$(sudo -n uptime 2>&1|grep "load"|wc -l)
+    if [ ${CAN_I_RUN_SUDO} -gt 0 ]
+    then
+        echo "The sudo password is fine !!!"
+        echo " "
+        passwd_ok=1
+    else
+        echo " "
+        echo "The password you entered does not match your Mac user password !!!"
+        echo "Please type your Mac user's password followed by [ENTER]:"
+        read -s my_password
+    fi
+done
+
 security add-generic-password -a kube-solo-app -s kube-solo-app -w $password -U
-echo " "
 }
+
 
 function clean_up_after_vm {
 sleep 3

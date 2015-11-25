@@ -41,6 +41,13 @@
     cp -R "$1"/fleet/ ~/kube-solo/fleet
     #
 
+    # check if iTerm.app exists
+    App="/Applications/iTerm.app"
+    if [ ! -d "$App" ]
+    then
+        unzip "$1"/files/iTerm2.zip -d /Applications/
+    fi
+
     # initial init
     open -a iTerm.app "$1"/first-init.command
 

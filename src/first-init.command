@@ -125,6 +125,11 @@ echo " "
 #
 install_k8s_add_ons "$vm_ip"
 #
+echo "fleetctl list-machines:"
+fleetctl list-machines
+echo " "
+echo "fleetctl list-units:"
+fleetctl list-units
 echo " "
 echo "kubectl get nodes:"
 ~/kube-solo/bin/kubectl get nodes
@@ -136,13 +141,13 @@ echo "Assigned static VM's IP: $vm_ip"
 echo " "
 echo "Enjoy Kube Solo on your Mac !!!"
 echo " "
-echo "Run from menu 'OS Shell' to open a terninal window with fleetctl, etcdctl and kubectl pre-set !!!"
+echo "You can control this App via status bar icon... "
 echo " "
-echo 'You can close this window/tab with CMD + W'
-echo " "
-sleep 9000
 
-open -a iTerm.app "${res_folder}"/os_shell.command
+cd ~/kube-solo
+# open bash shell
+/bin/bash
+
 
 
 
