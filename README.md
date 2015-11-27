@@ -70,7 +70,7 @@ Just start `Kube-Solo` application and you will find a small icon of Kubernetes 
 ````
 
 * `Updates/Update Kubernetes and OS X kubectl` will update to latest version of Kubernetes.
-* `Updates/Update OS X fleetctl and helm clients` will update fleetctl to the same versions as Kube-Cluster Master runs and helm to the latest version.
+* `Updates/Update OS X fleetctl and helm clients` will update fleetctl to the same versions as CoreOS VM runs and helm to the latest version.
 * `Fetch latest CoreOS ISO` will download latest ISO file of CoreOS VM.
 *
 * `SSH to k8solo-01` menu option will open VM shell
