@@ -3,15 +3,13 @@ Kubernetes Solo cluster for OS X
 
 ![k8s-solo](k8s-singlenode.png)
 
-Zero to Kubernetes development environment using xhyve + CoreOS
+Zero to Kubernetes development environment
 ---------------
 
-**NEW:** Includes [Helm](https://helm.sh) - The Kubernetes Package Manager
-
-**NEW:** Mac user password (used to run sudo) is now stored in `OS X Keychain` !!!
-
-
 **Kube-Solo for Mac OS X** is a Mac Status bar App which works like a wrapper around the [coreos-xhyve](https://github.com/coreos/coreos-xhyve) command line tool and bootstraps Kubernetes on a standalone [CoreOS](https://coreos.com) VM machine.
+
+Includes [Helm](https://helm.sh) - The Kubernetes Package Manager
+
 
 ![Kube-Solo](kube-solo-osx.png "Kubernetes-Solo")
 
