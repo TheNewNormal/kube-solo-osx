@@ -6,6 +6,8 @@ Kubernetes Solo cluster for OS X
 Zero to Kubernetes development environment
 ---------------
 
+***Kube-Solo App has a new home, it is now under https://github.com/TheNewNormal organisation***
+
 **Kube-Solo for Mac OS X** is a Mac Status bar App which works like a wrapper around the [coreos-xhyve](https://github.com/coreos/coreos-xhyve) command line tool and bootstraps Kubernetes on a standalone [CoreOS](https://coreos.com) VM machine.
 
 Includes [Helm](https://helm.sh) - The Kubernetes Package Manager
@@ -15,7 +17,7 @@ Includes [Helm](https://helm.sh) - The Kubernetes Package Manager
 
 Download
 --------
-Head over to the [Releases Page](https://github.com/rimusz/kube-solo-osx/releases) to grab the latest release.
+Head over to the [Releases Page](https://github.com/TheNewNormal/kube-solo-osx/releases) to grab the latest release.
 
 
 How to install Kube-Solo
