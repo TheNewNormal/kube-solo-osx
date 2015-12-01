@@ -15,7 +15,7 @@ rm -f *.tgz
 
 # get latest k8s version
 function get_latest_version_number {
- local -r latest_url="https://storage.googleapis.com/kubernetes-release/release/latest.txt"
+ local -r latest_url="https://storage.googleapis.com/kubernetes-release/release/stable.txt"
  curl -Ss ${latest_url}
 }
 
@@ -38,6 +38,8 @@ echo "Downloading setup-network-environment"
 curl -L https://github.com/kelseyhightower/setup-network-environment/releases/download/1.0.1/setup-network-environment > kube/setup-network-environment
 #
 chmod a+x kube/*
+#
+curl -L https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz > kube/easy-rsa.tar.gz
 tar czvf kube.tgz -C kube .
 rm -f kube/*.*
 rm -f kube/*

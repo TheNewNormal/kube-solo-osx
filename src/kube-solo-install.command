@@ -20,6 +20,7 @@
     # copy files to ~/kube-solo/bin
     cp -f "$1"/files/* ~/kube-solo/bin
     rm -f ~/kube-solo/bin/iTerm2.zip
+
     # copy xhyve to bin folder
     cp -f "$1"/bin/xhyve ~/kube-solo/bin
     chmod 755 ~/kube-solo/bin/*

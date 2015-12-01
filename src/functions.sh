@@ -155,9 +155,9 @@ function download_k8s_files() {
 #
 cd ~/kube-solo/tmp
 
-# get latest k8s version
+# get latest stable k8s version
 function get_latest_version_number {
-    local -r latest_url="https://storage.googleapis.com/kubernetes-release/release/latest.txt"
+    local -r latest_url="https://storage.googleapis.com/kubernetes-release/release/stable.txt"
     curl -Ss ${latest_url}
 }
 
@@ -184,6 +184,8 @@ bins=( kubectl kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-
 for b in "${bins[@]}"; do
     curl -k -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/$b > ~/kube-solo/tmp/$b
 done
+#
+curl -L https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz > ~/kube-solo/tmp/easy-rsa.tar.gz
 #
 tar czvf kube.tgz *
 cp -f kube.tgz ~/kube-solo/kube/
@@ -248,6 +250,9 @@ for b in "${bins[@]}"; do
 done
 #
 chmod a+x kube/*
+#
+curl -L https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz > ~/kube-solo/tmp/easy-rsa.tar.gz
+#
 tar czvf kube.tgz -C kube .
 cp -f kube.tgz ~/kube-solo/kube/
 # clean up tmp folder
@@ -302,6 +307,7 @@ echo "Installing Kubernetes files on to VM..."
 cd ~/kube-solo/kube
 scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet kube.tgz core@$vm_ip:/home/core
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet core@$vm_ip 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet core@$vm_ip 'sudo /usr/bin/mkdir -p /opt/tmp && sudo mv /opt/bin/easy-rsa.tar.gz /opt/tmp'
 echo "Done with k8solo-01 "
 echo " "
 }
