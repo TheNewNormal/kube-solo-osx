@@ -60,7 +60,7 @@ do
     then
         VALID_MAIN=1
         sed -i "" "s/CHANNEL=alpha/CHANNEL=stable/" ~/kube-solo/custom.conf
-        sed -i "" "s/CHANNEL=beta/CHANNEL=stable/" ~/kube-solo/custom.confs
+        sed -i "" "s/CHANNEL=beta/CHANNEL=stable/" ~/kube-solo/custom.conf
         channel="Stable"
         LOOP=0
     fi
@@ -140,9 +140,9 @@ rm -f fleet.zip
 echo "fleetctl was copied to ~/kube-solo/bin "
 
 # get lastest OS X helm version from bintray
-bin_version=$(curl -I https://bintray.com/deis/helm-ci/helm/_latestVersion | grep "Location:" | sed -n 's%.*helm/%%;s%/view.*%%p')
+bin_version=$(curl -I https://bintray.com/deis/helm/helm/_latestVersion | grep "Location:" | sed -n 's%.*helm/%%;s%/view.*%%p')
 echo "Downloading latest version of helm for OS X"
-curl -L "https://dl.bintray.com/deis/helm-ci/helm-$bin_version-darwin-amd64.zip" -o helm.zip
+curl -L "https://dl.bintray.com/deis/helm/helm-$bin_version-darwin-amd64.zip" -o helm.zip
 unzip -o helm.zip
 rm -f helm.zip
 echo "helm was copied to ~/kube-solo/bin "
@@ -372,7 +372,7 @@ do
     fi
 done
 
-security add-generic-password -a kube-solo-app -s kube-solo-app -w $password -U
+security add-generic-password -a kube-solo-app -s kube-solo-app -w $my_password -U
 }
 
 
