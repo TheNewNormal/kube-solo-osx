@@ -40,6 +40,9 @@
 		1329DEB61BD4FB5F008AA719 /* update_osx_clients_files.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEAB1BD4FB5F008AA719 /* update_osx_clients_files.command */; };
 		1329DEB81BD526A3008AA719 /* update_k8s.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEB71BD526A3008AA719 /* update_k8s.command */; };
 		13BCE1C01BEBC0BD00A1A48E /* update_k8s_version.command in Resources */ = {isa = PBXBuildFile; fileRef = 13BCE1BF1BEBC0BD00A1A48E /* update_k8s_version.command */; };
+		CA4F6FFF1BE1910A00D87763 /* NSURL+KubeSolo.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4F6FFE1BE1910A00D87763 /* NSURL+KubeSolo.m */; settings = {ASSET_TAGS = (); }; };
+		CA4F70021BE19B8400D87763 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = CA4F70001BE19B8400D87763 /* Localizable.strings */; settings = {ASSET_TAGS = (); }; };
+		CA5B6F621BE15FDC00708D85 /* VMManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CA5B6F611BE15FDC00708D85 /* VMManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -85,6 +88,11 @@
 		1329DEAB1BD4FB5F008AA719 /* update_osx_clients_files.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = update_osx_clients_files.command; sourceTree = "<group>"; };
 		1329DEB71BD526A3008AA719 /* update_k8s.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = update_k8s.command; sourceTree = "<group>"; };
 		13BCE1BF1BEBC0BD00A1A48E /* update_k8s_version.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = update_k8s_version.command; sourceTree = "<group>"; };
+		CA4F6FFD1BE1910A00D87763 /* NSURL+KubeSolo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+KubeSolo.h"; sourceTree = "<group>"; };
+		CA4F6FFE1BE1910A00D87763 /* NSURL+KubeSolo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+KubeSolo.m"; sourceTree = "<group>"; };
+		CA4F70011BE19B8400D87763 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		CA5B6F601BE15FDC00708D85 /* VMManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMManager.h; sourceTree = "<group>"; };
+		CA5B6F611BE15FDC00708D85 /* VMManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VMManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +165,10 @@
 				0133608F18A70E0C0024B1CB /* Kube-Solo.entitlements */,
 				01E2854F18A6C4E300BC630D /* AppDelegate.h */,
 				01E2855018A6C4E300BC630D /* AppDelegate.m */,
+				CA5B6F601BE15FDC00708D85 /* VMManager.h */,
+				CA5B6F611BE15FDC00708D85 /* VMManager.m */,
+				CA4F6FFD1BE1910A00D87763 /* NSURL+KubeSolo.h */,
+				CA4F6FFE1BE1910A00D87763 /* NSURL+KubeSolo.m */,
 				01E2855218A6C4E300BC630D /* MainMenu.xib */,
 				01E2855518A6C4E300BC630D /* Images.xcassets */,
 				01D3685818E5C184006510B5 /* icon.icns */,
@@ -173,6 +185,7 @@
 				01E2854918A6C4E300BC630D /* main.m */,
 				01E2854B18A6C4E300BC630D /* Kube-Solo-Prefix.pch */,
 				01E2854C18A6C4E300BC630D /* Credits.rtf */,
+				CA4F70001BE19B8400D87763 /* Localizable.strings */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -291,6 +304,7 @@
 				019410681BE11DFA00723E19 /* kill_VM.command in Resources */,
 				1329DE921BD4F974008AA719 /* files in Resources */,
 				1329DE901BD4F95F008AA719 /* settings in Resources */,
+				CA4F70021BE19B8400D87763 /* Localizable.strings in Resources */,
 				01E2855418A6C4E300BC630D /* MainMenu.xib in Resources */,
 				01F0282C1A7C54C8008C37AA /* os_shell.command in Resources */,
 				019410661BE119E700723E19 /* go_webserver in Resources */,
@@ -306,6 +320,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				01E2855118A6C4E300BC630D /* AppDelegate.m in Sources */,
+				CA5B6F621BE15FDC00708D85 /* VMManager.m in Sources */,
+				CA4F6FFF1BE1910A00D87763 /* NSURL+KubeSolo.m in Sources */,
 				01E2854A18A6C4E300BC630D /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -335,6 +351,14 @@
 				01E2855318A6C4E300BC630D /* Base */,
 			);
 			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		CA4F70001BE19B8400D87763 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CA4F70011BE19B8400D87763 /* en */,
+			);
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
