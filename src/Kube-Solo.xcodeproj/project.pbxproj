@@ -40,8 +40,8 @@
 		1329DEB61BD4FB5F008AA719 /* update_osx_clients_files.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEAB1BD4FB5F008AA719 /* update_osx_clients_files.command */; };
 		1329DEB81BD526A3008AA719 /* update_k8s.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEB71BD526A3008AA719 /* update_k8s.command */; };
 		13BCE1C01BEBC0BD00A1A48E /* update_k8s_version.command in Resources */ = {isa = PBXBuildFile; fileRef = 13BCE1BF1BEBC0BD00A1A48E /* update_k8s_version.command */; };
-		CA4F6FFF1BE1910A00D87763 /* NSURL+KubeSolo.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4F6FFE1BE1910A00D87763 /* NSURL+KubeSolo.m */; settings = {ASSET_TAGS = (); }; };
-		CA4F70021BE19B8400D87763 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = CA4F70001BE19B8400D87763 /* Localizable.strings */; settings = {ASSET_TAGS = (); }; };
+		CA4F6FFF1BE1910A00D87763 /* NSURL+KubeSolo.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4F6FFE1BE1910A00D87763 /* NSURL+KubeSolo.m */; };
+		CA4F70021BE19B8400D87763 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = CA4F70001BE19B8400D87763 /* Localizable.strings */; };
 		CA5B6F621BE15FDC00708D85 /* VMManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CA5B6F611BE15FDC00708D85 /* VMManager.m */; };
 /* End PBXBuildFile section */
 

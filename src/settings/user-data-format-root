@@ -14,5 +14,5 @@ coreos:
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStart=/bin/sh -c '/usr/sbin/mkfs.ext4 /dev/vda'
-        ExecStartPost=/bin/sh -c 'sudo reboot'
+        ExecStart=/bin/sh -c '/usr/sbin/mkfs.ext4 -L ROOT /dev/vda'
+        ExecStartPost=/bin/sh -c 'sudo halt'

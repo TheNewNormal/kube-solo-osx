@@ -83,23 +83,6 @@ coreos:
         Type=oneshot
         RemainAfterExit=true
 write-files:
- - path: /etc/conf.d/nfs
-   permissions: '0644'
-   content: |
-     OPTS_RPC_MOUNTD=""
- - path: /opt/bin/ip2host
-   permissions: '0755'
-   content: |
-     #!/bin/bash
-     UUID=$(sudo cat /sys/devices/virtual/dmi/id/product_uuid)
-     USER=$(cat /proc/cmdline | sed -e 's,.*localUser=,,' -e 's, .*,,')
-     DATADIR=/Users/${USER}/.coreos-xhyve
-     [[ -d "${DATADIR}" ]] || mkdir -p "${DATADIR}"
-     [[ $# -eq 0 ]] && \
-        ip route get 8.8.8.8 | \
-        awk 'NR==1 {print $NF}' > "${DATADIR}/${UUID}" || \
-        rm -rf "${DATADIR}/${UUID}"
-
  - path: /home/core/.ssh/id_rsa
    permissions: '0600'
    owner: core:core
