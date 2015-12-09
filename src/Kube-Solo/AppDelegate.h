@@ -14,8 +14,8 @@
 @property (strong, nonatomic) IBOutlet NSMenu *statusMenu;
 @property (strong, nonatomic) NSStatusItem *statusItem;
 
-@property(strong) NSWindowController *myWindowController;
+@property (strong) NSWindowController *myWindowController;
 
-@property(strong) NSString *resoucesPathFromApp;
+@property (strong) NSString *resoucesPathFromApp;
 
 @end

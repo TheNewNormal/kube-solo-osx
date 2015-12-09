@@ -1,0 +1,48 @@
+/* 
+  Localizable.strings
+  Kube-Solo
+
+  Created by Brandon Evans on 2015-10-28.
+  Copyright © 2015 Rimantas Mocevicius. All rights reserved.
+*/
+
+"AppName" = "Kube-Solo";
+"OK" = "OK";
+"Cancel" = "Cancel";
+
+// VM States
+
+"VMStateAlreadyRunning" = "VM is already running !!!";
+"VMStateAlreadyOff" = "VM is already Off !!!";
+"VMStateWillStop" = "VM will be stopped";
+"VMStateStopping" = "VM is stopping !!!";
+"VMStateOff" = "VM is OFF !!!";
+"VMStateWillReload" = "VM will be reloaded";
+"VMStateStopped" = "VM is stopped";
+"VMStateRunning" = "VM is running";
+"VMStateWillDestroy" = "VM will be destroyed";
+
+// Notification Messages
+
+"ClientsWillBeUpdatedNotificationMessage" = "OS X clients will be updated";
+"ISOImageWillBeUpdatedNotificationMessage" = "CoreOS ISO image will be updated";
+"ReleaseChannelChangeNotificationMessage" = "CoreOS release channel change";
+"SSHShellWillOpenNotificationMessage" = "VM ssh shell will be opened";
+"ShellWillOpenNotificationMessage" = "OS X shell will be opened";
+"ConsoleWillOpenNotificationMessage" = "VM's console will be opened";
+"WillSetupNotificationTitle" = "Kube Solo will be up shortly";
+"WillSetupNotificationMessage" = "and OS shell will be opened";
+"KubernetesUpdateNotificationTitle" = "Kube-Solo and";
+"KubernetedUpdateNotificationMessage" = "OS X kubectl will be updated";
+"KubernetesVersionChangeNotificationMessage" = "OS X kubectl version will be changed";
+"QuittingNotificationTitle" = "Quitting Kube-Solo App";
+
+// Alerts
+
+"NotSetupAlertMessage" = "Kube Solo was not setup";
+"NotSetupAlertInformativeText" = "Do you want to set it up?";
+"SetupAlertMessage" = "You can set Kube-Solo from menu 'Setup':";
+"SetupAlertInformativeText" = " 'Initial setup of Kube-Solo' at any time later one !!! ";
+"HomeFolderExistsAlertInformativeText" = "Folder %@ exists, please delete or rename that folder !!!";
+"AboutAlertMessage" = "Kube-Solo for OS X v%@";
+"AboutInformativeText" = "It is a simple wrapper around xhyve + CoreOS VM, which allows to control Kube-Solo via Status Bar !!!";
