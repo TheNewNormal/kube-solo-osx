@@ -51,6 +51,8 @@ coreos:
             Requires=flanneld.service
             [Service]
             Environment=DOCKER_OPTS='--insecure-registry="0.0.0.0/0"'
+    - name: update-engine.service
+      command: stop
     - name: setup-network-environment.service
       command: start
       content: |

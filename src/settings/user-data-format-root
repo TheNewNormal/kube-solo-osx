@@ -4,6 +4,8 @@ hostname: k8solo-01
 
 coreos:
   units:
+    - name: update-engine.service
+      command: stop
     - name: format-ephemeral.service
       command: start
       content: |
