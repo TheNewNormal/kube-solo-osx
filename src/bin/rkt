@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# get VM's IP
+vm_ip=$(< ~/kube-solo/.env/ip_address)
+
+cmd=(ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet core@$vm_ip sudo /usr/bin/rkt "${@+$@}")
+
+"${cmd[@]}"

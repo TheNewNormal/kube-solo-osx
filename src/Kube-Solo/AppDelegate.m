@@ -234,20 +234,6 @@
     [self alertWithMessage:message infoText:infoText];
 }
 
-- (IBAction)attachConsole:(id)sender {
-    VMStatus vmStatus = [self.vmManager checkVMStatus];
-
-    switch (vmStatus) {
-        case VMStatusDown:
-            [self notifyUserWithText:NSLocalizedString(@"VMStateOff", nil)];
-            break;
-
-        case VMStatusUp:
-            [self notifyUserWithText:NSLocalizedString(@"ConsoleWillOpenNotificationMessage", nil)];
-            [self.vmManager attachConsole];
-            break;
-    }
-}
 
 - (IBAction)runShell:(id)sender {
     VMStatus vmStatus = [self.vmManager checkVMStatus];

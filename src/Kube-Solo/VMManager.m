@@ -100,10 +100,6 @@
     [self runScript:@"kube-solo-install" arguments:[[NSBundle mainBundle] resourcePath]];
 }
 
-- (void)attachConsole {
-    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"console.command"]];
-}
-
 - (void)runShell {
     [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"os_shell.command"]];
 }

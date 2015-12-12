@@ -14,7 +14,7 @@ res_folder=$(cat ~/kube-solo/.env/resouces_path)
 export PATH=${HOME}/kube-solo/bin:$PATH
 
 echo " "
-echo "Setting up Kubernetes Solo on OS X"
+echo "Setting up Kubernetes Solo Cluster on OS X"
 
 # add ssh key to custom.conf
 echo " "
@@ -30,9 +30,12 @@ do
 done
 
 echo " "
-echo "$file found, updating custom.conf..."
-echo "SSHKEY='$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/custom.conf
+echo "$file found, updating configuration files ..."
+echo "   sshkey = '$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/settings/k8solo-01.toml
+echo "   sshkey = '$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/settings/format-root.toml
 #
+
+##ssh-add ~/.ssh/id_rsa.pub &>/dev/null
 
 # save user's password to Keychain
 save_password
@@ -41,45 +44,26 @@ save_password
 # Set release channel
 release_channel
 
-# now let's fetch ISO file
-echo " "
-echo "Fetching lastest CoreOS $channel channel ISO ..."
-echo " "
-cd ~/kube-solo/
-"${res_folder}"/bin/coreos-xhyve-fetch -f custom.conf
-echo " "
-#
-
 # create ROOT disk
 create_root_disk
 
-echo " "
-# Start VM
-echo "Starting VM ..."
-"${res_folder}"/bin/dtach -n ~/kube-solo/.env/.console -z "${res_folder}"/start_VM.command
-#
+# get password for sudo
+my_password=$(security find-generic-password -wa kube-solo-app)
+# reset sudo
+sudo -k > /dev/null 2>&1
 
-# wait till VM is booted up
-echo "You can connect to VM console from menu 'Attach to VM's console' "
-echo "When you done with console just close it's window/tab with CMD+W "
-echo "Waiting for VM to boot up..."
-spin='-\|/'
-i=1
-until [ -e ~/kube-solo/.env/.console ] >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+# Start VM
+cd ~/kube-solo
+echo " "
+echo "Starting VM ..."
+echo " "
+echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
 #
-sleep 3
+sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml
 
 # get VM IP
-echo "Waiting for VM to be ready..."
-spin='-\|/'
-i=1
-until cat ~/kube-solo/.env/ip_address | grep 192.168.64 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-vm_ip=$(cat ~/kube-solo/.env/ip_address)
-#
-# waiting for VM's response to ping
-spin='-\|/'
-i=1
-while ! ping -c1 $vm_ip >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+#vm_ip=$(corectl ps -j | jq ".[] | select(.Name==\"k8solo-01\") | .PublicIP" | sed -e 's/"\(.*\)"/\1/')
+vm_ip=$(cat ~/kube-solo/.env/ip_address);
 #
 
 # install k8s files on to VM
@@ -89,6 +73,9 @@ install_k8s_files
 # download latest version fleetctl client
 download_osx_clients
 #
+
+# set etcd endpoint
+export ETCDCTL_PEERS=http://$vm_ip:2379
 
 # set fleetctl endpoint and install fleet units
 export FLEETCTL_TUNNEL=
@@ -102,6 +89,8 @@ echo " "
 #
 deploy_fleet_units
 #
+
+sleep 2
 
 # generate kubeconfig file
 echo Generate kubeconfig file ...
@@ -137,9 +126,7 @@ echo " "
 #
 echo "Installation has finished, Kube Solo VM is up and running !!!"
 echo " "
-echo "Assigned static VM's IP: $vm_ip"
-echo " "
-echo "Enjoy Kube Solo on your Mac !!!"
+echo "Assigned static IP for VM: $vm_ip"
 echo " "
 echo "You can control this App via status bar icon... "
 echo " "

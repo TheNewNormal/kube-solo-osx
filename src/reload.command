@@ -8,47 +8,33 @@ source "${DIR}"/functions.sh
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
-# get VM IP
-vm_ip=$(<~/kube-solo/.env/ip_address)
-
-# Stop VM
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ConnectTimeout=5 core@$vm_ip sudo halt
-# just in case run
-kill_xhyve
-
-# wait till VM is stopped
-echo " "
-echo "Waiting for VM to shutdown..."
-spin='-\|/'
-i=1
-until "${res_folder}"/check_vm_status.command | grep "VM is stopped" >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-#
-spin='-\|/'
-i=1
-until [ ! -e ~/kube-solo/.env/.console ] >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-#
-# Check if set channel's images are present
-check_for_images
-#
-
-# Start VM
-rm -f ~/kube-solo/.env/.console
-echo " "
-echo "Starting VM ..."
-"${res_folder}"/bin/dtach -n ~/kube-solo/.env/.console -z "${res_folder}"/start_VM.command
-#
-
-# wait till VM is booted up
-echo "You can connect to VM console from menu 'Attach to VM's console' "
-echo "When you done with console just close it's window/tab with CMD+W "
-echo "Waiting for VM to boot up..."
-spin='-\|/'
-i=1
-while ! ping -c1 $vm_ip >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-echo " "
-
 # path to the bin folder where we store our binary files
 export PATH=${HOME}/kube-solo/bin:$PATH
+
+# get password for sudo
+my_password=$(security find-generic-password -wa kube-solo-app)
+# reset sudo
+sudo -k
+
+### Stop VM
+echo " "
+echo "Stopping VM ..."
+# send halt to VM
+echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
+sudo "${res_folder}"/bin/corectl halt k8solo-01
+
+sleep 2
+
+# Start VM
+cd ~/kube-solo
+echo " "
+echo "Starting VM ..."
+echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
+sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml
+echo " "
+
+# get VM's IP
+vm_ip=$(<~/kube-solo/.env/ip_address)
 
 # set fleetctl endpoint
 export FLEETCTL_ENDPOINT=http://$vm_ip:2379
@@ -60,6 +46,10 @@ echo "Waiting for VM to be ready..."
 spin='-\|/'
 i=1
 until curl -o /dev/null http://$vm_ip:2379 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+echo " "
+#
+
+sleep 2
 
 #
 echo " "

@@ -17,9 +17,7 @@ vm_ip=$(cat ~/kube-solo/.env/ip_address)
 export PATH=${HOME}/kube-solo/bin:$PATH
 
 # copy files to ~/kube-solo/bin
-cp -f "${res_folder}"/files/* ~/kube-solo/bin
-# copy xhyve to bin folder
-cp -f "${res_folder}"/bin/xhyve ~/kube-solo/bin
+cp -f "${res_folder}"/bin/* ~/kube-solo/bin
 chmod 755 ~/kube-solo/bin/*
 
 # download latest version of k8s files
@@ -38,10 +36,13 @@ export FLEETCTL_ENDPOINT=http://$vm_ip:2379
 export FLEETCTL_DRIVER=etcd
 export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
 cd ~/kube-solo/fleet
-~/kube-solo/bin/fleetctl stop *.service
+~/kube-solo/bin/fleetctl stop kube-apiserver.service
+~/kube-solo/bin/fleetctl stop kube-controller-manager.service
+~/kube-solo/bin/fleetctl stop kube-scheduler.service
+~/kube-solo/bin/fleetctl stop kube-kubelet.service
+~/kube-solo/bin/fleetctl stop kube-proxy.service
 echo " "
 sleep 5
-~/kube-solo/bin/fleetctl start fleet-ui.service
 ~/kube-solo/bin/fleetctl start kube-apiserver.service
 ~/kube-solo/bin/fleetctl start kube-controller-manager.service
 ~/kube-solo/bin/fleetctl start kube-scheduler.service

@@ -17,12 +17,10 @@ vm_ip=$(cat ~/kube-solo/.env/ip_address)
 export PATH=${HOME}/kube-solo/bin:$PATH
 
 # copy files to ~/kube-solo/bin
-cp -f "${res_folder}"/files/* ~/kube-solo/bin
-# copy xhyve to bin folder
-cp -f "${res_folder}"/bin/xhyve ~/kube-solo/bin
+cp -f "${res_folder}"/bin/* ~/kube-solo/bin
 chmod 755 ~/kube-solo/bin/*
 
-# download latest version of fleetctl client
+# download latest version of fleetctl and helm clients
 download_osx_clients
 #
 

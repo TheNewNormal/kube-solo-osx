@@ -1,0 +1,8 @@
+[k8solo-01]
+   uuid = "90394897-5956-4F9D-AFC4-E274C45DAB31"
+   channel = "alpha"
+   volume = "root.img"
+   cloud_config = "cloud-init/user-data-format-root"
+   cpus = 1
+   memory = "1024"
+   local = "true"

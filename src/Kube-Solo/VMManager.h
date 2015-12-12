@@ -27,7 +27,6 @@ typedef NS_ENUM(NSInteger, VMStatus) {
 - (void)changeReleaseChannel;
 - (void)destroy;
 - (void)install;
-- (void)attachConsole;
 - (void)runShell;
 - (void)runSSH;
 

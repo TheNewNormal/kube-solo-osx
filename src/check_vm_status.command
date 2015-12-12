@@ -6,7 +6,8 @@
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
-status=$(ps aux | grep "[k]ube-solo/bin/xhyve" | awk '{print $2}')
+# check VM status
+status=$("${res_folder}"/bin/corectl ps 2>&1 | grep "[k]8solo-01")
 
 if [ "$status" = "" ]; then
     echo -n "VM is stopped"

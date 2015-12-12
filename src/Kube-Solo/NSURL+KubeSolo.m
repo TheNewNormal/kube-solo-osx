@@ -19,7 +19,7 @@
 }
 
 + (instancetype)ks_resourcePathURL {
-    return [[self ks_envURL] URLByAppendingPathComponent:@"resouce_path"];
+    return [[self ks_envURL] URLByAppendingPathComponent:@"resouces_path"];
 }
 
 + (instancetype)ks_appVersionURL {

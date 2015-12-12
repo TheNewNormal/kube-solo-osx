@@ -9,17 +9,6 @@ function pause(){
     read -p "$*"
 }
 
-function check_vm_status() {
-# check VM status
-status=$(ps aux | grep "[k]ube-solo/bin/xhyve" | awk '{print $2}')
-if [ "$status" = "" ]; then
-    echo " "
-    echo "CoreOS VM is not running, please start VM !!!"
-    pause "Press any key to continue ..."
-    exit 1
-fi
-}
-
 
 function release_channel(){
 # Set release channel
@@ -41,8 +30,8 @@ do
     if [ $RESPONSE = 1 ]
     then
         VALID_MAIN=1
-        sed -i "" "s/CHANNEL=stable/CHANNEL=alpha/" ~/kube-solo/custom.conf
-        sed -i "" "s/CHANNEL=beta/CHANNEL=alpha/" ~/kube-solo/custom.conf
+        sed -i "" 's/channel = "stable"/channel = "alpha"/g' ~/kube-solo/settings/*.toml
+        sed -i "" 's/channel = "beta"/channel = "alpha"/g' ~/kube-solo/settings/*.toml
         channel="Alpha"
         LOOP=0
     fi
@@ -50,8 +39,8 @@ do
     if [ $RESPONSE = 2 ]
     then
         VALID_MAIN=1
-        sed -i "" "s/CHANNEL=alpha/CHANNEL=beta/" ~/kube-solo/custom.conf
-        sed -i "" "s/CHANNEL=stable/CHANNEL=beta/" ~/kube-solo/custom.conf
+        sed -i "" 's/channel = "stable"/channel = "beta"/g' ~/kube-solo/settings/*.toml
+        sed -i "" 's/channel = "alpha"/channel = "beta"/g' ~/kube-solo/settings/*.toml
         channel="Beta"
         LOOP=0
     fi
@@ -59,8 +48,8 @@ do
     if [ $RESPONSE = 3 ]
     then
         VALID_MAIN=1
-        sed -i "" "s/CHANNEL=alpha/CHANNEL=stable/" ~/kube-solo/custom.conf
-        sed -i "" "s/CHANNEL=beta/CHANNEL=stable/" ~/kube-solo/custom.conf
+        sed -i "" 's/channel = "beta"/channel = "stable"/g' ~/kube-solo/settings/*.toml
+        sed -i "" 's/channel = "alpha"/channel = "stable"/g' ~/kube-solo/settings/*.toml
         channel="Stable"
         LOOP=0
     fi
@@ -74,58 +63,63 @@ done
 
 
 create_root_disk() {
-
-# Get password
-my_password=$(security find-generic-password -wa kube-solo-app)
-echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
+# path to the bin folder where we store our binary files
+export PATH=${HOME}/kube-solo/bin:$PATH
 
 # create persistent disk
 cd ~/kube-solo/
 echo "  "
 echo "Please type ROOT disk size in GBs followed by [ENTER]:"
-echo -n [default is 5]:
+echo -n "[default is 5]: "
 read disk_size
 if [ -z "$disk_size" ]
 then
+    echo " "
     echo "Creating 5GB disk ..."
     dd if=/dev/zero of=root.img bs=1024 count=0 seek=$[1024*5120]
 else
-    echo "Creating "$disk_size"GB disk ..."
+    echo " "
+    echo "Creating "$disk_size"GB disk (it could take a while for big disks)..."
     dd if=/dev/zero of=root.img bs=1024 count=0 seek=$[1024*$disk_size*1024]
 fi
 echo " "
 #
 
 ### format ROOT disk
-# Start webserver
-cd ~/kube-solo/cloud-init
-"${res_folder}"/bin/webserver start
 
-# Start VM
-echo "Waiting for VM to boot up for ROOT disk to be formated ... "
-echo " "
-cd ~/kube-solo
-export XHYVE=~/kube-solo/bin/xhyve
+# Get password
+my_password=$(security find-generic-password -wa kube-solo-app)
+# reset sudo
+sudo -k > /dev/null 2>&1
+#
+echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
+#
+echo "Formating k8solo-01 ROOT disk ..."
 
-# enable format mode
-sed -i "" "s/user-data/user-data-format-root/" ~/kube-solo/custom.conf
-sed -i "" "s/ROOT_HDD=/#ROOT_HDD=/" ~/kube-solo/custom.conf
-sed -i "" "s/#IMG_HDD=/IMG_HDD=/" ~/kube-solo/custom.conf
-#
-"${res_folder}"/bin/coreos-xhyve-run -f custom.conf kube-solo
-#
-# disable format mode
-sed -i "" "s/user-data-format-root/user-data/" ~/kube-solo/custom.conf
-sed -i "" "s/IMG_HDD=/#IMG_HDD=/" ~/kube-solo/custom.conf
-sed -i "" "s/#ROOT_HDD=/ROOT_HDD=/" ~/kube-solo/custom.conf
-#
+## start VM
+# get UUID
+UUID=$(cat ~/kube-solo/settings/k8solo-01.toml | grep "uuid =" | sed -e 's/uuid = "\(.*\)"/\1/' | tr -d ' ')
+# cleanup
+rm -rf ~/.coreos/running/$UUID
+# start VM
+sudo "${res_folder}"/bin/corectl load settings/format-root.toml 2>&1 | grep IP | awk -v FS="(IP | and)" '{print $2}' | tr -d "\n" > ~/kube-solo/.env/ip_address
+spin='-\|/'
+i=1
+#while [[ "$('${res_folder}'/bin/corectl ps 2>&1 | grep '[k]8solo-01')" != "" ]]
+while [[ "$(corectl ps 2>&1 | grep '[k]8solo-01')" != "" ]]
+do
+    printf "\r${spin:$i:1}"
+    sleep .1
+done
+
+sleep 2
+
+# cleanup
+rm -rf ~/.coreos/running/$UUID
+
 echo " "
 echo "ROOT disk got created and formated... "
 echo "---"
-###
-
-# Stop webserver
-"${res_folder}"/bin/webserver stop
 
 }
 
@@ -212,7 +206,7 @@ echo "Bear in mind if the version you want is lower than the currently installed
 echo "Kubernetes cluster migth not work, so you will need to destroy the cluster first "
 echo " and boot VM again !!! "
 echo " "
-echo "Please type Kubernetes version you want to be installed e.g. v1.1.1"
+echo "Please type Kubernetes version you want to be installed e.g. v1.1.1 or v1.2.0-alpha.4"
 echo "followed by [ENTER] or CMD + W to exit:"
 read K8S_VERSION
 
@@ -231,30 +225,31 @@ fi
 cd ~/kube-solo/tmp
 echo " "
 echo "Downloading Kubernetes $K8S_VERSION tar.gz from github ..."
-curl -k -L https://github.com/kubernetes/kubernetes/releases/download/$K8S_VERSION/kubernetes.tar.gz >  ~/kube-solo/tmp/kubernetes.tar.gz
-mkdir kube
+curl -k -L https://github.com/kubernetes/kubernetes/releases/download/$K8S_VERSION/kubernetes.tar.gz >  kubernetes.tar.gz
 
 # download setup-network-environment binary
 echo "Downloading setup-network-environment from github ..."
-curl -L https://github.com/kelseyhightower/setup-network-environment/releases/download/1.0.1/setup-network-environment > ~/kube-solo/tmp/kube/setup-network-environment
+curl -L https://github.com/kelseyhightower/setup-network-environment/releases/download/1.0.1/setup-network-environment > setup-network-environment
+chmod 755 setup-network-environment
 #
 # extracting Kubernetes files
 echo "Extracting Kubernetes $K8S_VERSION files ..."
 tar xvf  kubernetes.tar.gz --strip=4 kubernetes/platforms/darwin/amd64/kubectl
 mv -f kubectl ~/kube-solo/kube
+chmod 755 ~/kube-solo/kube/kubectl
 #
 tar xvf kubernetes.tar.gz --strip=2 kubernetes/server/kubernetes-server-linux-amd64.tar.gz
 bins=( kubectl kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
 for b in "${bins[@]}"; do
-    tar xvf kubernetes-server-linux-amd64.tar.gz -C ~/kube-solo/tmp/kube --strip=3 kubernetes/server/bin/$b
+    tar xvf kubernetes-server-linux-amd64.tar.gz -C ~/kube-solo/tmp --strip=3 kubernetes/server/bin/$b
 done
+rm -f kubernetes.tar.gz
+rm -f kubernetes-server-linux-amd64.tar.gz
 #
-chmod a+x kube/*
+curl -L https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz > easy-rsa.tar.gz
 #
-curl -L https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz > ~/kube-solo/tmp/easy-rsa.tar.gz
-#
-tar czvf kube.tgz -C kube .
-cp -f kube.tgz ~/kube-solo/kube/
+tar czvf kube.tgz *
+mv -f kube.tgz ~/kube-solo/kube/
 # clean up tmp folder
 rm -rf ~/kube-solo/tmp/*
 echo " "
@@ -265,20 +260,6 @@ vm_ip=$(cat ~/kube-solo/.env/ip_address)
 # install k8s files
 install_k8s_files
 
-}
-
-
-function check_for_images() {
-# Check if set channel's images are present
-CHANNEL=$(cat ~/kube-solo/custom.conf | grep CHANNEL= | head -1 | cut -f2 -d"=")
-LATEST=$(ls -r ~/kube-solo/imgs/${CHANNEL}.*.vmlinuz | head -n 1 | sed -e "s,.*${CHANNEL}.,," -e "s,.coreos_.*,," )
-if [[ -z ${LATEST} ]]; then
-    echo "Couldn't find anything to load locally (${CHANNEL} channel)."
-    echo "Fetching lastest $CHANNEL channel ISO ..."
-    echo " "
-    cd ~/kube-solo/
-    "${res_folder}"/bin/coreos-xhyve-fetch -f custom.conf
-fi
 }
 
 
@@ -301,13 +282,21 @@ echo " "
 
 
 function install_k8s_files {
+# get App's Resources folder
+res_folder=$(cat ~/kube-solo/.env/resouces_path)
+
+# get VM IP
+vm_ip=$(cat ~/kube-solo/.env/ip_address);
+
 # install k8s files on to VM
 echo " "
 echo "Installing Kubernetes files on to VM..."
 cd ~/kube-solo/kube
 scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet kube.tgz core@$vm_ip:/home/core
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet core@$vm_ip 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet core@$vm_ip 'sudo /usr/bin/mkdir -p /opt/tmp && sudo mv /opt/bin/easy-rsa.tar.gz /opt/tmp'
+###"${res_folder}"/bin/corectl scp kube.tgz k8solo-01:/home/core/
+"${res_folder}"/bin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
+"${res_folder}"/bin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /opt/tmp && sudo mv /opt/bin/easy-rsa.tar.gz /opt/tmp'
+
 echo "Done with k8solo-01 "
 echo " "
 }
@@ -377,28 +366,28 @@ security add-generic-password -a kube-solo-app -s kube-solo-app -w $my_password 
 
 
 function clean_up_after_vm {
-sleep 3
+sleep 1
 
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
-# Get password
+# path to the bin folder where we store our binary files
+export PATH=${HOME}/kube-solo/bin:$PATH
+
+# get App's Resources folder
+res_folder=$(cat ~/kube-solo/.env/resouces_path)
+
+# get password for sudo
 my_password=$(security find-generic-password -wa kube-solo-app)
+# reset sudo
+sudo -k
+# enable sudo
+echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
 
-# Stop webserver
-kill $(ps aux | grep "[k]ube-solo-web" | awk {'print $2'})
-
-# kill all kube-solo/bin/xhyve instances
-# ps aux | grep "[k]ube-solo/bin/xhyve" | awk '{print $2}' | sudo -S xargs kill | echo -e "$my_password\n"
-echo -e "$my_password\n" | sudo -S pkill -f [k]ube-solo/bin/xhyve
-#
-echo -e "$my_password\n" | sudo -S pkill -f "${res_folder}"/bin/uuid2mac
+# send halt to VM
+sudo "${res_folder}"/bin/corectl halt k8solo-01
 
 # kill all other scripts
-pkill -f [K]ube-Solo.app/Contents/Resources/start_VM.command
-pkill -f [K]ube-Solo.app/Contents/Resources/bin/get_ip
-pkill -f [K]ube-Solo.app/Contents/Resources/bin/get_mac
-pkill -f [K]ube-Solo.app/Contents/Resources/bin/mac2ip
 pkill -f [K]ube-Solo.app/Contents/Resources/fetch_latest_iso.command
 pkill -f [K]ube-Solo.app/Contents/Resources/update_k8s.command
 pkill -f [K]ube-Solo.app/Contents/Resources/update_osx_clients_files.command
@@ -406,18 +395,4 @@ pkill -f [K]ube-Solo.app/Contents/Resources/change_release_channel.command
 
 }
 
-
-function kill_xhyve {
-sleep 3
-
-# get App's Resources folder
-res_folder=$(cat ~/kube-solo/.env/resouces_path)
-
-# Get password
-my_password=$(security find-generic-password -wa kube-solo-app)
-
-# kill all kube-solo/bin/xhyve instances
-echo -e "$my_password\n" | sudo -S pkill -f [k]ube-solo/bin/xhyve
-
-}
 

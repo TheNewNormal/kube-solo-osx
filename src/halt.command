@@ -1,7 +1,6 @@
 #!/bin/bash
 
 #  halt.command
-# stop VM via ssh
 
 #
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -10,12 +9,15 @@ source "${DIR}"/functions.sh
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
-# get VM IP
-#vm_ip=$( ~/kube-solo/mac2ip.sh $(cat ~/kube-solo/.env/mac_address))
-vm_ip=$(cat ~/kube-solo/.env/ip_address)
+# path to the bin folder where we store our binary files
+export PATH=${HOME}/kube-solo/bin:$PATH
+
+# get password for sudo
+my_password=$(security find-generic-password -wa kube-solo-app)
+# reset sudo
+sudo -k
+# enable sudo
+echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
 
 # send halt to VM
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ConnectTimeout=5 core@$vm_ip sudo halt
-
-# just in case run
-clean_up_after_vm
+sudo "${res_folder}"/bin/corectl halt k8solo-01

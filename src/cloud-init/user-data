@@ -1,0 +1,189 @@
+#cloud-config
+
+hostname: k8solo-01
+
+coreos:
+  update:
+    reboot-strategy: off
+  etcd2:
+    name: k8solo-01
+    initial-advertise-peer-urls: http://127.0.0.1:2380
+    initial-cluster-token: k8solo-01_etcd
+    initial-cluster: k8solo-01=http://127.0.0.1:2380
+    initial-cluster-state: new
+    listen-peer-urls: http://0.0.0.0:2380,http://0.0.0.0:7001
+    listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
+    advertise-client-urls:  http://0.0.0.0:2379,http://0.0.0.0:4001
+  units:
+    - name: etcd2.service
+      command: start
+    - name: fleet.service
+      command: start
+    - name: flanneld.service
+      command: start
+      drop-ins:
+      - name: 50-network-config.conf
+        content: |
+          [Unit]
+          Requires=etcd2.service
+          [Service]
+          ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network": "10.244.0.0/16", "SubnetLen": 24, "SubnetMin": "10.244.0.0", "Backend": {"Type": "vxlan"}}'
+    - name: docker-tcp.socket
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=Docker Socket for the API
+
+        [Socket]
+        ListenStream=2375
+        BindIPv6Only=both
+        Service=docker.service
+
+        [Install]
+        WantedBy=sockets.target
+    - name: docker.service
+      command: start
+      drop-ins:
+        - name: 50-insecure-registry.conf
+          content: |
+            [Unit]
+            Requires=flanneld.service
+            [Service]
+            Environment=DOCKER_OPTS='--insecure-registry="0.0.0.0/0"'
+    - name: update-engine.service
+      command: stop
+    - name: setup-network-environment.service
+      command: start
+      content: |
+        [Unit]
+        Description=Setup Network Environment
+        Documentation=https://github.com/kelseyhightower/setup-network-environment
+        Requires=network-online.target
+        After=network-online.target
+        [Service]
+        ExecStartPre=/bin/sh -c "while [ ! -f /opt/bin/setup-network-environment ]; do sleep 1; done"
+        ExecStart=/opt/bin/setup-network-environment
+        RemainAfterExit=yes
+        Type=oneshot
+    - name: kube-certs.service
+      command: start
+      content: |
+        [Unit]
+        Description=Generate Kubernetes API Server certificates
+        ConditionPathExists=/opt/bin/make-certs.sh
+        Requires=network-online.target setup-network-environment.service
+        After=network-online.target setup-network-environment.service
+        [Service]
+        EnvironmentFile=/etc/network-environment
+        ExecStartPre=/bin/sh -c "while [ ! -f /opt/tmp/easy-rsa.tar.gz ]; do sleep 1; done"
+        ExecStartPre=-/usr/sbin/groupadd -r kube-cert
+        ExecStartPre=/usr/bin/chmod 755 /opt/bin/make-certs.sh
+        ExecStart=/opt/bin/make-certs.sh ${DEFAULT_IPV4} IP:${DEFAULT_IPV4},IP:10.100.0.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local
+        Type=oneshot
+        RemainAfterExit=true
+write-files:
+ - path: /home/core/.ssh/id_rsa
+   permissions: '0600'
+   owner: core:core
+   content: |
+     -----BEGIN RSA PRIVATE KEY-----
+     MIIEowIBAAKCAQEA18VKh3nRpHTOC+AAyg+YB1P0SSISR/2TjHG89c7ZhPTGCXr5
+     P60H5vU/YOrV8sQR542inDwxfAvhn86yHe/w8dX/g4krNDB+0NFL1fbQ9BktGsao
+     Apg5bWMGjBgVTp8WJlDfW7zYqJQu/wjZ90oz6EpL4+DhzAn/W0JUXWiFgCUpKDHJ
+     zZIZzebywLcJ/8jngMhxpae9OSDIkR9i5QNkeqLZhR0kB65Bq/8KbtFibduxAUyG
+     qxXnou3QB5VH9c4Ura8vzhMqsBCohKPuH5OLz2V4jcijZJY7vyNahXG3PB8Gw1c0
+     7XZUAlEUDuJaLA5kIBXSOMM9X5Tjq7Cvtfrz2wIDAQABAoIBAC3R0pLUVqWCvGKf
+     Leu6xgEAXgbNum4ZNiUD3imgxGZMiGVo/Nb9yojMGapeFBLaeibe1+Ivkh6Sc1Y5
+     UW+0DUl9tSXckhUiGzwCxgToxdSgKAjgmLr8Um2dMr27O4MXm1+FmvjjMGsUFKrJ
+     2Wd/FWjFpjn8/lYS5WweuMWhNYBRf8lwA4VdjU/pnlPDro8PqMysf4h+tRw26nJb
+     NXzqzJ5zQGfBJ0wIYuZSa25SF9l9gRWEUM/KxL36S/SpwuXSdBv/GtqKB21ogyOn
+     S3UZZjfTlkX0KvaLG0eVXptSRjqSJbZkzBbDX1WsBEJIvV1XqeJcptNtO6Ez7Kou
+     NqE4cfkCgYEA/IX2AZCLBmCfYsQm1M6WaQ/hgaWFrcimr/huNbASuc3fE4e5vFSR
+     Dh6jFikDg5t6Q8nUTySpRXovCHEfnvYFrS5s4tPOe/2JqBwK63KqjpeC/JPNGC1E
+     sXPEttiFo49kkTOOh1ImCbqHJT2EIPEIuXE3RUXlTk/+MwOwYL2HaHUCgYEA2r3K
+     5O1gf7Cfws3lRxOdS+eK+m4z8oF92tcX7sEVphJTG6wqRR0z2Llj8SsyGbFWSYfK
+     zalFkk66zr55MzTrOhJ35+LyJUx+IBAcYkQLTtTsp54JlJ8CMD1EcRPASYTg3L8R
+     Rf8+cgfcSslBiL/nyhnTN0hmyjVJp7ucvbep4Q8CgYEAhFn99xH4G86WmyBtrcnd
+     QZGGQvorF0t8Oey+brsrBWFmkwjnC1NTd5ANMDcs1VSu/0qQUS7I3VZNwmHwDdOq
+     Y/taLISQy6G1/Xs9Kew+gl/c0l7w9sP7JfqkVqUjXfdw4T2hbUFcGGtAG/+i+dT7
+     Gp7BNjiNF7+LXteHIR0VFGUCgYAaMorfOhLJmDS6FwCzr4SyN4vsjFBKZfnVwNcL
+     8DIQjrdHZCo31tSDy0hN9PduHlAQRGQkl3ZOnIFBC4zmdhsJ/HZB3mtTzkJ4wpUz
+     q6STD2s8c+//zb9sWZod1Ni9tV1c8sE12ej3rTtT9aCUqS8whEFIqLIu24zzusN9
+     8UY2PwKBgHWyekUzaQRcteEYsCWsl9KeX777EdtbK6bGh5JlD9rK5YVK3Ogq24Ts
+     9+yKbdYPv6KjXbAnb3ywDeifIx9vna+4jtXZ8cUuZQcj4nmBtKfeaxZeN7OlHv0d
+     LwDeOM4DDptEENhfzc0sPYHyGqUsfH6c4kq5KwtDAoY9MCS5/dGN
+     -----END RSA PRIVATE KEY-----
+ - path: /home/core/.ssh/id_rsa.pub
+   permissions: '0600'
+   owner: core:core
+   content: |
+     ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXxUqHedGkdM4L4ADKD5gHU/RJIhJH/ZOMcbz1ztmE9MYJevk/rQfm9T9g6tXyxBHnjaKcPDF8C+GfzrId7/Dx1f+DiSs0MH7Q0UvV9tD0GS0axqgCmDltYwaMGBVOnxYmUN9bvNiolC7/CNn3SjPoSkvj4OHMCf9bQlRdaIWAJSkoMcnNkhnN5vLAtwn/yOeAyHGlp705IMiRH2LlA2R6otmFHSQHrkGr/wpu0WJt27EBTIarFeei7dAHlUf1zhStry/OEyqwEKiEo+4fk4vPZXiNyKNklju/I1qFcbc8HwbDVzTtdlQCURQO4losDmQgFdI4wz1flOOrsK+1+vPb core@k8solo-01
+ - path: /opt/bin/wupiao
+   permissions: '0755'
+   content: |
+      #!/bin/bash
+      # [w]ait [u]ntil [p]ort [i]s [a]ctually [o]pen
+      [ -n "$1" ] && \
+        until curl -o /dev/null -sIf http://${1}; do \
+          sleep 1 && echo .;
+        done;
+      exit $?
+ - path: /opt/bin/make-certs.sh
+   permissions: '0755'
+   content: |
+      #!/bin/sh -
+
+      # Copyright 2014 The Kubernetes Authors All rights reserved.
+      #
+
+      set -o errexit
+      set -o nounset
+      set -o pipefail
+
+      cert_ip=$1
+      extra_sans=${2:-}
+      cert_dir=/srv/kubernetes
+      cert_group=kube-cert
+
+      mkdir -p "$cert_dir"
+
+      use_cn=false
+
+      sans="IP:${cert_ip}"
+      if [[ -n "${extra_sans}" ]]; then
+        sans="${sans},${extra_sans}"
+      fi
+
+      tmpdir=$(mktemp -d --tmpdir kubernetes_cacert.XXXXXX)
+      trap 'rm -rf "${tmpdir}"' EXIT
+      #
+      if [ ! -f /opt/tmp/easy-rsa.tar.gz ]
+      then
+         curl -L -O https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz > /dev/null 2>&1
+         tar xzf easy-rsa.tar.gz > /dev/null 2>&1
+      else
+         tar xzf /opt/tmp/easy-rsa.tar.gz > /dev/null 2>&1
+      fi
+
+      cd easy-rsa-master/easyrsa3
+      ./easyrsa init-pki > /dev/null 2>&1
+      ./easyrsa --batch "--req-cn=$cert_ip@`date +%s`" build-ca nopass > /dev/null 2>&1
+      if [ $use_cn = "true" ]; then
+          ./easyrsa build-server-full $cert_ip nopass > /dev/null 2>&1
+          cp -p pki/issued/$cert_ip.crt "${cert_dir}/server.cert" > /dev/null 2>&1
+          cp -p pki/private/$cert_ip.key "${cert_dir}/server.key" > /dev/null 2>&1
+      else
+          ./easyrsa --subject-alt-name="${sans}" build-server-full kubernetes-master nopass > /dev/null 2>&1
+          cp -p pki/issued/kubernetes-master.crt "${cert_dir}/server.cert" > /dev/null 2>&1
+          cp -p pki/private/kubernetes-master.key "${cert_dir}/server.key" > /dev/null 2>&1
+      fi
+      ./easyrsa build-client-full kubecfg nopass > /dev/null 2>&1
+      cp -p pki/ca.crt "${cert_dir}/ca.crt"
+      cp -p pki/issued/kubecfg.crt "${cert_dir}/kubecfg.crt"
+      cp -p pki/private/kubecfg.key "${cert_dir}/kubecfg.key"
+      # Make server certs accessible to apiserver.
+      echo 3
+      chgrp $cert_group "${cert_dir}/server.key" "${cert_dir}/server.cert" "${cert_dir}/ca.crt"
+      chmod 660 "${cert_dir}/server.key" "${cert_dir}/server.cert" "${cert_dir}/ca.crt"
+      echo 4
