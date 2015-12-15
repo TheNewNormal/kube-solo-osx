@@ -35,7 +35,8 @@ echo "   sshkey = '$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/settings/k8solo
 echo "   sshkey = '$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/settings/format-root.toml
 #
 
-##ssh-add ~/.ssh/id_rsa.pub &>/dev/null
+# add ssh key to Keychain
+ssh-add -K ~/.ssh/id_rsa &>/dev/null
 
 # save user's password to Keychain
 save_password

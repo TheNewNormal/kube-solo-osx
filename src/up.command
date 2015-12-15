@@ -13,8 +13,8 @@ res_folder=$(cat ~/kube-solo/.env/resouces_path)
 # path to the bin folder where we store our binary files
 export PATH=${HOME}/kube-solo/bin:$PATH
 
-##eval `ssh-agent` &>/dev/null
-##ssh-add ~/.ssh/id_rsa.pub &>/dev/null
+# add ssh key to Keychain
+ssh-add -K ~/.ssh/id_rsa &>/dev/null
 
 # check if iTerm.app exists
 App="/Applications/iTerm.app"

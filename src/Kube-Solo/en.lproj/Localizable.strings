@@ -45,4 +45,4 @@
 "SetupAlertInformativeText" = " 'Initial setup of Kube-Solo' at any time later one !!! ";
 "HomeFolderExistsAlertInformativeText" = "Folder %@ exists, please delete or rename that folder !!!";
 "AboutAlertMessage" = "Kube-Solo for OS X v%@";
-"AboutInformativeText" = "It is a simple wrapper around xhyve + CoreOS VM, which allows to control Kube-Solo via Status Bar !!!";
+"AboutInformativeText" = "It is a simple wrapper around corectl + CoreOS VM, which allows to control Kube-Solo via Status Bar !!!";

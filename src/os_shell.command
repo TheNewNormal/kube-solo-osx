@@ -5,7 +5,8 @@
 ###DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 ###source "${DIR}"/functions.sh
 
-##ssh-add ~/.ssh/id_rsa.pub &>/dev/null
+# add ssh key to Keychain
+ssh-add -K ~/.ssh/id_rsa &>/dev/null
 
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)

@@ -292,8 +292,8 @@ vm_ip=$(cat ~/kube-solo/.env/ip_address);
 echo " "
 echo "Installing Kubernetes files on to VM..."
 cd ~/kube-solo/kube
-scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet kube.tgz core@$vm_ip:/home/core
-###"${res_folder}"/bin/corectl scp kube.tgz k8solo-01:/home/core/
+###scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet kube.tgz core@$vm_ip:/home/core
+"${res_folder}"/bin/corectl scp kube.tgz k8solo-01:/home/core/
 "${res_folder}"/bin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
 "${res_folder}"/bin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /opt/tmp && sudo mv /opt/bin/easy-rsa.tar.gz /opt/tmp'
 
