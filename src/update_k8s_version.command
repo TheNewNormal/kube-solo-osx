@@ -73,6 +73,9 @@ echo "k8s nodes list:"
 ~/kube-solo/bin/kubectl get nodes
 echo " "
 #
+echo "Cluster info:"
+~/kube-solo/bin/kubectl cluster-info
+echo " "
 
-echo "Kubernetes update has finished !!!"
+echo "Kubernetes cluster update has finished !!!"
 pause 'Press [Enter] key to continue...'

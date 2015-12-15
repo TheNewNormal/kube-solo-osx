@@ -168,16 +168,18 @@ echo " "
 # clean up tmp folder
 rm -rf ~/kube-solo/tmp/*
 
-# download setup-network-environment binary
-echo "Downloading setup-network-environment"
-curl -L https://github.com/kelseyhightower/setup-network-environment/releases/download/1.0.1/setup-network-environment > ~/kube-solo/tmp/setup-network-environment
-#
 # download latest version of k8s for CoreOS
-echo "Downloading latest version of Kubernetes"
+echo "Downloading Kubernetes $K8S_VERSION"
 bins=( kubectl kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
 for b in "${bins[@]}"; do
     curl -k -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/$b > ~/kube-solo/tmp/$b
 done
+#
+# download setup-network-environment binary
+echo "Downloading setup-network-environment"
+curl -L https://github.com/kelseyhightower/setup-network-environment/releases/download/1.0.1/setup-network-environment > ~/kube-solo/tmp/setup-network-environment
+#
+chmod 755 ~/kube-solo/tmp/*
 #
 curl -L https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz > ~/kube-solo/tmp/easy-rsa.tar.gz
 #
@@ -186,9 +188,6 @@ cp -f kube.tgz ~/kube-solo/kube/
 # clean up tmp folder
 rm -rf ~/kube-solo/tmp/*
 echo " "
-
-# get VM IP
-vm_ip=$(cat ~/kube-solo/.env/ip_address)
 
 # install k8s files
 install_k8s_files
@@ -253,9 +252,6 @@ mv -f kube.tgz ~/kube-solo/kube/
 # clean up tmp folder
 rm -rf ~/kube-solo/tmp/*
 echo " "
-
-# get VM IP
-vm_ip=$(cat ~/kube-solo/.env/ip_address)
 
 # install k8s files
 install_k8s_files
