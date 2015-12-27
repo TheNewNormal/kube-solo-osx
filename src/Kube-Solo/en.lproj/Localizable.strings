@@ -27,6 +27,7 @@
 "ClientsWillBeUpdatedNotificationMessage" = "OS X clients will be updated";
 "ISOImageWillBeUpdatedNotificationMessage" = "CoreOS ISO image will be updated";
 "ReleaseChannelChangeNotificationMessage" = "CoreOS release channel change";
+"SudoPasswordChangeNotificationMessage" = "sudo password change";
 "SSHShellWillOpenNotificationMessage" = "VM ssh shell will be opened";
 "ShellWillOpenNotificationMessage" = "OS X shell will be opened";
 "ConsoleWillOpenNotificationMessage" = "VM's console will be opened";

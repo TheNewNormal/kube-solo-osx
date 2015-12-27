@@ -192,6 +192,13 @@
     [self.vmManager changeReleaseChannel];
 }
 
+
+- (IBAction)changeSudoPassword:(id)sender {
+    [self notifyUserWithText:NSLocalizedString(@"SudoPasswordChangeNotificationMessage", nil)];
+    [self.vmManager changeSudoPassword];
+}
+
+
 - (IBAction)destroy:(id)sender {
     [self notifyUserWithText:NSLocalizedString(@"VMStateWillDestroy", nil)];
     [self.vmManager destroy];
@@ -205,6 +212,7 @@
             break;
     }
 }
+
 
 - (IBAction)initialInstall:(id)sender {
     BOOL isDir;

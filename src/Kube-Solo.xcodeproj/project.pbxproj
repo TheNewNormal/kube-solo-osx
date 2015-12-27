@@ -34,6 +34,7 @@
 		1329DEB51BD4FB5F008AA719 /* up.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEAA1BD4FB5F008AA719 /* up.command */; };
 		1329DEB61BD4FB5F008AA719 /* update_osx_clients_files.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEAB1BD4FB5F008AA719 /* update_osx_clients_files.command */; };
 		1329DEB81BD526A3008AA719 /* update_k8s.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEB71BD526A3008AA719 /* update_k8s.command */; };
+		1347C2F91C30570D0083CDF9 /* change_sudo_password.command in Resources */ = {isa = PBXBuildFile; fileRef = 1347C2F81C30570D0083CDF9 /* change_sudo_password.command */; };
 		13BCE1C01BEBC0BD00A1A48E /* update_k8s_version.command in Resources */ = {isa = PBXBuildFile; fileRef = 13BCE1BF1BEBC0BD00A1A48E /* update_k8s_version.command */; };
 		13FE22171C1C40C700F465F1 /* bin in Resources */ = {isa = PBXBuildFile; fileRef = 13FE22161C1C40C700F465F1 /* bin */; };
 		13FE22191C1C410100F465F1 /* cloud-init in Resources */ = {isa = PBXBuildFile; fileRef = 13FE22181C1C410100F465F1 /* cloud-init */; };
@@ -79,6 +80,7 @@
 		1329DEAA1BD4FB5F008AA719 /* up.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = up.command; sourceTree = "<group>"; };
 		1329DEAB1BD4FB5F008AA719 /* update_osx_clients_files.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = update_osx_clients_files.command; sourceTree = "<group>"; };
 		1329DEB71BD526A3008AA719 /* update_k8s.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = update_k8s.command; sourceTree = "<group>"; };
+		1347C2F81C30570D0083CDF9 /* change_sudo_password.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = change_sudo_password.command; sourceTree = "<group>"; };
 		13BCE1BF1BEBC0BD00A1A48E /* update_k8s_version.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = update_k8s_version.command; sourceTree = "<group>"; };
 		13FE22161C1C40C700F465F1 /* bin */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bin; sourceTree = SOURCE_ROOT; };
 		13FE22181C1C410100F465F1 /* cloud-init */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "cloud-init"; sourceTree = SOURCE_ROOT; };
@@ -193,6 +195,7 @@
 				1329DEA51BD4FB5F008AA719 /* functions.sh */,
 				1329DEA11BD4FB5F008AA719 /* check_vm_status.command */,
 				011BBA3A1A2A842A00AAB35B /* change_release_channel.command */,
+				1347C2F81C30570D0083CDF9 /* change_sudo_password.command */,
 				1329DEA31BD4FB5F008AA719 /* destroy.command */,
 				019410671BE11DFA00723E19 /* kill_VM.command */,
 				1329DEA81BD4FB5F008AA719 /* ssh.command */,
@@ -297,6 +300,7 @@
 				01E2855418A6C4E300BC630D /* MainMenu.xib in Resources */,
 				01F0282C1A7C54C8008C37AA /* os_shell.command in Resources */,
 				1329DEB61BD4FB5F008AA719 /* update_osx_clients_files.command in Resources */,
+				1347C2F91C30570D0083CDF9 /* change_sudo_password.command in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

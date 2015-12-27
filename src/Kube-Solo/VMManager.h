@@ -25,6 +25,7 @@ typedef NS_ENUM(NSInteger, VMStatus) {
 - (void)updateClients;
 - (void)updateISO;
 - (void)changeReleaseChannel;
+- (void)changeSudoPassword;
 - (void)destroy;
 - (void)install;
 - (void)runShell;

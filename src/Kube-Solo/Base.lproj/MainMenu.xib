@@ -752,13 +752,20 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="2qm-xK-2AI"/>
+                            <menuItem title="Change 'sudo' password" id="YJ4-BU-RHT">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="changeSudoPassword:" target="494" id="zih-wE-heQ"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="IpY-jd-Luh"/>
                             <menuItem title="Destroy Kube-Solo VM" id="FxG-t4-gXU">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="destroy:" target="494" id="Jew-dm-MAW"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="IpY-jd-Luh"/>
+                            <menuItem isSeparatorItem="YES" id="iDa-Hf-lxm"/>
                             <menuItem title="Initial setup of Kube-Solo VM" id="dRI-wk-81S">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
