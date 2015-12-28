@@ -20,4 +20,5 @@ sudo -k
 echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
 
 # send halt to VM
+#sudo "${res_folder}"/bin/corectl ssh k8solo-01 sudo halt
 sudo "${res_folder}"/bin/corectl halt k8solo-01

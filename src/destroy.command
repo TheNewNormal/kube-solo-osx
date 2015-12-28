@@ -36,7 +36,7 @@ do
         echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
 
         # send halt to VM
-        sudo "${res_folder}"/bin/corectl halt k8solo-01
+        sudo "${res_folder}"/bin/corectl halt k8solo-01 > /dev/null 2>&1
 
         # delete root image
         rm -f ~/kube-solo/root.img

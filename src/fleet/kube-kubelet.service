@@ -5,6 +5,10 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 [Service]
 EnvironmentFile=/etc/network-environment
 #ExecStartPre=/opt/bin/wupiao 127.0.0.1:8080
+# small hacks around for Deis-Lite v2 alpha
+ExecStartPre=-/bin/sh -c 'sudo mkdir -p /data/deis/minio && sudo chown 1000:1000 /data/deis/minio'
+ExecStartPre=-/bin/sh -c 'sudo rm -f /data/deis/postgresql/postmaster.pid'
+#
 ExecStart=/opt/bin/kubelet \
  --address=0.0.0.0 \
  --port=10250 \
