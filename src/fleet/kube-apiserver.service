@@ -1,13 +1,14 @@
 [Unit]
 Description=Kubernetes API Server
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
-
+Requires=etcd2.service fleet.service docker.service flanneld.service
+After=etcd2.service fleet.service docker.service flanneld.service
 [Service]
 ExecStart=/opt/bin/kube-apiserver \
  --client-ca-file=/srv/kubernetes/ca.crt \
  --tls-cert-file=/srv/kubernetes/server.cert \
  --tls-private-key-file=/srv/kubernetes/server.key \
- --admission_control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota \
+ --admission_control=NamespaceLifecycle,NamespaceAutoProvision,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota \
  --service_account_key_file=/srv/kubernetes/server.key \
  --service_account_lookup=false \
  --allow_privileged=true \
@@ -17,10 +18,9 @@ ExecStart=/opt/bin/kube-apiserver \
  --secure_port=6443 \
  --service-cluster-ip-range=10.100.0.0/16 \
  --etcd_servers=http://127.0.0.1:2379 \
- --public_address_override=127.0.0.1 \
- --logtostderr=true \
- --runtime_config=extensions/v1beta1=true,extensions/v1beta1/daemonsets=true
+ --bind-address=0.0.0.0 \
+ --logtostderr=true
+ #--runtime_config=extensions/v1beta1=true,extensions/v1beta1/daemonsets=true
 
 Restart=always
 RestartSec=10
-

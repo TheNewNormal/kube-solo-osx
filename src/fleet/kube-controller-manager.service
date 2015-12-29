@@ -1,8 +1,10 @@
 [Unit]
 Description=Kubernetes Controller Manager
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
-
+Requires=kube-apiserver.service
+After=kube-apiserver.service
 [Service]
+ExecStartPre=/opt/bin/wupiao 127.0.0.1:8080
 ExecStart=/opt/bin/kube-controller-manager \
  --root-ca-file=/srv/kubernetes/ca.crt \
  --service-account-private-key-file=/srv/kubernetes/server.key \
