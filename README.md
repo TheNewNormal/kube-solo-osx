@@ -12,9 +12,12 @@ Zero to Kubernetes development environment
 
 Includes [Helm](https://helm.sh) - The Kubernetes Package Manager
 
-Kube-Solo App can be used together with [CoreOS VM App](https://github.com/TheNewNormal/coreos-osx) which allows to build Docker containers and has a private local Docker registry which is accesable from Kube-Solo App.
+**New:** Includes an option to install [Deis open source PaaS](http://deis.io/overview/) v2 alpha which works on top of Kubernetes
 
-**New** v0.3.2 is based on [corectl](https://github.com/TheNewNormal/corectl) which brings more stablity to the App.
+**New:** Since v0.3.2 the App is based on [corectl](https://github.com/TheNewNormal/corectl) which brings more stablity to the App.
+
+Kube-Solo App can be used together with [CoreOS VM App](https://github.com/TheNewNormal/coreos-osx) which allows to build Docker containers and has a private local Docker registry v2 which is accessible from Kube-Solo App.
+
 
 
 ![Kube-Solo](kube-solo-osx.png "Kubernetes-Solo")

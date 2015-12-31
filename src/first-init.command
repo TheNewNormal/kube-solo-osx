@@ -132,6 +132,9 @@ echo " "
 echo "You can control this App via status bar icon... "
 echo " "
 
+echo "Also you can install Deis PaaS (http://deis.io) v2 alpha version with 'install_deis' command ..."
+echo " "
+
 cd ~/kube-solo
 # open bash shell
 /bin/bash

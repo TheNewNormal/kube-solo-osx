@@ -6,6 +6,6 @@ current_folder=$(pwd)
 
 cd ~/kube-solo/bin
 
-curl -s https://get.helm.sh | bash
+curl -s https://get.helm.sh | bash > /dev/null 2>&1
 
 cd $current_folder
