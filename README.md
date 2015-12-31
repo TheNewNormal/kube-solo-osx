@@ -12,7 +12,7 @@ Zero to Kubernetes development environment
 
 Includes [Helm](https://helm.sh) - The Kubernetes Package Manager
 
-**New:** Includes an option from shell to install [Deis open source PaaS](http://deis.io/overview/) v2 alpha which works on top of Kubernetes: `$ install_deis`
+**New:** Includes an option from shell to install [Deis open source PaaS](http://deis.io/overview/) v2 alpha on top of Kubernetes: `$ install_deis`
 
 **New:** Since v0.3.2 the App is based on [corectl](https://github.com/TheNewNormal/corectl) which brings more stablity to the App.
 
