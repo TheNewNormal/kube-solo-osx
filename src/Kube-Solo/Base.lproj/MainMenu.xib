@@ -731,10 +731,17 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="vyH-FE-ksB"/>
-                            <menuItem title="Fetch latest CoreOS ISO" id="KYE-xq-LpJ" userLabel="Force CoreOS update">
+                            <menuItem title="Restore/update fleet units" id="KYE-xq-LpJ" userLabel="Restore/update fleet units">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="fetchLatestISO:" target="494" id="z9S-Pq-sjA"/>
+                                    <action selector="restoreFleetUnits:" target="494" id="e7L-uZ-VLY"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="XkV-sa-RCz"/>
+                            <menuItem title="Fetch latest CoreOS ISO" id="1Lj-FO-yQv" userLabel="Force CoreOS update">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="fetchLatestISO:" target="494" id="nGJ-oZ-3ux"/>
                                 </connections>
                             </menuItem>
                         </items>

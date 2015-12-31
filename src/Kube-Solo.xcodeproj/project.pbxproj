@@ -36,6 +36,7 @@
 		1329DEB81BD526A3008AA719 /* update_k8s.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEB71BD526A3008AA719 /* update_k8s.command */; };
 		1347C2F91C30570D0083CDF9 /* change_sudo_password.command in Resources */ = {isa = PBXBuildFile; fileRef = 1347C2F81C30570D0083CDF9 /* change_sudo_password.command */; };
 		13BCE1C01BEBC0BD00A1A48E /* update_k8s_version.command in Resources */ = {isa = PBXBuildFile; fileRef = 13BCE1BF1BEBC0BD00A1A48E /* update_k8s_version.command */; };
+		13D9B8671C35B09B00EBB078 /* restore_update_fleet_units.command in Resources */ = {isa = PBXBuildFile; fileRef = 13D9B8661C35B09B00EBB078 /* restore_update_fleet_units.command */; };
 		13FE22171C1C40C700F465F1 /* bin in Resources */ = {isa = PBXBuildFile; fileRef = 13FE22161C1C40C700F465F1 /* bin */; };
 		13FE22191C1C410100F465F1 /* cloud-init in Resources */ = {isa = PBXBuildFile; fileRef = 13FE22181C1C410100F465F1 /* cloud-init */; };
 		CA4F6FFF1BE1910A00D87763 /* NSURL+KubeSolo.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4F6FFE1BE1910A00D87763 /* NSURL+KubeSolo.m */; };
@@ -82,6 +83,7 @@
 		1329DEB71BD526A3008AA719 /* update_k8s.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = update_k8s.command; sourceTree = "<group>"; };
 		1347C2F81C30570D0083CDF9 /* change_sudo_password.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = change_sudo_password.command; sourceTree = "<group>"; };
 		13BCE1BF1BEBC0BD00A1A48E /* update_k8s_version.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = update_k8s_version.command; sourceTree = "<group>"; };
+		13D9B8661C35B09B00EBB078 /* restore_update_fleet_units.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = restore_update_fleet_units.command; sourceTree = "<group>"; };
 		13FE22161C1C40C700F465F1 /* bin */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bin; sourceTree = SOURCE_ROOT; };
 		13FE22181C1C410100F465F1 /* cloud-init */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "cloud-init"; sourceTree = SOURCE_ROOT; };
 		CA4F6FFD1BE1910A00D87763 /* NSURL+KubeSolo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+KubeSolo.h"; sourceTree = "<group>"; };
@@ -203,6 +205,7 @@
 				1329DEA61BD4FB5F008AA719 /* halt.command */,
 				1329DEA71BD4FB5F008AA719 /* reload.command */,
 				1329DEA41BD4FB5F008AA719 /* fetch_latest_iso.command */,
+				13D9B8661C35B09B00EBB078 /* restore_update_fleet_units.command */,
 				13BCE1BF1BEBC0BD00A1A48E /* update_k8s_version.command */,
 				1329DEB71BD526A3008AA719 /* update_k8s.command */,
 				1329DEAB1BD4FB5F008AA719 /* update_osx_clients_files.command */,
@@ -300,6 +303,7 @@
 				01E2855418A6C4E300BC630D /* MainMenu.xib in Resources */,
 				01F0282C1A7C54C8008C37AA /* os_shell.command in Resources */,
 				1329DEB61BD4FB5F008AA719 /* update_osx_clients_files.command in Resources */,
+				13D9B8671C35B09B00EBB078 /* restore_update_fleet_units.command in Resources */,
 				1347C2F91C30570D0083CDF9 /* change_sudo_password.command in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

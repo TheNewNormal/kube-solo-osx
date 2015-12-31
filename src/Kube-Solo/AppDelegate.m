@@ -182,6 +182,22 @@
     }
 }
 
+- (IBAction)restoreFleetUnits:(id)sender {
+    VMStatus vmStatus = [self.vmManager checkVMStatus];
+    
+    switch (vmStatus) {
+        case VMStatusDown:
+            [self notifyUserWithText:NSLocalizedString(@"VMStateOff", nil)];
+            break;
+            
+        case VMStatusUp:
+            [self notifyUserWithText:NSLocalizedString(@"RestoreFleetUnitsNotificationMessage", nil)];
+            [self.vmManager restoreFleetUnits];
+            break;
+    }
+}
+
+
 - (IBAction)fetchLatestISO:(id)sender {
     [self notifyUserWithText:NSLocalizedString(@"ISOImageWillBeUpdatedNotificationMessage", nil)];
     [self.vmManager updateISO];

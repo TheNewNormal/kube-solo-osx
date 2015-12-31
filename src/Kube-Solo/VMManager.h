@@ -23,6 +23,7 @@ typedef NS_ENUM(NSInteger, VMStatus) {
 - (void)updateKubernetes;
 - (void)updateKubernetesVersion;
 - (void)updateClients;
+- (void)restoreFleetUnits;
 - (void)updateISO;
 - (void)changeReleaseChannel;
 - (void)changeSudoPassword;

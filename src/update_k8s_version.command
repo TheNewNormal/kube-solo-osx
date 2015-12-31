@@ -18,6 +18,7 @@ export PATH=${HOME}/kube-solo/bin:$PATH
 
 # copy files to ~/kube-solo/bin
 cp -f "${res_folder}"/bin/* ~/kube-solo/bin
+rm -f ~/kube-solo/bin/gen_kubeconfig
 chmod 755 ~/kube-solo/bin/*
 
 echo "$1"
@@ -28,7 +29,7 @@ download_k8s_files_version
 
 # generate kubeconfig file
 echo Generate kubeconfig file ...
- "${res_folder}"/bin/gen_kubeconfig $vm_ip
+"${res_folder}"/bin/gen_kubeconfig $vm_ip
 echo " "
 #
 
