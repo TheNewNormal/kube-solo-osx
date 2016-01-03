@@ -125,13 +125,29 @@ echo "---"
 
 function download_osx_clients() {
 # download fleetctl file
-LATEST_RELEASE=$(ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no core@$vm_ip 'fleetctl version' | cut -d " " -f 3- | tr -d '\r')
-cd ~/kube-solo/bin
-echo "Downloading fleetctl v$LATEST_RELEASE for OS X"
-curl -L -o fleet.zip "https://github.com/coreos/fleet/releases/download/v$LATEST_RELEASE/fleet-v$LATEST_RELEASE-darwin-amd64.zip"
-unzip -j -o "fleet.zip" "fleet-v$LATEST_RELEASE-darwin-amd64/fleetctl"
-rm -f fleet.zip
-echo "fleetctl was copied to ~/kube-solo/bin "
+FLEETCTL_VERSION=$("${res_folder}"/bin/corectl ssh k8solo-01 'fleetctl --version' | awk '{print $3}' | tr -d '\r')
+FILE=fleetctl
+if [ ! -f ~/kube-solo/bin/$FILE ]; then
+    cd ~/kube-solo/bin
+    echo "Downloading fleetctl v$FLEETCTL_VERSION for OS X"
+    curl -L -o fleet.zip "https://github.com/coreos/fleet/releases/download/v$FLEETCTL_VERSION/fleet-v$FLEETCTL_VERSION-darwin-amd64.zip"
+    unzip -j -o "fleet.zip" "fleet-v$FLEETCTL_VERSION-darwin-amd64/fleetctl"
+    rm -f fleet.zip
+    echo "fleetctl was copied to ~/kube-solo/bin 1"
+else
+    # we check the version of the binary
+    INSTALLED_VERSION=$(~/kube-solo/bin/$FILE --version | awk '{print $3}' | tr -d '\r')
+    MATCH=$(echo "${INSTALLED_VERSION}" | grep -c "${FLEETCTL_VERSION}")
+    if [ $MATCH -eq 0 ]; then
+        # the version is different
+        cd ~/kube-solo/bin
+        echo "Downloading fleetctl v$FLEETCTL_VERSION for OS X"
+        curl -L -o fleet.zip "https://github.com/coreos/fleet/releases/download/v$FLEETCTL_VERSION/fleet-v$FLEETCTL_VERSION-darwin-amd64.zip"
+        unzip -j -o "fleet.zip" "fleet-v$FLEETCTL_VERSION-darwin-amd64/fleetctl"
+        rm -f fleet.zip
+        echo "fleetctl was copied to ~/kube-solo/bin 2"
+    fi
+fi
 
 # get lastest OS X helm version from bintray
 bin_version=$(curl -I https://bintray.com/deis/helm/helm/_latestVersion | grep "Location:" | sed -n 's%.*helm/%%;s%/view.*%%p')
@@ -154,8 +170,21 @@ function get_latest_version_number {
     local -r latest_url="https://storage.googleapis.com/kubernetes-release/release/stable.txt"
     curl -Ss ${latest_url}
 }
-
 K8S_VERSION=$(get_latest_version_number)
+
+echo $K8S_VERSION
+
+# we check the version of the binary
+INSTALLED_VERSION=$(~/kube-solo/bin/kubectl version | grep "Server Version:" | awk '{print $5}' | awk -v FS='(:"|",)' '{print $2}')
+MATCH=$(echo "${INSTALLED_VERSION}" | grep -c "${K8S_VERSION}")
+if [ $MATCH -ne 0 ]; then
+    echo " "
+    echo "You have already the latest stable ${K8S_VERSION} of Kubernetes installed !!!"
+    pause 'Press [Enter] key to continue...'
+    exit 0
+fi
+
+k8s_upgrade=1
 
 # download latest version of kubectl for OS X
 cd ~/kube-solo/tmp

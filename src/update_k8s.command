@@ -21,8 +21,13 @@ cp -f "${res_folder}"/bin/* ~/kube-solo/bin
 rm -f ~/kube-solo/bin/gen_kubeconfig
 chmod 755 ~/kube-solo/bin/*
 
-# download latest version of k8s files
+#
+k8s_upgrade=0
 download_k8s_files
+if [ $k8s_upgrade -eq 0 ]; then
+    pause "No upgrade..."
+    exit 0
+fi
 #
 
 # generate kubeconfig file

@@ -4,15 +4,13 @@
 vm_ip=$(corectl q -i k8solo-01)
 
 # get lastest OS X helm version
-echo "Installing latest helm ..."
 current_folder=$(pwd)
-bin_version=$(curl -I https://bintray.com/deis/helm/helm/_latestVersion | grep "Location:" | sed -n 's%.*helm/%%;s%/view.*%%p')
-echo "Downloading latest version of helm for OS X"
-curl -L "https://dl.bintray.com/deis/helm/helm-$bin_version-darwin-amd64.zip" -o helm.zip
-unzip -o helm.zip
-rm -f helm.zip
-echo "helm was copied to ~/kube-solo/bin "
+cd ~/kube-solo/bin
+echo " "
+echo "Installing latest helm ..."
+curl -s https://get.helm.sh | bash > /dev/null 2>&1
 cd $current_folder
+echo "helm is installed to ~/kube-solo/bin ... "
 
 # run helm for the first time
 helm up
@@ -23,7 +21,7 @@ helm repo add kube-charts https://github.com/TheNewNormal/kube-charts
 # Get the latest version of all Charts from repos
 helm up
 
-# Fetch Deis-Lite Chart to helm your working directory
+# Fetch Deis-Lite Chart to your helm's working directory
 helm fetch kube-charts/deis-lite
 
 # Install Deis-Lite PaaS
@@ -35,11 +33,11 @@ cd ~/kube-solo/bin
 echo " "
 echo "Installing deis client ..."
 curl -sSL http://deis.io/deis-cli/install-v2-alpha.sh | bash > /dev/null 2>&1
-echo "deis client is installed ..."
+cd $current_folder
+echo "deis client is installed to ~/kube-solo/bin ..."
 echo "To learn more about deis client, execute:"
 echo "deis -h"
 echo " "
-cd $current_folder
 #
 echo "Waiting for Deis PaaS to be ready ..."
 spin='-\|/'
