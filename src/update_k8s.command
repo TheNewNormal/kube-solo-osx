@@ -21,11 +21,10 @@ cp -f "${res_folder}"/bin/* ~/kube-solo/bin
 rm -f ~/kube-solo/bin/gen_kubeconfig
 chmod 755 ~/kube-solo/bin/*
 
-#
+# download latest version of k8s files
 k8s_upgrade=0
 download_k8s_files
 if [ $k8s_upgrade -eq 0 ]; then
-    pause "No upgrade..."
     exit 0
 fi
 #
@@ -42,13 +41,14 @@ export FLEETCTL_ENDPOINT=http://$vm_ip:2379
 export FLEETCTL_DRIVER=etcd
 export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
 cd ~/kube-solo/fleet
+echo " Stopping Kubernetes fleet units ..."
 ~/kube-solo/bin/fleetctl stop kube-apiserver.service
 ~/kube-solo/bin/fleetctl stop kube-controller-manager.service
 ~/kube-solo/bin/fleetctl stop kube-scheduler.service
 ~/kube-solo/bin/fleetctl stop kube-kubelet.service
 ~/kube-solo/bin/fleetctl stop kube-proxy.service
-echo " "
 sleep 5
+echo "Starting Kubernetes fleet units ..."
 ~/kube-solo/bin/fleetctl start kube-apiserver.service
 ~/kube-solo/bin/fleetctl start kube-controller-manager.service
 ~/kube-solo/bin/fleetctl start kube-scheduler.service
@@ -75,7 +75,13 @@ echo "k8s nodes list:"
 ~/kube-solo/bin/kubectl get nodes
 echo " "
 #
-
+echo "Cluster version:"
+CLIENT_INSTALLED_VERSION=$(~/kube-solo/bin/kubectl version | grep "Client Version:" | awk '{print $5}' | awk -v FS='(:"|",)' '{print $2}')
+SERVER_INSTALLED_VERSION=$(~/kube-solo/bin/kubectl version | grep "Server Version:" | awk '{print $5}' | awk -v FS='(:"|",)' '{print $2}')
+echo "Client version: $CLIENT_INSTALLED_VERSION"
+echo "Server version: $SERVER_INSTALLED_VERSION"
+echo " "
+#
 echo "Cluster info:"
 ~/kube-solo/bin/kubectl cluster-info
 echo " "

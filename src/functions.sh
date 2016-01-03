@@ -131,9 +131,8 @@ if [ ! -f ~/kube-solo/bin/$FILE ]; then
     cd ~/kube-solo/bin
     echo "Downloading fleetctl v$FLEETCTL_VERSION for OS X"
     curl -L -o fleet.zip "https://github.com/coreos/fleet/releases/download/v$FLEETCTL_VERSION/fleet-v$FLEETCTL_VERSION-darwin-amd64.zip"
-    unzip -j -o "fleet.zip" "fleet-v$FLEETCTL_VERSION-darwin-amd64/fleetctl"
+    unzip -j -o "fleet.zip" "fleet-v$FLEETCTL_VERSION-darwin-amd64/fleetctl" > /dev/null 2>&1
     rm -f fleet.zip
-    echo "fleetctl was copied to ~/kube-solo/bin 1"
 else
     # we check the version of the binary
     INSTALLED_VERSION=$(~/kube-solo/bin/$FILE --version | awk '{print $3}' | tr -d '\r')
@@ -143,19 +142,23 @@ else
         cd ~/kube-solo/bin
         echo "Downloading fleetctl v$FLEETCTL_VERSION for OS X"
         curl -L -o fleet.zip "https://github.com/coreos/fleet/releases/download/v$FLEETCTL_VERSION/fleet-v$FLEETCTL_VERSION-darwin-amd64.zip"
-        unzip -j -o "fleet.zip" "fleet-v$FLEETCTL_VERSION-darwin-amd64/fleetctl"
+        unzip -j -o "fleet.zip" "fleet-v$FLEETCTL_VERSION-darwin-amd64/fleetctl" > /dev/null 2>&1
         rm -f fleet.zip
-        echo "fleetctl was copied to ~/kube-solo/bin 2"
+    else
+        echo " "
+        echo "fleetctl is up to date ..."
+        echo " "
     fi
 fi
 
 # get lastest OS X helm version from bintray
-bin_version=$(curl -I https://bintray.com/deis/helm/helm/_latestVersion | grep "Location:" | sed -n 's%.*helm/%%;s%/view.*%%p')
+bin_version=$(curl -sI https://bintray.com/deis/helm/helm/_latestVersion | grep "Location:" | sed -n 's%.*helm/%%;s%/view.*%%p')
 echo "Downloading latest version of helm for OS X"
 curl -L "https://dl.bintray.com/deis/helm/helm-$bin_version-darwin-amd64.zip" -o helm.zip
-unzip -o helm.zip
+unzip -o helm.zip > /dev/null 2>&1
 rm -f helm.zip
-echo "helm was copied to ~/kube-solo/bin "
+echo " "
+echo "Installed latest helm $bin_version to ~/kube-solo/bin ..."
 #
 
 }
@@ -172,16 +175,14 @@ function get_latest_version_number {
 }
 K8S_VERSION=$(get_latest_version_number)
 
-echo $K8S_VERSION
-
-# we check the version of the binary
+# we check the version of installed k8s cluster
 INSTALLED_VERSION=$(~/kube-solo/bin/kubectl version | grep "Server Version:" | awk '{print $5}' | awk -v FS='(:"|",)' '{print $2}')
 MATCH=$(echo "${INSTALLED_VERSION}" | grep -c "${K8S_VERSION}")
 if [ $MATCH -ne 0 ]; then
     echo " "
     echo "You have already the latest stable ${K8S_VERSION} of Kubernetes installed !!!"
     pause 'Press [Enter] key to continue...'
-    exit 0
+    exit 1
 fi
 
 k8s_upgrade=1
@@ -235,7 +236,7 @@ echo "Kubernetes cluster migth not work, so you will need to destroy the cluster
 echo " and boot VM again !!! "
 echo " "
 echo "Please type Kubernetes version you want to be installed e.g. v1.1.1 or v1.2.0-alpha.4"
-echo "followed by [ENTER] or CMD + W to exit:"
+echo "followed by [ENTER] to continue or press CMD + W to exit:"
 read K8S_VERSION
 
 url=https://github.com/kubernetes/kubernetes/releases/download/$K8S_VERSION/kubernetes.tar.gz
@@ -248,6 +249,18 @@ else
     pause 'Press [Enter] key to continue...'
     exit 1
 fi
+
+# we check the version of installed k8s cluster
+INSTALLED_VERSION=$(~/kube-solo/bin/kubectl version | grep "Server Version:" | awk '{print $5}' | awk -v FS='(:"|",)' '{print $2}')
+MATCH=$(echo "${INSTALLED_VERSION}" | grep -c "${K8S_VERSION}")
+if [ $MATCH -ne 0 ]; then
+    echo " "
+    echo "You have already the ${K8S_VERSION} of Kubernetes installed !!!"
+    pause 'Press [Enter] key to continue...'
+    exit 1
+fi
+
+k8s_upgrade=1
 
 # download required version of Kubernetes
 cd ~/kube-solo/tmp
