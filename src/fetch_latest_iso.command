@@ -19,9 +19,13 @@ echo " "
 echo "Fetching lastest CoreOS $CHANNEL channel ISO ..."
 echo " "
 #
-"${res_folder}"/bin/corectl pull --channel="$CHANNEL"
+"${res_folder}"/bin/corectl pull --channel="$CHANNEL" 2>&1 | tee ~/kube-solo/tmp/check_channel
+CHECK_CHANNEL=$(cat ~/kube-solo/tmp/check_channel | grep "already available")
 #
-echo " "
-echo "You need to reload your VM to be booted from the lastest version !!! "
+if [[ "$CHECK_CHANNEL" == "" ]]; then
+    echo " "
+    echo "You need to reload your VM to be booted from the lastest version !!! "
+fi
+rm -f ~/kube-solo/tmp/check_channel
 echo " "
 pause 'Press [Enter] key to continue...'

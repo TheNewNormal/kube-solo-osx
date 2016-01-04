@@ -75,6 +75,13 @@ install_k8s_files
 download_osx_clients
 #
 
+# run helm for the first time
+helm up
+# add kube-charts repo
+helm repo add kube-charts https://github.com/TheNewNormal/kube-charts
+# Get the latest version of all Charts from repos
+helm up
+
 # set etcd endpoint
 export ETCDCTL_PEERS=http://$vm_ip:2379
 

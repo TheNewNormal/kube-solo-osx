@@ -14,16 +14,12 @@ echo "helm is installed to ~/kube-solo/bin ... "
 
 # run helm for the first time
 helm up
-
 # add Chart repo
 helm repo add kube-charts https://github.com/TheNewNormal/kube-charts
-
 # Get the latest version of all Charts from repos
 helm up
-
 # Fetch Deis-Lite Chart to your helm's working directory
 helm fetch kube-charts/deis-lite
-
 # Install Deis-Lite PaaS
 helm install deis-lite
 
@@ -60,6 +56,6 @@ echo " "
 echo "Please read how to:" 
 echo "Deploy Applications - https://github.com/deis/workflow/blob/master/docs/src/using-deis/deploying-an-application.md"
 echo "To manage Applications - https://github.com/deis/workflow/blob/master/docs/src/using-deis/managing-an-application.md"
-echo "Using Deis - https://github.com/deis/workflow/tree/master/docs/src/using-deis"
+echo "Using Deis PaaS - https://github.com/deis/workflow/tree/master/docs/src/using-deis"
 echo " "
 

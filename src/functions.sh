@@ -76,11 +76,15 @@ if [ -z "$disk_size" ]
 then
     echo " "
     echo "Creating 5GB disk ..."
-    dd if=/dev/zero of=root.img bs=1024 count=0 seek=$[1024*5120]
+### dd if=/dev/zero of=root.img bs=1m count=$[5120]
+    mkfile 5g root.img
+    echo "Created 5GB ROOT disk"
 else
     echo " "
     echo "Creating "$disk_size"GB disk (it could take a while for big disks)..."
-    dd if=/dev/zero of=root.img bs=1024 count=0 seek=$[1024*$disk_size*1024]
+###    dd if=/dev/zero of=root.img bs=1m count=$[$disk_size*1024]
+    mkfile "$disk_size"g root.img
+    echo "Created "$disk_size"GB ROOT disk"
 fi
 echo " "
 #
