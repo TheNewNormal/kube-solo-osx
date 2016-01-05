@@ -58,6 +58,10 @@ echo " "
 echo "Starting VM ..."
 echo " "
 echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
+
+# multi user workaround
+sudo sed -i.bak '/Users.*/d' /etc/exports
+
 #
 sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml
 

@@ -6,13 +6,3 @@ coreos:
   units:
     - name: update-engine.service
       command: stop
-    - name: format-ephemeral.service
-      command: start
-      content: |
-        [Unit]
-        Description=Formats the ephemeral drive
-        [Service]
-        Type=oneshot
-        RemainAfterExit=yes
-        ExecStart=/bin/sh -c '/usr/sbin/mkfs.ext4 -L ROOT /dev/vda'
-        ExecStartPost=/bin/sh -c 'sudo halt'

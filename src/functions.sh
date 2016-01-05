@@ -87,6 +87,7 @@ else
     echo "Created "$disk_size"GB ROOT disk"
 fi
 echo " "
+sleep 1
 #
 
 ### format ROOT disk
@@ -100,23 +101,23 @@ echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
 #
 echo "Formating k8solo-01 ROOT disk ..."
 
-## start VM
+# multi user workaround
+sudo sed -i.bak '/Users.*/d' /etc/exports
+
+#
 # get UUID
 UUID=$(cat ~/kube-solo/settings/k8solo-01.toml | grep "uuid =" | sed -e 's/uuid = "\(.*\)"/\1/' | tr -d ' ')
 # cleanup
 rm -rf ~/.coreos/running/$UUID
-# start VM
-sudo "${res_folder}"/bin/corectl load settings/format-root.toml 2>&1 | grep IP | awk -v FS="(IP | and)" '{print $2}' | tr -d "\n" > ~/kube-solo/.env/ip_address
-spin='-\|/'
-i=1
-#while [[ "$('${res_folder}'/bin/corectl ps 2>&1 | grep '[k]8solo-01')" != "" ]]
-while [[ "$(corectl ps 2>&1 | grep '[k]8solo-01')" != "" ]]
-do
-    printf "\r${spin:$i:1}"
-    sleep .1
-done
 
-sleep 2
+# start VM
+sudo "${res_folder}"/bin/corectl load settings/format-root.toml
+# format disk
+"${res_folder}"/bin/corectl ssh k8solo-01 "sudo /usr/sbin/mkfs.ext4 -L ROOT /dev/vda"
+# get VM's IP
+"${res_folder}"/bin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
+# halt VM
+sudo "${res_folder}"/bin/corectl halt k8solo-01
 
 # cleanup
 rm -rf ~/.coreos/running/$UUID
@@ -430,11 +431,10 @@ echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
 sudo "${res_folder}"/bin/corectl halt k8solo-01
 
 # kill all other scripts
+pkill -f [K]ube-Solo.app/Contents/Resources/bin/corectl
 pkill -f [K]ube-Solo.app/Contents/Resources/fetch_latest_iso.command
 pkill -f [K]ube-Solo.app/Contents/Resources/update_k8s.command
 pkill -f [K]ube-Solo.app/Contents/Resources/update_osx_clients_files.command
 pkill -f [K]ube-Solo.app/Contents/Resources/change_release_channel.command
 
 }
-
-
