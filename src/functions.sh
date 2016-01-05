@@ -100,28 +100,30 @@ sudo -k > /dev/null 2>&1
 echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
 #
 echo "Formating k8solo-01 ROOT disk ..."
-
 # multi user workaround
+sudo sed -i.bak '/^$/d' /etc/exports
 sudo sed -i.bak '/Users.*/d' /etc/exports
-
 #
 # get UUID
 UUID=$(cat ~/kube-solo/settings/k8solo-01.toml | grep "uuid =" | sed -e 's/uuid = "\(.*\)"/\1/' | tr -d ' ')
 # cleanup
 rm -rf ~/.coreos/running/$UUID
-
 # start VM
 sudo "${res_folder}"/bin/corectl load settings/format-root.toml
 # format disk
 "${res_folder}"/bin/corectl ssh k8solo-01 "sudo /usr/sbin/mkfs.ext4 -L ROOT /dev/vda"
 # get VM's IP
 "${res_folder}"/bin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
+#
+sleep 2
+#
 # halt VM
 sudo "${res_folder}"/bin/corectl halt k8solo-01
-
+#
+sleep 1
 # cleanup
 rm -rf ~/.coreos/running/$UUID
-
+#
 echo " "
 echo "ROOT disk got created and formated... "
 echo "---"
