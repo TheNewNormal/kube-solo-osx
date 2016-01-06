@@ -433,7 +433,6 @@ echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
 sudo "${res_folder}"/bin/corectl halt k8solo-01
 
 # kill all other scripts
-pkill -f [K]ube-Solo.app/Contents/Resources/bin/corectl
 pkill -f [K]ube-Solo.app/Contents/Resources/fetch_latest_iso.command
 pkill -f [K]ube-Solo.app/Contents/Resources/update_k8s.command
 pkill -f [K]ube-Solo.app/Contents/Resources/update_osx_clients_files.command

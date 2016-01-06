@@ -8,7 +8,7 @@ Zero to Kubernetes development environment
 
 ***Kube-Solo App has a new home, it is now under https://github.com/TheNewNormal organisation***
 
-**Kube-Solo for Mac OS X** is a Mac Status bar App which works like a wrapper around the [corectl](https://github.com/TheNewNormal/corectl) command line tool (it makes easier to control [xhyve](https://github.com/mist64/xhyve) based VMs) and bootstraps Kubernetes on a standalone [CoreOS](https://coreos.com) VM machine.
+**Kube-Solo for Mac OS X** is a Mac Status bar App which works like a wrapper around the [corectl](https://github.com/TheNewNormal/corectl) command line tool (it makes easier to control [xhyve](https://github.com/xhyve-xyz/xhyve) based VMs) and bootstraps Kubernetes on a standalone [CoreOS](https://coreos.com) VM machine.
 
 Includes [Helm](https://helm.sh) - The Kubernetes Package Manager
 
