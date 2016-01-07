@@ -12,7 +12,7 @@ ssh-add -K ~/.ssh/id_rsa &>/dev/null
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
 # get VM IP
-vm_ip=$(<~/kube-solo/.env/ip_address)
+vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
 
 # path to the bin folder where we store our binary files
 export PATH=${HOME}/kube-solo/bin:$PATH

@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# get App's Resources folder
+res_folder=$(cat ~/kube-solo/.env/resouces_path)
+
 # get VM's IP
-vm_ip=$(corectl q -i k8solo-01)
+vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
 
 # get lastest OS X helm version
 current_folder=$(pwd)
@@ -38,12 +41,12 @@ echo " "
 echo "Waiting for Deis PaaS to be ready ..."
 spin='-\|/'
 i=1
-until curl -o /dev/null -sI http://$vm_ip:8000 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+until curl -o /dev/null -sI http://deis.$vm_ip.xip.io >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 
 # run deis register user
 echo " "
 echo "Registering user ..."
-deis register $vm_ip:8000
+deis register deis.$vm_ip.xip.io
 
 # add ssh key to Deis PaaS
 echo " "
@@ -51,7 +54,17 @@ echo "Adding ssh key to Deis PaaS ... "
 deis keys:add ~/.ssh/id_rsa.pub
 echo " "
 
+echo " "
+echo "Clonning some demo Apps for Deis ... "
+mkdir -p ~/kube-solo/deis/apps
+cd ~/kube-solo/deis/apps
+git clone https://github.com/deis/example-ruby-sinatra.git
+git clone https://github.com/deis/helloworld.git
+git clone https://github.com/deis/example-go.git
+echo " "
+
 echo "Deis PaaS install is completed ..."
+echo "It can be accessed via http://deis.$vm_ip.xip.io "
 echo " "
 echo "Please read how to:" 
 echo "Deploy Applications - https://github.com/deis/workflow/blob/master/docs/src/using-deis/deploying-an-application.md"

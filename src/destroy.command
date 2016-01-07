@@ -11,7 +11,7 @@ source "${DIR}"/functions.sh
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
 # get VM IP
-vm_ip=$(<~/kube-solo/.env/ip_address)
+vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
 
 # get password for sudo
 my_password=$(security find-generic-password -wa kube-solo-app)

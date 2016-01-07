@@ -1,6 +1,6 @@
 #cloud-config
 
-hostname: k8solo-01
+#hostname: k8solo-01
 
 coreos:
   units:

@@ -34,7 +34,7 @@ sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml
 echo " "
 
 # get VM's IP
-vm_ip=$(<~/kube-solo/.env/ip_address)
+vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
 
 # set fleetctl endpoint
 export FLEETCTL_ENDPOINT=http://$vm_ip:2379
