@@ -39,9 +39,11 @@ echo "deis -h"
 echo " "
 #
 echo "Waiting for Deis PaaS to be ready ..."
+echo "(it could take a while till all docker images get downloaded ...)"
 spin='-\|/'
 i=1
-until curl -o /dev/null -sI http://deis.$vm_ip.xip.io >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+until kubectl --namespace=deis get po | grep [d]eis-workflow- | grep "Running"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+###until curl -o /dev/null -sI http://deis.$vm_ip.xip.io >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 
 # run deis register user
 echo " "
