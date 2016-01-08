@@ -84,6 +84,7 @@ else
     echo "Creating "$disk_size"GB disk (it could take a while for big disks)..."
 ###    dd if=/dev/zero of=root.img bs=1m count=$[$disk_size*1024]
     mkfile "$disk_size"g root.img
+    echo "-"
     echo "Created "$disk_size"GB ROOT disk"
 fi
 echo " "
@@ -108,11 +109,13 @@ sudo sed -i.bak '/Users.*/d' /etc/exports
 UUID=$(cat ~/kube-solo/settings/k8solo-01.toml | grep "uuid =" | sed -e 's/uuid = "\(.*\)"/\1/' | tr -d ' ')
 # cleanup
 rm -rf ~/.coreos/running/$UUID
+# copy user-data-format-root
+cp -f "${res_folder}"/cloud-init/user-data-format-root ~/kube-solo/cloud-init
 # start VM
 sudo "${res_folder}"/bin/corectl load settings/format-root.toml
 # format disk
 "${res_folder}"/bin/corectl ssh k8solo-01 "sudo /usr/sbin/mkfs.ext4 -L ROOT /dev/vda"
-# get VM's IP
+# save VM's IP
 "${res_folder}"/bin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
 #
 sleep 2
@@ -331,7 +334,7 @@ function install_k8s_files {
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
 # get VM IP
-vm_ip=$(cat ~/kube-solo/.env/ip_address);
+vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
 
 # install k8s files on to VM
 echo " "

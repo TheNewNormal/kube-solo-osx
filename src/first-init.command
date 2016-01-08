@@ -67,9 +67,10 @@ sudo sed -i.bak '/Users.*/d' /etc/exports
 #
 sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml
 
+# save VM's IP
+"${res_folder}"/bin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
 # get VM IP
-#vm_ip=$(corectl ps -j | jq ".[] | select(.Name==\"k8solo-01\") | .PublicIP" | sed -e 's/"\(.*\)"/\1/')
-vm_ip=$(cat ~/kube-solo/.env/ip_address);
+vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
 #
 
 # install k8s files on to VM
