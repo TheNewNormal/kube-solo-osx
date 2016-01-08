@@ -60,12 +60,14 @@ echo " "
 echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
 
 # multi user workaround
-sudo sed -i.bak '/^$/d' /etc/exports
-sudo sed -i.bak '/Users.*/d' /etc/exports
+#sudo sed -i.bak '/^$/d' /etc/exports
+#sudo sed -i.bak '/Users.*/d' /etc/exports
 
 #
 sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml
 
+# save VM's IP
+"${res_folder}"/bin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
 # get VM IP
 vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
 #

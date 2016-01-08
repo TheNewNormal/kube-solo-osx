@@ -115,7 +115,7 @@ cp -f "${res_folder}"/cloud-init/user-data-format-root ~/kube-solo/cloud-init
 sudo "${res_folder}"/bin/corectl load settings/format-root.toml
 # format disk
 "${res_folder}"/bin/corectl ssh k8solo-01 "sudo /usr/sbin/mkfs.ext4 -L ROOT /dev/vda"
-# get VM's IP
+# save VM's IP
 "${res_folder}"/bin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
 #
 sleep 2

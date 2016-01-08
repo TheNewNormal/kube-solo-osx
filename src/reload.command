@@ -33,6 +33,8 @@ echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
 sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml
 echo " "
 
+# save VM's IP
+"${res_folder}"/bin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
 # get VM's IP
 vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
 
