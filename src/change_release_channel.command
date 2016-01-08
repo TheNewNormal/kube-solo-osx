@@ -13,8 +13,6 @@ release_channel
 #
 echo " "
 echo "The 'custom.conf' file was updated to $channel channel !!!"
-echo "You need to run from menu 'Setup->Destroy VM' to get VM destroyed"
-echo "and new VM will be created on the next 'Up'..."
-echo "If there is no $channel channel image, it will be downloaded automaticly..."
+echo "You need to reload your VM if it is running or on next VM's boot new $channel ISO will be used ..."
 echo " "
 pause 'Press [Enter] key to continue...'

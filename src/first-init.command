@@ -16,7 +16,7 @@ export PATH=${HOME}/kube-solo/bin:$PATH
 echo " "
 echo "Setting up Kubernetes Solo Cluster on OS X"
 
-# add ssh key to custom.conf
+# add ssh key to to *.toml files
 echo " "
 echo "Reading ssh key from $HOME/.ssh/id_rsa.pub  "
 file="$HOME/.ssh/id_rsa.pub"
@@ -32,7 +32,6 @@ done
 echo " "
 echo "$file found, updating configuration files ..."
 echo "   sshkey = '$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/settings/k8solo-01.toml
-echo "   sshkey = '$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/settings/format-root.toml
 #
 
 # add ssh key to Keychain
@@ -45,8 +44,8 @@ save_password
 # Set release channel
 release_channel
 
-# create ROOT disk
-create_root_disk
+# create Data disk
+create_data_disk
 
 # get password for sudo
 my_password=$(security find-generic-password -wa kube-solo-app)
@@ -59,10 +58,6 @@ echo " "
 echo "Starting VM ..."
 echo " "
 echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
-
-# multi user workaround
-sudo sed -i.bak '/^$/d' /etc/exports
-sudo sed -i.bak '/Users.*/d' /etc/exports
 
 #
 sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml

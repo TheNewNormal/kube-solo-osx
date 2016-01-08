@@ -1,6 +1,6 @@
 #cloud-config
 
-#hostname: k8solo-01
+hostname: k8solo-01
 
 coreos:
   update:
@@ -15,19 +15,6 @@ coreos:
     listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
     advertise-client-urls:  http://0.0.0.0:2379,http://0.0.0.0:4001
   units:
-    - name: etcd2.service
-      command: start
-    - name: fleet.service
-      command: start
-    - name: flanneld.service
-      command: start
-      drop-ins:
-      - name: 50-network-config.conf
-        content: |
-          [Unit]
-          Requires=etcd2.service
-          [Service]
-          ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network": "10.244.0.0/16", "SubnetLen": 24, "SubnetMin": "10.244.0.0", "Backend": {"Type": "vxlan"}}'
     - name: docker-tcp.socket
       command: start
       enable: true
@@ -42,6 +29,107 @@ coreos:
 
         [Install]
         WantedBy=sockets.target
+    - name: format-persistent-disk.service
+      command: start
+      content: |
+        [Unit]
+        Description=Formats the persistent drive (if not formated yet)
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/bin/sh -c '/usr/sbin/blkid -pi /dev/vda | grep TYPE= || /usr/sbin/mkfs.ext4 /dev/vda'
+    - name: data.mount
+      command: start
+      content: |
+        [Unit]
+        Description=Mounts ephemeral to /data
+        Requires=format-persistent-disk.service
+        After=format-persistent-disk.service
+        Before=etcd2.service fleet.service docker.service rkt-metadata.socket
+        [Mount]
+        What=/dev/vda
+        Where=/data
+        Type=ext4
+    - name: persistent-data-checks.service
+      command: start
+      content: |
+        [Unit]
+        Description=prepare for etcd,docker,rkt,opt
+        Requires=data.mount
+        After=data.mount
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/bin/sh -c '[[ -d /data/var/lib/docker ]] || mkdir -p /data/var/lib/docker'
+        ExecStart=/bin/sh -c '[[ -d /data/var/lib/rkt ]] || mkdir -p /data/var/lib/rkt'
+        ExecStart=/bin/sh -c '[[ -d /data/var/lib/etcd2 ]] || mkdir -p /data/var/lib/etcd2 && /usr/bin/chown etcd:etcd /data/var/lib/etcd2'
+        ExecStart=/bin/sh -c '[[ -d /data/opt/bin ]] || mkdir -p /data/opt/bin'
+        ExecStart=/bin/sh -c '[[ -d /data/kubernetes ]] || mkdir -p /data/kubernetes'
+    - name: var-lib-etcd2.mount
+      command: start
+      content: |
+        [Unit]
+        Description=Binds /data/var/lib/etcd2 to /var/lib/etcd2
+        After=persistent-data-checks.service
+        Requires=persistent-data-checks docker.service
+        Before=etcd2.service
+        [Mount]
+        What=/data/var/lib/etcd2
+        Where=/var/lib/etcd2
+        Type=none
+        Options=bind
+    - name: var-lib-docker.mount
+      command: start
+      content: |
+        [Unit]
+        Description=Binds /data/var/lib/docker to /var/lib/docker
+        After=persistent-data-checks.service
+        Requires=persistent-data-checks docker.service
+        Before=docker.service
+        [Mount]
+        What=/data/var/lib/docker
+        Where=/var/lib/docker
+        Type=none
+        Options=bind
+    - name: var-lib-rkt.mount
+      command: start
+      content: |
+        [Unit]
+        Description=Binds /data/var/lib/rkt to /var/lib/rkt
+        Requires=persistent-data-checks.service rkt-metadata.socket
+        After=persistent-data-checks.service
+        Before=rkt-metadata.socket
+        [Mount]
+        What=/data/var/lib/rkt
+        Where=/var/lib/rkt
+        Type=none
+        Options=bind
+    - name: opt-bin.mount
+      command: start
+      content: |
+        [Unit]
+        Description=Binds /data/opt/bin to /opt/bin
+        Requires=persistent-data-checks.service
+        After=persistent-data-checks.service
+        Before=docker.service rkt-metadata.socket
+        [Mount]
+        What=/data/opt/bin
+        Where=/opt/bin
+        Type=none
+        Options=bind
+    - name: etcd2.service
+      command: start
+    - name: fleet.service
+      command: start
+    - name: flanneld.service
+      command: start
+      drop-ins:
+      - name: 50-network-config.conf
+        content: |
+          [Unit]
+          Requires=etcd2.service
+          [Service]
+          ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{"Network": "10.244.0.0/16", "SubnetLen": 24, "SubnetMin": "10.244.0.0", "Backend": {"Type": "vxlan"}}'
     - name: docker.service
       command: start
       drop-ins:
@@ -53,31 +141,18 @@ coreos:
             Environment=DOCKER_OPTS='--insecure-registry="0.0.0.0/0"'
     - name: update-engine.service
       command: stop
-    - name: setup-network-environment.service
-      command: start
-      content: |
-        [Unit]
-        Description=Setup Network Environment
-        Documentation=https://github.com/kelseyhightower/setup-network-environment
-        Requires=network-online.target
-        After=network-online.target
-        [Service]
-        ExecStartPre=/bin/sh -c "while [ ! -f /opt/bin/setup-network-environment ]; do sleep 1; done"
-        ExecStart=/opt/bin/setup-network-environment
-        RemainAfterExit=yes
-        Type=oneshot
     - name: kube-certs.service
       command: start
       content: |
         [Unit]
         Description=Generate Kubernetes API Server certificates
-        ConditionPathExists=/opt/bin/make-certs.sh
+        ConditionPathExists=/opt/sbin/make-certs.sh
         [Service]
         EnvironmentFile=/etc/environment
         ExecStartPre=/bin/sh -c "while [ ! -f /opt/tmp/easy-rsa.tar.gz ]; do sleep 1; done"
         ExecStartPre=-/usr/sbin/groupadd -r kube-cert
-        ExecStartPre=/usr/bin/chmod 755 /opt/bin/make-certs.sh
-        ExecStart=/opt/bin/make-certs.sh ${COREOS_PUBLIC_IPV4} IP:${COREOS_PUBLIC_IPV4},IP:10.100.0.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local
+        ExecStartPre=/usr/bin/chmod 755 /opt/sbin/make-certs.sh
+        ExecStart=/opt/sbin/make-certs.sh ${COREOS_PUBLIC_IPV4} IP:${COREOS_PUBLIC_IPV4},IP:10.100.0.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local
         Type=oneshot
         RemainAfterExit=true
 write-files:
@@ -117,7 +192,7 @@ write-files:
    owner: core:core
    content: |
      ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXxUqHedGkdM4L4ADKD5gHU/RJIhJH/ZOMcbz1ztmE9MYJevk/rQfm9T9g6tXyxBHnjaKcPDF8C+GfzrId7/Dx1f+DiSs0MH7Q0UvV9tD0GS0axqgCmDltYwaMGBVOnxYmUN9bvNiolC7/CNn3SjPoSkvj4OHMCf9bQlRdaIWAJSkoMcnNkhnN5vLAtwn/yOeAyHGlp705IMiRH2LlA2R6otmFHSQHrkGr/wpu0WJt27EBTIarFeei7dAHlUf1zhStry/OEyqwEKiEo+4fk4vPZXiNyKNklju/I1qFcbc8HwbDVzTtdlQCURQO4losDmQgFdI4wz1flOOrsK+1+vPb core@k8solo-01
- - path: /opt/bin/wupiao
+ - path: /opt/sbin/wupiao
    permissions: '0755'
    content: |
       #!/bin/bash
@@ -127,7 +202,7 @@ write-files:
           sleep 1 && echo .;
         done;
       exit $?
- - path: /opt/bin/make-certs.sh
+ - path: /opt/sbin/make-certs.sh
    permissions: '0755'
    content: |
       #!/bin/sh -
@@ -141,7 +216,7 @@ write-files:
 
       cert_ip=$1
       extra_sans=${2:-}
-      cert_dir=/srv/kubernetes
+      cert_dir=/data/kubernetes
       cert_group=kube-cert
 
       mkdir -p "$cert_dir"

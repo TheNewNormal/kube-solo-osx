@@ -5,11 +5,11 @@ Requires=etcd2.service fleet.service docker.service flanneld.service
 After=etcd2.service fleet.service docker.service flanneld.service
 [Service]
 ExecStart=/opt/bin/kube-apiserver \
- --client-ca-file=/srv/kubernetes/ca.crt \
- --tls-cert-file=/srv/kubernetes/server.cert \
- --tls-private-key-file=/srv/kubernetes/server.key \
+ --client-ca-file=/data/kubernetes/ca.crt \
+ --tls-cert-file=/data/kubernetes/server.cert \
+ --tls-private-key-file=/data/kubernetes/server.key \
  --admission_control=NamespaceLifecycle,NamespaceAutoProvision,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota \
- --service_account_key_file=/srv/kubernetes/server.key \
+ --service_account_key_file=/data/kubernetes/server.key \
  --service_account_lookup=false \
  --allow_privileged=true \
  --insecure_bind_address=0.0.0.0 \
