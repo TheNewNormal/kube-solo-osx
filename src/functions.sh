@@ -10,6 +10,26 @@ function pause(){
 }
 
 
+function sshkey(){
+# add ssh key to *.toml files
+echo " "
+echo "Reading ssh key from $HOME/.ssh/id_rsa.pub  "
+file="$HOME/.ssh/id_rsa.pub"
+
+while [ ! -f "$file" ]
+do
+echo " "
+echo "$file not found."
+echo "please run 'ssh-keygen -t rsa' before you continue !!!"
+pause 'Press [Enter] key to continue...'
+done
+
+echo " "
+echo "$file found, updating configuration files ..."
+echo "   sshkey = '$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/settings/k8solo-01.toml
+#
+}
+
 function release_channel(){
 # Set release channel
 LOOP=1
@@ -62,76 +82,33 @@ done
 }
 
 
-create_root_disk() {
+create_data_disk() {
 # path to the bin folder where we store our binary files
 export PATH=${HOME}/kube-solo/bin:$PATH
 
 # create persistent disk
 cd ~/kube-solo/
 echo "  "
-echo "Please type ROOT disk size in GBs followed by [ENTER]:"
+echo "Please type Data disk size in GBs followed by [ENTER]:"
 echo -n "[default is 5]: "
 read disk_size
 if [ -z "$disk_size" ]
 then
     echo " "
     echo "Creating 5GB disk ..."
-### dd if=/dev/zero of=root.img bs=1m count=$[5120]
-    mkfile 5g root.img
-    echo "Created 5GB ROOT disk"
+    mkfile 5g data.img
+    echo "-"
+    echo "Created 5GB Data disk"
 else
     echo " "
     echo "Creating "$disk_size"GB disk (it could take a while for big disks)..."
-###    dd if=/dev/zero of=root.img bs=1m count=$[$disk_size*1024]
-    mkfile "$disk_size"g root.img
+    mkfile "$disk_size"g data.img
     echo "-"
-    echo "Created "$disk_size"GB ROOT disk"
+    echo "Created "$disk_size"GB Data disk"
 fi
-echo " "
-sleep 1
-#
-
-### format ROOT disk
-
-# Get password
-my_password=$(security find-generic-password -wa kube-solo-app)
-# reset sudo
-sudo -k > /dev/null 2>&1
-#
-echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
-#
-echo "Formating k8solo-01 ROOT disk ..."
-# multi user workaround
-sudo sed -i.bak '/^$/d' /etc/exports
-sudo sed -i.bak '/Users.*/d' /etc/exports
-#
-# get UUID
-UUID=$(cat ~/kube-solo/settings/k8solo-01.toml | grep "uuid =" | sed -e 's/uuid = "\(.*\)"/\1/' | tr -d ' ')
-# cleanup
-rm -rf ~/.coreos/running/$UUID
-# copy user-data-format-root
-cp -f "${res_folder}"/cloud-init/user-data-format-root ~/kube-solo/cloud-init
-# start VM
-sudo "${res_folder}"/bin/corectl load settings/format-root.toml
-# format disk
-"${res_folder}"/bin/corectl ssh k8solo-01 "sudo /usr/sbin/mkfs.ext4 -L ROOT /dev/vda"
-# save VM's IP
-"${res_folder}"/bin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
-#
-sleep 2
-#
-# halt VM
-sudo "${res_folder}"/bin/corectl halt k8solo-01
-#
-sleep 1
-# cleanup
-rm -rf ~/.coreos/running/$UUID
-#
-echo " "
-echo "ROOT disk got created and formated... "
-echo "---"
 
 }
+
 
 function download_osx_clients() {
 # download fleetctl file
@@ -215,10 +192,6 @@ for b in "${bins[@]}"; do
     curl -k -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/$b > ~/kube-solo/tmp/$b
 done
 #
-# download setup-network-environment binary
-echo "Downloading setup-network-environment"
-curl -L https://github.com/kelseyhightower/setup-network-environment/releases/download/1.0.1/setup-network-environment > ~/kube-solo/tmp/setup-network-environment
-#
 chmod 755 ~/kube-solo/tmp/*
 #
 curl -L https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz > ~/kube-solo/tmp/easy-rsa.tar.gz
@@ -277,11 +250,6 @@ cd ~/kube-solo/tmp
 echo " "
 echo "Downloading Kubernetes $K8S_VERSION tar.gz from github ..."
 curl -k -L https://github.com/kubernetes/kubernetes/releases/download/$K8S_VERSION/kubernetes.tar.gz >  kubernetes.tar.gz
-
-# download setup-network-environment binary
-echo "Downloading setup-network-environment from github ..."
-curl -L https://github.com/kelseyhightower/setup-network-environment/releases/download/1.0.1/setup-network-environment > setup-network-environment
-chmod 755 setup-network-environment
 #
 # extracting Kubernetes files
 echo "Extracting Kubernetes $K8S_VERSION files ..."

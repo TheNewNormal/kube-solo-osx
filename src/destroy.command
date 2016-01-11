@@ -39,7 +39,7 @@ do
         echo -e "$my_password\n" | sudo -S "${res_folder}"/bin/corectl halt k8solo-01 > /dev/null 2>&1
 
         # delete root image
-        rm -f ~/kube-solo/root.img
+        rm -f ~/kube-solo/data.img
 
         # delete password in keychain
         security 2>&1 >/dev/null delete-generic-password -a kube-solo-app 2>&1 >/dev/null

@@ -1,8 +1,0 @@
-#cloud-config
-
-#hostname: k8solo-01
-
-coreos:
-  units:
-    - name: update-engine.service
-      command: stop

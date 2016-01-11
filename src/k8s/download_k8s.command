@@ -33,10 +33,6 @@ for b in "${bins[@]}"; do
     curl -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/$b > kube/$b
 done
 
-# download setup-network-environment binary
-echo "Downloading setup-network-environment"
-curl -L https://github.com/kelseyhightower/setup-network-environment/releases/download/1.0.1/setup-network-environment > kube/setup-network-environment
-#
 chmod a+x kube/*
 #
 curl -L https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz > kube/easy-rsa.tar.gz

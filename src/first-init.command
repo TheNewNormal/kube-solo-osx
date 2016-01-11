@@ -16,24 +16,8 @@ export PATH=${HOME}/kube-solo/bin:$PATH
 echo " "
 echo "Setting up Kubernetes Solo Cluster on OS X"
 
-# add ssh key to custom.conf
-echo " "
-echo "Reading ssh key from $HOME/.ssh/id_rsa.pub  "
-file="$HOME/.ssh/id_rsa.pub"
-
-while [ ! -f "$file" ]
-do
-    echo " "
-    echo "$file not found."
-    echo "please run 'ssh-keygen -t rsa' before you continue !!!"
-    pause 'Press [Enter] key to continue...'
-done
-
-echo " "
-echo "$file found, updating configuration files ..."
-echo "   sshkey = '$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/settings/k8solo-01.toml
-echo "   sshkey = '$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/settings/format-root.toml
-#
+# add ssh key to *.toml files
+sshkey
 
 # add ssh key to Keychain
 ssh-add -K ~/.ssh/id_rsa &>/dev/null
@@ -45,8 +29,8 @@ save_password
 # Set release channel
 release_channel
 
-# create ROOT disk
-create_root_disk
+# create Data disk
+create_data_disk
 
 # get password for sudo
 my_password=$(security find-generic-password -wa kube-solo-app)
@@ -59,13 +43,10 @@ echo " "
 echo "Starting VM ..."
 echo " "
 echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
-
-# multi user workaround
-sudo sed -i.bak '/^$/d' /etc/exports
-sudo sed -i.bak '/Users.*/d' /etc/exports
-
 #
 sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml
+# check id /Users/homefolder is mounted, if not mount it
+"${res_folder}"/bin/corectl ssh k8solo-01 'source /etc/environment; if df -h | grep ${HOMEDIR}; then echo 0; else sudo systemctl restart ${HOMEDIR}; fi' > /dev/null 2>&1
 
 # save VM's IP
 "${res_folder}"/bin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address

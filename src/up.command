@@ -13,6 +13,9 @@ res_folder=$(cat ~/kube-solo/.env/resouces_path)
 # path to the bin folder where we store our binary files
 export PATH=${HOME}/kube-solo/bin:$PATH
 
+# add ssh key to *.toml files
+sshkey
+
 # add ssh key to Keychain
 ssh-add -K ~/.ssh/id_rsa &>/dev/null
 
@@ -24,9 +27,20 @@ then
 fi
 
 # copy bin files to ~/kube-solo/bin
-cp -f "${res_folder}"/bin/* ~/kube-solo/bin
+rsync -r --verbose --exclude 'helm' "${res_folder}"/bin/* ~/kube-solo/bin/ > /dev/null 2>&1
 rm -f ~/kube-solo/bin/gen_kubeconfig
 chmod 755 ~/kube-solo/bin/*
+## copy user-data
+rm -f ~/kube-solo/cloud-init/*
+cp -f "${res_folder}"/cloud-init/* ~/kube-solo/cloud-init
+### copy and update settings
+used_channel=$(cat ~/kube-solo/settings/k8solo-01.toml | grep channel | cut -f 2 -d"=" | awk -F '"' '{print $2}' )
+rm -f ~/kube-solo/settings/*
+cp -f "${res_folder}"/settings/* ~/kube-solo/settings
+# restore coreos channel and sshkey
+sed -i '' "s/"alpha"/$used_channel/g" ~/kube-solo/settings/*.toml
+echo "   sshkey = '$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/settings/k8solo-01.toml
+#
 
 # check for password in Keychain
 my_password=$(security 2>&1 >/dev/null find-generic-password -wa kube-solo-app)
@@ -40,10 +54,10 @@ fi
 
 new_vm=0
 # check if root disk exists, if not create it
-if [ ! -f $HOME/kube-solo/root.img ]; then
+if [ ! -f $HOME/kube-solo/data.img ]; then
     echo " "
-    echo "ROOT disk does not exist, it will be created now ..."
-    create_root_disk
+    echo "Data disk does not exist, it will be created now ..."
+    create_data_disk
     new_vm=1
 fi
 
@@ -58,13 +72,10 @@ echo " "
 echo "Starting VM ..."
 echo " "
 echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
-
-# multi user workaround
-#sudo sed -i.bak '/^$/d' /etc/exports
-#sudo sed -i.bak '/Users.*/d' /etc/exports
-
 #
 sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml
+# check id /Users/homefolder is mounted, if not mount it
+"${res_folder}"/bin/corectl ssh k8solo-01 'source /etc/environment; if df -h | grep ${HOMEDIR}; then echo 0; else sudo systemctl restart ${HOMEDIR}; fi' > /dev/null 2>&1
 
 # save VM's IP
 "${res_folder}"/bin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address

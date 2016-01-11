@@ -30,7 +30,10 @@ cd ~/kube-solo
 echo " "
 echo "Starting VM ..."
 echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
+#
 sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml
+# check id /Users/homefolder is mounted, if not mount it
+"${res_folder}"/bin/corectl ssh k8solo-01 'source /etc/environment; if df -h | grep ${HOMEDIR}; then echo 0; else sudo systemctl restart ${HOMEDIR}; fi' > /dev/null 2>&1
 echo " "
 
 # save VM's IP
