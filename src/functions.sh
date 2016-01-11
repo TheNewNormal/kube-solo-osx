@@ -10,6 +10,26 @@ function pause(){
 }
 
 
+function sshkey(){
+# add ssh key to *.toml files
+echo " "
+echo "Reading ssh key from $HOME/.ssh/id_rsa.pub  "
+file="$HOME/.ssh/id_rsa.pub"
+
+while [ ! -f "$file" ]
+do
+echo " "
+echo "$file not found."
+echo "please run 'ssh-keygen -t rsa' before you continue !!!"
+pause 'Press [Enter] key to continue...'
+done
+
+echo " "
+echo "$file found, updating configuration files ..."
+echo "   sshkey = '$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/settings/k8solo-01.toml
+#
+}
+
 function release_channel(){
 # Set release channel
 LOOP=1

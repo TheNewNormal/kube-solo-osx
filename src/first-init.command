@@ -16,23 +16,8 @@ export PATH=${HOME}/kube-solo/bin:$PATH
 echo " "
 echo "Setting up Kubernetes Solo Cluster on OS X"
 
-# add ssh key to to *.toml files
-echo " "
-echo "Reading ssh key from $HOME/.ssh/id_rsa.pub  "
-file="$HOME/.ssh/id_rsa.pub"
-
-while [ ! -f "$file" ]
-do
-    echo " "
-    echo "$file not found."
-    echo "please run 'ssh-keygen -t rsa' before you continue !!!"
-    pause 'Press [Enter] key to continue...'
-done
-
-echo " "
-echo "$file found, updating configuration files ..."
-echo "   sshkey = '$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/settings/k8solo-01.toml
-#
+# add ssh key to *.toml files
+sshkey
 
 # add ssh key to Keychain
 ssh-add -K ~/.ssh/id_rsa &>/dev/null
@@ -58,9 +43,10 @@ echo " "
 echo "Starting VM ..."
 echo " "
 echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
-
 #
 sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml
+# check id /Users/homefolder is mounted, if not mount it
+"${res_folder}"/bin/corectl ssh k8solo-01 'source /etc/environment; if df -h | grep ${HOMEDIR}; then echo 0; else sudo systemctl restart ${HOMEDIR}; fi' > /dev/null 2>&1
 
 # save VM's IP
 "${res_folder}"/bin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
