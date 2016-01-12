@@ -54,7 +54,7 @@ Open downloaded `dmg` file and drag the App e.g. to your Desktop. Start the `Kub
 * [Kubernetes UI](http://kubernetes.io/v1.1/docs/user-guide/ui.html) will be instlled as an add-on
 * Also [DNS Add On](https://github.com/GoogleCloudPlatform/kubernetes/tree/master/cluster/addons/dns) will be installed
 * Via assigned static IP (it will be shown in first boot and will survive VM's reboots) you can access any port on CoreOS VM
-* Persistant disk `data.img` will be created and mounted to `/data` for these mount binds:
+* Persistent disk `data.img` will be created and mounted to `/data` for these mount binds:
 
 ```
 /data/var/lib/docker -> /var/lib/docker

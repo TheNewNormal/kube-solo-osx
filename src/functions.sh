@@ -139,6 +139,8 @@ else
 fi
 
 # get lastest OS X helm version from bintray
+cd ~/kube-solo/bin
+# curl -s https://get.helm.sh | bash > /dev/null 2>&1
 bin_version=$(curl -sI https://bintray.com/deis/helm/helm/_latestVersion | grep "Location:" | sed -n 's%.*helm/%%;s%/view.*%%p')
 echo "Downloading latest version of helm for OS X"
 curl -L "https://dl.bintray.com/deis/helm/helm-$bin_version-darwin-amd64.zip" -o helm.zip

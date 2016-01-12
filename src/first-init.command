@@ -58,7 +58,7 @@ vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
 install_k8s_files
 #
 
-# download latest version fleetctl client
+# download latest version of fleetctl and helm clients
 download_osx_clients
 #
 
