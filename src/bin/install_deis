@@ -38,7 +38,7 @@ echo "To learn more about deis client, execute:"
 echo "deis -h"
 echo " "
 #
-echo "Waiting for Deis PaaS to be ready, it could take a while (5-10 min) ... "
+echo "Waiting for Deis PaaS to be ready... but first, coffee! "
 spin='-\|/'
 i=1
 until kubectl --namespace=deis get po | grep [d]eis-builder- | grep "Running"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
