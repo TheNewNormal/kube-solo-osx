@@ -31,11 +31,11 @@ export FLEETCTL_ENDPOINT=http://$vm_ip:2379
 export FLEETCTL_DRIVER=etcd
 export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
 cd ~/kube-solo/fleet
-~/kube-solo/bin/fleetctl stop kube-apiserver.service
-~/kube-solo/bin/fleetctl stop kube-controller-manager.service
-~/kube-solo/bin/fleetctl stop kube-scheduler.service
-~/kube-solo/bin/fleetctl stop kube-kubelet.service
-~/kube-solo/bin/fleetctl stop kube-proxy.service
+~/kube-solo/bin/fleetctl destroy kube-apiserver.service
+~/kube-solo/bin/fleetctl destroy kube-controller-manager.service
+~/kube-solo/bin/fleetctl destroy kube-scheduler.service
+~/kube-solo/bin/fleetctl destroy kube-kubelet.service
+~/kube-solo/bin/fleetctl destroy kube-proxy.service
 echo " "
 sleep 5
 ~/kube-solo/bin/fleetctl start kube-apiserver.service
