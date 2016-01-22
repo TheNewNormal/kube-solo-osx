@@ -13,12 +13,6 @@ res_folder=$(cat ~/kube-solo/.env/resouces_path)
 # path to the bin folder where we store our binary files
 export PATH=${HOME}/kube-solo/bin:$PATH
 
-# add ssh key to *.toml files
-sshkey
-
-# add ssh key to Keychain
-ssh-add -K ~/.ssh/id_rsa &>/dev/null
-
 # check if iTerm.app exists
 App="/Applications/iTerm.app"
 if [ ! -d "$App" ]
@@ -37,9 +31,12 @@ cp -f "${res_folder}"/cloud-init/* ~/kube-solo/cloud-init
 used_channel=$(cat ~/kube-solo/settings/k8solo-01.toml | grep channel | cut -f 2 -d"=" | awk -F '"' '{print $2}' )
 rm -f ~/kube-solo/settings/*
 cp -f "${res_folder}"/settings/* ~/kube-solo/settings
-# restore coreos channel and sshkey
+# restore coreos channel
 sed -i '' "s/"alpha"/$used_channel/g" ~/kube-solo/settings/*.toml
-echo "   sshkey = '$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/settings/k8solo-01.toml
+# add ssh key to *.toml file
+sshkey
+# add ssh key to Keychain
+ssh-add -K ~/.ssh/id_rsa &>/dev/null
 #
 
 # check for password in Keychain
