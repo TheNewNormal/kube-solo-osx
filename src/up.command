@@ -20,6 +20,9 @@ then
     unzip "${res_folder}"/files/iTerm2.zip -d /Applications/
 fi
 
+# create logs dir
+mkdir ~/kube-solo/logs > /dev/null 2>&1
+
 # copy bin files to ~/kube-solo/bin
 rsync -r --verbose --exclude 'helm' "${res_folder}"/bin/* ~/kube-solo/bin/ > /dev/null 2>&1
 rm -f ~/kube-solo/bin/gen_kubeconfig
@@ -70,8 +73,20 @@ echo "Starting VM ..."
 echo " "
 echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
 #
-sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml
-# check id /Users/homefolder is mounted, if not mount it
+sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml 2>&1 | tee ~/kube-solo/logs/vm_up.log
+CHECK_VM_STATUS=$(cat ~/kube-solo/logs/vm_up.log | grep "started")
+#
+if [[ "$CHECK_VM_STATUS" == "" ]]; then
+    echo " "
+    echo "VM have not booted, please check '~/kube-solo/logs/vm_up.log' and report the problem !!! "
+    echo " "
+    pause 'Press [Enter] key to continue...'
+    exit 0
+else
+    echo "VM successfully started !!!" >> ~/kube-solo/logs/vm_up.log
+fi
+
+# check if /Users/homefolder is mounted, if not mount it
 "${res_folder}"/bin/corectl ssh k8solo-01 'source /etc/environment; if df -h | grep ${HOMEDIR}; then echo 0; else sudo systemctl restart ${HOMEDIR}; fi' > /dev/null 2>&1
 
 # save VM's IP

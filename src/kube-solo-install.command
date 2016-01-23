@@ -6,6 +6,7 @@
     # create in "kube-solo" all required folders and files at user's home folder where all the data will be stored
     mkdir ~/kube-solo
     mkdir ~/kube-solo/tmp
+    mkdir ~/kube-solo/logs
     mkdir ~/kube-solo/bin
     mkdir ~/kube-solo/cloud-init
     mkdir ~/kube-solo/settings
