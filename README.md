@@ -125,7 +125,7 @@ Some examples to start with [Kubernetes examples](https://github.com/GoogleCloud
 
 Other links
 -----------
-* Cluster one with Kubernetes CoreOS VM App can be found here [CoreOS Kubernetes Cluster for OS X](https://github.com/rimusz/coreos-osx-kubernetes-cluster).
+* Kubernetes Cluster (master + 2 nodes) CoreOS VM App can be found here [Kube-Cluster for OS X](https://github.com/TheNewNormal/kube-cluster-osx).
 
 * Standalone CoreOS VM version App can be found here [CoreOS OS X](https://github.com/TheNewNormal/coreos-osx).
 
