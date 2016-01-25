@@ -10,11 +10,11 @@ Zero to Kubernetes development environment
 
 **Kube-Solo for Mac OS X** is a Mac Status bar App which works like a wrapper around the [corectl](https://github.com/TheNewNormal/corectl) command line tool (it makes easier to control [xhyve](https://github.com/xhyve-xyz/xhyve) based VMs) and bootstraps Kubernetes on a standalone [CoreOS](https://coreos.com) VM machine.
 
-Includes [Helm](https://helm.sh) - The Kubernetes Package Manager
+Also there is [Kube-Cluster for OS X](https://github.com/TheNewNormal/kube-cluster-osx) App (master + 2 nodes)
 
-**New:** Includes an option from shell to install [Deis open source PaaS](http://deis.io/overview/) v2 alpha on top of Kubernetes: `$ install_deis`
+**Includes** [Helm](https://helm.sh) - The Kubernetes Package Manager
 
-**New:** Since v0.3.2 the App is based on [corectl](https://github.com/TheNewNormal/corectl) which brings more stablity to the App.
+**Includes** an option from shell to install [Deis open source PaaS](http://deis.io/overview/) v2 alpha on top of Kubernetes: `$ install_deis`
 
 Kube-Solo App can be used together with [CoreOS VM App](https://github.com/TheNewNormal/coreos-osx) which allows to build Docker containers and has a private local Docker registry v2 which is accessible from Kube-Solo App.
 
