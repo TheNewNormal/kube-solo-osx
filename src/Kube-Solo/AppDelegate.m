@@ -209,6 +209,12 @@
 }
 
 
+- (IBAction)changeVMRAM:(id)sender {
+    [self notifyUserWithText:NSLocalizedString(@"VMRAMChangeNotificationMessage", nil)];
+    [self.vmManager changeVMRAM];
+}
+
+
 - (IBAction)changeSudoPassword:(id)sender {
     [self notifyUserWithText:NSLocalizedString(@"SudoPasswordChangeNotificationMessage", nil)];
     [self.vmManager changeSudoPassword];

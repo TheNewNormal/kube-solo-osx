@@ -4,5 +4,5 @@
    volume = "data.img"
    cloud_config = "cloud-init/user-data"
    cpus = 2
-   memory = "2048"
+   memory = 2048
    local = "true"

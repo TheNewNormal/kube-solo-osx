@@ -10,9 +10,6 @@ source "${DIR}"/functions.sh
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
-# get VM IP
-vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
-
 # get password for sudo
 my_password=$(security find-generic-password -wa kube-solo-app)
 # reset sudo
@@ -38,7 +35,7 @@ do
         # send halt to VM
         echo -e "$my_password\n" | sudo -S "${res_folder}"/bin/corectl halt k8solo-01 > /dev/null 2>&1
 
-        # delete root image
+        # delete data image
         rm -f ~/kube-solo/data.img
 
         # delete password in keychain

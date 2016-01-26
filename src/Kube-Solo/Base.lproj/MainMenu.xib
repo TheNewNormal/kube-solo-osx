@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
     </dependencies>
@@ -759,10 +759,17 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="2qm-xK-2AI"/>
-                            <menuItem title="Change 'sudo' password" id="YJ4-BU-RHT">
+                            <menuItem title="Change VM's RAM size" id="YJ4-BU-RHT">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="changeSudoPassword:" target="494" id="zih-wE-heQ"/>
+                                    <action selector="changeVMRAM:" target="494" id="8SR-l6-uOC"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="NmB-Yu-0V6"/>
+                            <menuItem title="Change 'sudo' password" id="TTp-IO-ybw">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="changeSudoPassword:" target="494" id="DX4-cn-wRQ"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="IpY-jd-Luh"/>
