@@ -34,6 +34,7 @@
 		1329DEB51BD4FB5F008AA719 /* up.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEAA1BD4FB5F008AA719 /* up.command */; };
 		1329DEB61BD4FB5F008AA719 /* update_osx_clients_files.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEAB1BD4FB5F008AA719 /* update_osx_clients_files.command */; };
 		1329DEB81BD526A3008AA719 /* update_k8s.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEB71BD526A3008AA719 /* update_k8s.command */; };
+		1345D2771C57002B000BCBC6 /* change_vm_ram.command in Resources */ = {isa = PBXBuildFile; fileRef = 1345D2761C57002B000BCBC6 /* change_vm_ram.command */; };
 		1347C2F91C30570D0083CDF9 /* change_sudo_password.command in Resources */ = {isa = PBXBuildFile; fileRef = 1347C2F81C30570D0083CDF9 /* change_sudo_password.command */; };
 		13BCE1C01BEBC0BD00A1A48E /* update_k8s_version.command in Resources */ = {isa = PBXBuildFile; fileRef = 13BCE1BF1BEBC0BD00A1A48E /* update_k8s_version.command */; };
 		13D9B8671C35B09B00EBB078 /* restore_update_fleet_units.command in Resources */ = {isa = PBXBuildFile; fileRef = 13D9B8661C35B09B00EBB078 /* restore_update_fleet_units.command */; };
@@ -81,6 +82,7 @@
 		1329DEAA1BD4FB5F008AA719 /* up.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = up.command; sourceTree = "<group>"; };
 		1329DEAB1BD4FB5F008AA719 /* update_osx_clients_files.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = update_osx_clients_files.command; sourceTree = "<group>"; };
 		1329DEB71BD526A3008AA719 /* update_k8s.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = update_k8s.command; sourceTree = "<group>"; };
+		1345D2761C57002B000BCBC6 /* change_vm_ram.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = change_vm_ram.command; sourceTree = "<group>"; };
 		1347C2F81C30570D0083CDF9 /* change_sudo_password.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = change_sudo_password.command; sourceTree = "<group>"; };
 		13BCE1BF1BEBC0BD00A1A48E /* update_k8s_version.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = update_k8s_version.command; sourceTree = "<group>"; };
 		13D9B8661C35B09B00EBB078 /* restore_update_fleet_units.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = restore_update_fleet_units.command; sourceTree = "<group>"; };
@@ -197,6 +199,7 @@
 				1329DEA51BD4FB5F008AA719 /* functions.sh */,
 				1329DEA11BD4FB5F008AA719 /* check_vm_status.command */,
 				011BBA3A1A2A842A00AAB35B /* change_release_channel.command */,
+				1345D2761C57002B000BCBC6 /* change_vm_ram.command */,
 				1347C2F81C30570D0083CDF9 /* change_sudo_password.command */,
 				1329DEA31BD4FB5F008AA719 /* destroy.command */,
 				019410671BE11DFA00723E19 /* kill_VM.command */,
@@ -289,6 +292,7 @@
 				1329DE9A1BD4FA58008AA719 /* kube-solo-install.command in Resources */,
 				01E2855618A6C4E300BC630D /* Images.xcassets in Resources */,
 				1329DEB21BD4FB5F008AA719 /* reload.command in Resources */,
+				1345D2771C57002B000BCBC6 /* change_vm_ram.command in Resources */,
 				01741B63190DB80500BB1F91 /* first-init.command in Resources */,
 				011BBA3B1A2A842A00AAB35B /* change_release_channel.command in Resources */,
 				13FE22191C1C410100F465F1 /* cloud-init in Resources */,

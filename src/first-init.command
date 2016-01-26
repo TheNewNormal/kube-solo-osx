@@ -29,42 +29,14 @@ save_password
 # Set release channel
 release_channel
 
+# set VM's RAM
+change_vm_ram
+
 # create Data disk
 create_data_disk
 
-# get password for sudo
-my_password=$(security find-generic-password -wa kube-solo-app)
-# reset sudo
-sudo -k > /dev/null 2>&1
-
 # Start VM
-cd ~/kube-solo
-echo " "
-echo "Starting VM ..."
-echo " "
-echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
-#
-sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml 2>&1 | tee ~/kube-solo/logs/first-init_vm_up.log
-CHECK_VM_STATUS=$(cat ~/kube-solo/logs/first-init_vm_up.log | grep "started")
-#
-if [[ "$CHECK_VM_STATUS" == "" ]]; then
-    echo " "
-    echo "VM have not booted, please check '~/kube-solo/logs/first-init_vm_up.log' and report the problem !!! "
-    echo " "
-    pause 'Press [Enter] key to continue...'
-    exit 0
-else
-    echo "VM successfully started !!!" >> ~/kube-solo/logs/first-init_vm_up.log
-fi
-
-# check id /Users/homefolder is mounted, if not mount it
-"${res_folder}"/bin/corectl ssh k8solo-01 'source /etc/environment; if df -h | grep ${HOMEDIR}; then echo 0; else sudo systemctl restart ${HOMEDIR}; fi' > /dev/null 2>&1
-
-# save VM's IP
-"${res_folder}"/bin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
-# get VM IP
-vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
-#
+start_vm
 
 # install k8s files on to VM
 install_k8s_files
