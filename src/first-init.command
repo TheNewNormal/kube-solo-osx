@@ -20,7 +20,9 @@ echo "Setting up Kubernetes Solo Cluster on OS X"
 sshkey
 
 # add ssh key to Keychain
-ssh-add -K ~/.ssh/id_rsa &>/dev/null
+if ! ssh-add -l | grep -q ssh/id_rsa; then
+  ssh-add -K ~/.ssh/id_rsa &>/dev/null
+fi
 
 # save user's password to Keychain
 save_password
