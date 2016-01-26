@@ -110,6 +110,66 @@ fi
 }
 
 
+change_vm_ram() {
+echo " "
+echo " "
+echo "Please type VM's RAM size in GBs followed by [ENTER]:"
+echo -n "[default is 2]: "
+read ram_size
+if [ -z "$ram_size" ]
+then
+    ram_size=2
+    echo "Changing VM's RAM to "$ram_size"GB..."
+    ((new_ram_size=$ram_size*1024))
+    sed -i "" 's/\(memory = \)\(.*\)/\1'$new_ram_size'/g' ~/kube-solo/settings/k8solo-01.toml
+    echo " "
+else
+    echo "Changing VM's RAM to "$ram_size"GB..."
+    ((new_ram_size=$ram_size*1024))
+    sed -i "" 's/\(memory = \)\(.*\)/\1'$new_ram_size'/g' ~/kube-solo/settings/k8solo-01.toml
+    echo " "
+fi
+
+}
+
+
+start_vm() {
+# get password for sudo
+my_password=$(security find-generic-password -wa kube-solo-app)
+# reset sudo
+sudo -k > /dev/null 2>&1
+
+# Start VM
+cd ~/kube-solo
+echo " "
+echo "Starting VM ..."
+echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
+#
+sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml 2>&1 | tee ~/kube-solo/logs/vm_up.log
+CHECK_VM_STATUS=$(cat ~/kube-solo/logs/vm_up.log | grep "started")
+#
+if [[ "$CHECK_VM_STATUS" == "" ]]; then
+    echo " "
+    echo "VM have not booted, please check '~/kube-solo/logs/vm_up.log' and report the problem !!! "
+    echo " "
+    pause 'Press [Enter] key to continue...'
+    exit 0
+else
+    echo "VM successfully started !!!" >> ~/kube-solo/logs/vm_up.log
+fi
+
+# check if /Users/homefolder is mounted, if not mount it
+"${res_folder}"/bin/corectl ssh k8solo-01 'source /etc/environment; if df -h | grep ${HOMEDIR}; then echo 0; else sudo systemctl restart ${HOMEDIR}; fi' > /dev/null 2>&1
+
+# save VM's IP
+"${res_folder}"/bin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
+# get VM IP
+vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
+#
+
+}
+
+
 function download_osx_clients() {
 # download fleetctl file
 FLEETCTL_VERSION=$("${res_folder}"/bin/corectl ssh k8solo-01 'fleetctl --version' | awk '{print $3}' | tr -d '\r')
