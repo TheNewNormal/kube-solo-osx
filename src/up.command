@@ -29,8 +29,9 @@ rm -f ~/kube-solo/bin/gen_kubeconfig
 chmod 755 ~/kube-solo/bin/*
 
 # add ssh key to Keychain
-ssh-add -K ~/.ssh/id_rsa &>/dev/null
-#
+if ! ssh-add -l | grep -q ssh/id_rsa; then
+  ssh-add -K ~/.ssh/id_rsa &>/dev/null
+fi
 
 # check for password in Keychain
 my_password=$(security 2>&1 >/dev/null find-generic-password -wa kube-solo-app)
