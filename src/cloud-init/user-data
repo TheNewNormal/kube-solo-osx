@@ -65,6 +65,7 @@ coreos:
         ExecStart=/bin/sh -c '[[ -d /data/var/lib/etcd2 ]] || mkdir -p /data/var/lib/etcd2 && /usr/bin/chown etcd:etcd /data/var/lib/etcd2'
         ExecStart=/bin/sh -c '[[ -d /data/opt/bin ]] || mkdir -p /data/opt/bin'
         ExecStart=/bin/sh -c '[[ -d /data/kubernetes ]] || mkdir -p /data/kubernetes'
+        ExecStart=/bin/sh -c '[[ -d /data/mnt ]] || mkdir -p /data/mnt'
     - name: var-lib-etcd2.mount
       command: start
       content: |
@@ -115,6 +116,19 @@ coreos:
         [Mount]
         What=/data/opt/bin
         Where=/opt/bin
+        Type=none
+        Options=bind
+    - name: mnt.mount
+      command: start
+      content: |
+        [Unit]
+        Description=Binds /data/mnt to /mnt
+        Requires=persistent-data-checks.service
+        After=persistent-data-checks.service
+        Before=docker.service rkt-metadata.socket
+        [Mount]
+        What=/data/mnt
+        Where=/mnt
         Type=none
         Options=bind
     - name: etcd2.service
