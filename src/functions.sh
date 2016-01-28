@@ -40,7 +40,7 @@ do
     echo "Set CoreOS Release Channel:"
     echo " 1)  Alpha "
     echo " 2)  Beta "
-    echo " 3)  Stable "
+    echo " 3)  Stable (recommended)"
     echo " "
     echo -n "Select an option: "
 
@@ -90,20 +90,20 @@ export PATH=${HOME}/kube-solo/bin:$PATH
 cd ~/kube-solo/
 echo "  "
 echo "Please type Data disk size in GBs followed by [ENTER]:"
-echo -n "[default is 5]: "
+echo -n "[default is 10]: "
 read disk_size
 if [ -z "$disk_size" ]
 then
     echo " "
-    echo "Creating 5GB disk ..."
-    mkfile 5g data.img
-    echo "-"
-    echo "Created 5GB Data disk"
+    echo "Creating 10GB disk ..."
+##    mkfile 10g data.img
+    ~/kube-solo/bin/pv -s 10g -S < /dev/zero > data.img
+    echo "Created 10GB Data disk"
 else
     echo " "
     echo "Creating "$disk_size"GB disk (it could take a while for big disks)..."
-    mkfile "$disk_size"g data.img
-    echo "-"
+##    mkfile "$disk_size"g data.img
+    ~/kube-solo/bin/pv -s "$disk_size"g -S < /dev/zero > data.img
     echo "Created "$disk_size"GB Data disk"
 fi
 
