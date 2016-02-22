@@ -38,7 +38,7 @@ do
     VALID_MAIN=0
     echo " "
     echo "Set CoreOS Release Channel:"
-    echo " 1)  Alpha "
+    echo " 1)  Alpha (may not always function properly)"
     echo " 2)  Beta "
     echo " 3)  Stable (recommended)"
     echo " "
