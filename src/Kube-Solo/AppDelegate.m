@@ -27,12 +27,36 @@
     [self.statusItem setMenu:self.statusMenu];
     [self.statusItem setImage: [NSImage imageNamed:@"StatusItemIcon"]];
     [self.statusItem setHighlightMode:YES];
+    
+    // get resourcePath
+    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+    NSLog(@"App resource path: '%@'", resourcePath);
+    
+    NSString *dmgPath = @"/Volumes/Kube-Solo/Kube-Solo.app/Contents/Resources";
+    NSLog(@"DMG resource path: '%@'", dmgPath);
+    
+    // check resourcePath and exit the App if it runs from the dmg
+    if ( [resourcePath isEqual: dmgPath] ) {
+        // show alert message
+        NSString *message = [NSString stringWithFormat:NSLocalizedString(@"DmgAlertMessage", nil)];
+        NSString *infoText = NSLocalizedString(@"DmgAlertInformativeText", nil);
+        [self alertWithMessage:message infoText:infoText];
+        
+        // show quitting App message
+        [self notifyUserWithTitle:NSLocalizedString(@"QuittingNotificationTitle", nil) text:nil];
+
+        // exiting App
+        [[NSApplication sharedApplication] terminate:self];
+    }
+    
 
     BOOL isDir;
+    // check if the Apps' home folder exits
     if ([[NSFileManager defaultManager] fileExistsAtPath:[[NSURL ks_homeURL] path] isDirectory:&isDir] && isDir) {
-        NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+        // write down App's resource path a file
         [resourcePath writeToURL:[NSURL ks_resourcePathURL] atomically:YES encoding:NSUTF8StringEncoding error:nil];
-
+        
+        // write down App's version a file
         NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
         [version writeToURL:[NSURL ks_appVersionURL] atomically:YES encoding:NSUTF8StringEncoding error:nil];
         
@@ -255,6 +279,7 @@
         [self.vmManager install];
     }
 }
+
 
 - (IBAction)About:(id)sender {
     NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
