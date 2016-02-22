@@ -32,7 +32,6 @@ How to install Kube-Solo
  -----------
   - **OS X 10.10.3** Yosemite or later 
   - Mac 2010 or later for this to work.
-  - If you want to use this App with any other VirtualBox based VM, you need to use newest versions of VirtualBox 4.3.x or 5.0.x.
 
 
 ###Install:
