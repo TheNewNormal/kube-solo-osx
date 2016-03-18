@@ -32,6 +32,7 @@ How to install Kube-Solo
  -----------
   - **OS X 10.10.3** Yosemite or later 
   - Mac 2010 or later for this to work.
+  - **Note:** For the fresh install it is recommended to restart your Mac if you have used VirtualBox based VM, as the VirtualBox sometimes messes up networking.
 
 
 ###Install:
@@ -48,8 +49,8 @@ Open downloaded `dmg` file and drag the App e.g. to your Desktop. Start the `Kub
 * It will install `fleetctl, etcdctl and kubectl` to `~/kube-solo/bin/`
 * Kubernetes services will be installed with fleet units which are placed in `~/kube-solo/fleet`, this allows very easy updates to fleet units if needed.
 * [Fleet-UI](http://fleetui.com) via unit file will be installed to check running fleet units
-* [Kubernetes UI](http://kubernetes.io/v1.1/docs/user-guide/ui.html) will be instlled as an add-on
-* Also [DNS Add On](https://github.com/GoogleCloudPlatform/kubernetes/tree/master/cluster/addons/dns) will be installed
+* [Kubernetes Dashboard](http://kubernetes.io/docs/user-guide/ui/) will be instlled as an add-on
+* Also [DNS addon](https://github.com/kubernetes/kubernetes/blob/release-1.2/cluster/addons/dns/README.md) will be installed
 * Via assigned static IP (it will be shown in first boot and will survive VM's reboots) you can access any port on CoreOS VM
 * Persistent disk `data.img` will be created and mounted to `/data` for these mount binds:
 
@@ -78,7 +79,7 @@ Just start `Kube-Solo` application and you will find a small icon of Kubernetes 
 ````
 
 * [Fleet-UI](http://fleetui.com) dashboard will show running fleet units and etc
-* [Kubernetes-UI](https://github.com/GoogleCloudPlatform/kubernetes/tree/master/www) (contributed by [Kismatic.io](http://kismatic.io/)) will show nice Kubernetes Dashboard, where you can check Nodes, Pods, Replication and Service Controllers and etc.
+* [Kubernetes Dashboard](http://kubernetes.io/docs/user-guide/ui/) will show nice Kubernetes Dashboard, where you can check Nodes, Pods, Replication and Service Controllers, deploy Apps and etc.
 * `k8solo-01 cAdvisor` will open cAdvisor URL in default browser
 * `Updates/Update Kubernetes to the latest version` will update to latest version of Kubernetes.
 * `Updates/Change Kubernetes version` will download and install specified Kubernetes version from GitHub.
@@ -118,7 +119,7 @@ Usage
 
 You're now ready to use Kubernetes cluster.
 
-Some examples to start with [Kubernetes examples](https://github.com/GoogleCloudPlatform/kubernetes/blob/master/examples/).
+Some examples to start with [Kubernetes examples](http://kubernetes.io/docs/samples/).
 
 Other links
 -----------

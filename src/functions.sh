@@ -90,15 +90,15 @@ export PATH=${HOME}/kube-solo/bin:$PATH
 cd ~/kube-solo/
 echo "  "
 echo "Please type Data disk size in GBs followed by [ENTER]:"
-echo -n "[default is 10]: "
+echo -n "[default is 15]: "
 read disk_size
 if [ -z "$disk_size" ]
 then
     echo " "
-    echo "Creating 10GB disk ..."
+    echo "Creating 15GB disk ..."
 ##    mkfile 10g data.img
-    ~/kube-solo/bin/pv -s 10g -S < /dev/zero > data.img
-    echo "Created 10GB Data disk"
+    ~/kube-solo/bin/pv -s 15g -S < /dev/zero > data.img
+    echo "Created 15GB Data disk"
 else
     echo " "
     echo "Creating "$disk_size"GB disk (it could take a while for big disks)..."
@@ -392,16 +392,16 @@ echo "Installing SkyDNS ..."
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/skydns-svc.yaml
 #
 echo " "
-echo "Installing Kubernetes UI ..."
-~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-ui-rc.yaml
-~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-ui-svc.yaml
+echo "Installing Kubernetes Dashboard ..."
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/dashboard-controller.yaml
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/dashboard-service.yaml
 sleep 1
 # clean up kubernetes folder
 rm -f ~/kube-solo/kubernetes/kube-system-ns.yaml
 rm -f ~/kube-solo/kubernetes/skydns-rc.yaml
 rm -f ~/kube-solo/kubernetes/skydns-svc.yaml
-rm -f ~/kube-solo/kubernetes/kube-ui-rc.yaml
-rm -f ~/kube-solo/kubernetes/kube-ui-svc.yaml
+rm -f ~/kube-solo/kubernetes/dashboard-controller.yaml
+rm -f ~/kube-solo/kubernetes/dashboard-service.yaml
 echo " "
 }
 
