@@ -21,6 +21,7 @@
 		01E2855418A6C4E300BC630D /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 01E2855218A6C4E300BC630D /* MainMenu.xib */; };
 		01E2855618A6C4E300BC630D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01E2855518A6C4E300BC630D /* Images.xcassets */; };
 		01F0282C1A7C54C8008C37AA /* os_shell.command in Resources */ = {isa = PBXBuildFile; fileRef = 01F0282B1A7C54C8008C37AA /* os_shell.command */; };
+		1316B0B01CAD94C600C94913 /* deis in Resources */ = {isa = PBXBuildFile; fileRef = 1316B0AF1CAD94C600C94913 /* deis */; };
 		1329DE901BD4F95F008AA719 /* settings in Resources */ = {isa = PBXBuildFile; fileRef = 1329DE8F1BD4F95F008AA719 /* settings */; };
 		1329DE921BD4F974008AA719 /* files in Resources */ = {isa = PBXBuildFile; fileRef = 1329DE911BD4F974008AA719 /* files */; };
 		1329DE9A1BD4FA58008AA719 /* kube-solo-install.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DE991BD4FA58008AA719 /* kube-solo-install.command */; };
@@ -69,6 +70,7 @@
 		01E2855518A6C4E300BC630D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		01E2855C18A6C4E300BC630D /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		01F0282B1A7C54C8008C37AA /* os_shell.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = os_shell.command; sourceTree = "<group>"; };
+		1316B0AF1CAD94C600C94913 /* deis */ = {isa = PBXFileReference; lastKnownFileType = folder; path = deis; sourceTree = SOURCE_ROOT; };
 		1329DE8F1BD4F95F008AA719 /* settings */ = {isa = PBXFileReference; lastKnownFileType = folder; path = settings; sourceTree = SOURCE_ROOT; };
 		1329DE911BD4F974008AA719 /* files */ = {isa = PBXFileReference; lastKnownFileType = folder; path = files; sourceTree = SOURCE_ROOT; };
 		1329DE991BD4FA58008AA719 /* kube-solo-install.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "kube-solo-install.command"; sourceTree = SOURCE_ROOT; };
@@ -110,6 +112,7 @@
 		014E6F8B18B63AF700E697C0 /* Installation Files */ = {
 			isa = PBXGroup;
 			children = (
+				1316B0AF1CAD94C600C94913 /* deis */,
 				13FE22161C1C40C700F465F1 /* bin */,
 				13FE22181C1C410100F465F1 /* cloud-init */,
 				1329DE911BD4F974008AA719 /* files */,
@@ -303,6 +306,7 @@
 				1329DE921BD4F974008AA719 /* files in Resources */,
 				13FE22171C1C40C700F465F1 /* bin in Resources */,
 				1329DE901BD4F95F008AA719 /* settings in Resources */,
+				1316B0B01CAD94C600C94913 /* deis in Resources */,
 				CA4F70021BE19B8400D87763 /* Localizable.strings in Resources */,
 				01E2855418A6C4E300BC630D /* MainMenu.xib in Resources */,
 				01F0282C1A7C54C8008C37AA /* os_shell.command in Resources */,

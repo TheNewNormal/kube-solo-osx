@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: deis-minio
+  namespace: deis
+  labels:
+    heritage: deis
+spec:
+  replicas: 1
+  selector:
+    app: deis-minio
+  template:
+    metadata:
+      labels:
+        app: deis-minio
+    spec:
+      serviceAccount: deis-minio
+      containers:
+        - name: deis-minio
+          image: quay.io/deis/minio:v2.0.0-beta1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: HEALTH_SERVER_PORT
+              value: "8082"
+          ports:
+            - containerPort: 9000
+            - containerPort: 8082
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8082
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8082
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+          command:
+            - boot
+          args:
+            - "server /home/minio/"
+          volumeMounts:
+            - name: minio-admin
+              mountPath: /var/run/secrets/deis/minio/admin
+              readOnly: true
+            - name: minio-user
+              mountPath: /var/run/secrets/deis/minio/user
+              readOnly: true
+            - name: home-minio
+              mountPath: /home/minio
+      volumes:
+        - name: minio-admin
+          secret:
+            secretName: minio-admin
+        - name: minio-user
+          secret:
+            secretName: minio-user
+        - name: home-minio
+          hostPath:
+            path: /data/deis/minio
