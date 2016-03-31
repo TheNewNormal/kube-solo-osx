@@ -17,37 +17,40 @@ echo "helm is installed to ~/kube-solo/bin ... "
 
 # run helm for the first time
 helm up
-# add Chart repo
-helm repo add kube-charts https://github.com/TheNewNormal/kube-charts
-# Get the latest version of all Charts from repos
+# add Deis Chart repo
+helm repo add deis https://github.com/deis/charts
+# get the latest version of all Charts from all repos
 helm up
-# Fetch Deis-Lite Chart to your helm's working directory
-helm fetch kube-charts/deis-lite
-# Install Deis-Lite PaaS
-helm install deis-lite
+# fetch Deis Workflow Chart to your helm's working directory
+helm fetch deis/workflow-beta1
+# run helm generate
+helm generate -x manifests workflow-beta1
+# update minio rc with persistent volume
+cp -f "${res_folder}"/deis/deis-minio-rc.yaml ~/.helm/workspace/charts/workflow-beta1/manifests/deis-minio-rc.yaml
+# Install Deis PaaS
+helm install workflow-beta1
 
 # Install deis client
 current_folder=$(pwd)
 cd ~/kube-solo/bin
 echo " "
 echo "Installing deis client ..."
-curl -sSL http://deis.io/deis-cli/install-v2-alpha.sh | bash > /dev/null 2>&1
+curl -sSL http://deis.io/deis-cli/install-v2.sh | bash > /dev/null 2>&1
 cd $current_folder
 echo "deis client is installed to ~/kube-solo/bin ..."
 echo "To learn more about deis client, execute:"
 echo "deis -h"
 echo " "
 #
-echo "Waiting for Deis PaaS to be ready... but first, coffee! "
+echo "Waiting for Deis Workflow PaaS to be ready... but first, coffee! "
 spin='-\|/'
 i=1
-until kubectl --namespace=deis get po | grep [d]eis-builder- | grep "Running"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-until kubectl --namespace=deis get po | grep [d]eis-etcd-1- | grep "Running"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-until kubectl --namespace=deis get po | grep [d]eis-database- | grep "Running"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-until kubectl --namespace=deis get po | grep [d]eis-minio- | grep "Running"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-until kubectl --namespace=deis get po | grep [d]eis-router- | grep "Running"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-until kubectl --namespace=deis get po | grep [d]eis-workflow- | grep "Running"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-until curl -o /dev/null -sI http://deis.$vm_ip.xip.io/health-check >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+until kubectl --namespace=deis get po | grep [d]eis-builder- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+until kubectl --namespace=deis get po | grep [d]eis-registry- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+until kubectl --namespace=deis get po | grep [d]eis-database- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+until kubectl --namespace=deis get po | grep [d]eis-minio- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+until kubectl --namespace=deis get po | grep [d]eis-router- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+until kubectl --namespace=deis get po | grep [d]eis-controller- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 #
 
 sleep 5
@@ -59,12 +62,11 @@ deis register deis.$vm_ip.xip.io
 
 # add ssh key to Deis PaaS
 echo " "
-echo "Adding ssh key to Deis PaaS ... "
+echo "Adding ssh key to Deis Workflow PaaS ... "
 deis keys:add ~/.ssh/id_rsa.pub
-echo " "
 
 echo " "
-echo "Clonning some demo Apps for Deis ... "
+echo "Cloning some demo Apps for testing ... "
 rm -fr ~/kube-solo/deis/apps
 mkdir -p ~/kube-solo/deis/apps
 cd ~/kube-solo/deis/apps
@@ -75,12 +77,12 @@ echo " "
 
 cd ~/kube-solo/deis/apps
 
-echo "Deis PaaS install is completed ..."
-echo "It can be accessed via http://deis.$vm_ip.xip.io "
+echo "Deis Workflow PaaS install is completed ..."
+echo "Deis Workflow PaaS IP is http://deis.$vm_ip.xip.io "
 echo " "
 echo "Please read how to:" 
-echo "Deploy Applications - https://github.com/deis/workflow/blob/master/docs/src/using-deis/deploying-an-application.md"
-echo "To manage Applications - https://github.com/deis/workflow/blob/master/docs/src/using-deis/managing-an-application.md"
-echo "Using Deis PaaS - https://github.com/deis/workflow/tree/master/docs/src/using-deis"
+echo "Deploy Applications - http://docs-v2.readthedocs.org/en/latest/using-workflow/deploying-an-application/"
+echo "To manage Applications - http://docs-v2.readthedocs.org/en/latest/using-workflow/managing-an-application/"
+echo "Understanding Deis Workflow PaaS - http://docs-v2.readthedocs.org/en/latest/understanding-workflow/concepts/"
 echo " "
 
