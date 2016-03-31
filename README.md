@@ -12,7 +12,7 @@ Also there is [Kube-Cluster for OS X](https://github.com/TheNewNormal/kube-clust
 
 **Includes** [Helm](https://helm.sh) - The Kubernetes Package Manager
 
-**Includes** an option from shell to install [Deis open source PaaS](http://deis.io/overview/) v2 alpha on top of Kubernetes: `$ install_deis`
+**Includes:** an option from shell to install [Deis open source Workflow PaaS](https://deis.com) beta1 on top of Kubernetes: `$ install_deis`
 
 Kube-Solo App can be used together with [CoreOS VM App](https://github.com/TheNewNormal/coreos-osx) which allows to build Docker containers and has a private local Docker registry v2 which is accessible from Kube-Solo App.
 
