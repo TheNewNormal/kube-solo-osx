@@ -35,9 +35,11 @@
     # linux binaries
     cp "$1"/k8s/kube.tgz ~/kube-solo/kube
 
+    # copy fleetctl
+    cp -f "$1"/files/fleetctl ~/kube-solo/bin
+
     # copy fleet units
     cp -R "$1"/fleet/ ~/kube-solo/fleet
-    #
 
     # check if iTerm.app exists
     App="/Applications/iTerm.app"
