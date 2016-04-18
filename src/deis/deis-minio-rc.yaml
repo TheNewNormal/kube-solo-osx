@@ -1,3 +1,4 @@
+#helm:generate helm tpl -d $HELM_GENERATE_DIR/tpl/generate_params.toml -o $HELM_GENERATE_DIR/manifests/deis-minio-rc.yaml $HELM_GENERATE_DIR/tpl/deis-minio-rc.yaml
 apiVersion: v1
 kind: ReplicationController
 metadata:
@@ -17,7 +18,7 @@ spec:
       serviceAccount: deis-minio
       containers:
         - name: deis-minio
-          image: quay.io/deis/minio:v2.0.0-beta1
+          image: quay.io/deis/minio:v2.0.0-beta2
           imagePullPolicy: IfNotPresent
           env:
             - name: HEALTH_SERVER_PORT
@@ -42,18 +43,12 @@ spec:
           args:
             - "server /home/minio/"
           volumeMounts:
-            - name: minio-admin
-              mountPath: /var/run/secrets/deis/minio/admin
-              readOnly: true
             - name: minio-user
               mountPath: /var/run/secrets/deis/minio/user
               readOnly: true
             - name: home-minio
               mountPath: /home/minio
       volumes:
-        - name: minio-admin
-          secret:
-            secretName: minio-admin
         - name: minio-user
           secret:
             secretName: minio-user

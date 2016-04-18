@@ -3,8 +3,21 @@
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
+function pause(){
+    read -p "$*"
+}
+
+
 # get VM's IP
 vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
+
+#
+echo " "
+echo "If you have installed previous beta version of Deis Workflow PaaS, please uninstall it first"
+echo "'$ helm uninstall workflow-beta1 -n deis' as currently upgrade between Workflow betas is not supported yet ..."
+echo " "
+pause 'Press [Enter] key to continue...'
+echo " "
 
 # get lastest OS X helm version
 current_folder=$(pwd)
@@ -22,13 +35,13 @@ helm repo add deis https://github.com/deis/charts
 # get the latest version of all Charts from all repos
 helm up
 # fetch Deis Workflow Chart to your helm's working directory
-helm fetch deis/workflow-beta1
+helm fetch deis/workflow-beta2
 # run helm generate
-helm generate -x manifests workflow-beta1
+helm generate -x manifests workflow-beta2
 # update minio rc with persistent volume
-cp -f "${res_folder}"/deis/deis-minio-rc.yaml ~/.helm/workspace/charts/workflow-beta1/manifests/deis-minio-rc.yaml
+cp -f "${res_folder}"/deis/deis-minio-rc.yaml ~/.helm/workspace/charts/workflow-beta2/manifests/deis-minio-rc.yaml
 # Install Deis PaaS
-helm install workflow-beta1
+helm install workflow-beta2
 
 # Install deis client
 current_folder=$(pwd)
@@ -57,8 +70,8 @@ sleep 5
 
 # run deis register user
 echo " "
-echo "Registering user ..."
-deis register deis.$vm_ip.xip.io
+echo "Registering admin user ..."
+deis register deis.$vm_ip.nip.io
 
 # add ssh key to Deis PaaS
 echo " "
@@ -66,11 +79,11 @@ echo "Adding ssh key to Deis Workflow PaaS ... "
 deis keys:add ~/.ssh/id_rsa.pub
 
 echo " "
-echo "Cloning some demo Apps for testing ... "
+echo "Cloning some demo Apps for testing to ~/kube-solo/deis/apps ... "
 rm -fr ~/kube-solo/deis/apps
 mkdir -p ~/kube-solo/deis/apps
 cd ~/kube-solo/deis/apps
-git clone https://github.com/deis/example-ruby-sinatra.git
+git clone https://github.com/deis/example-dockerfile-http
 git clone https://github.com/deis/helloworld.git
 git clone https://github.com/deis/example-go.git
 echo " "
@@ -78,10 +91,10 @@ echo " "
 cd ~/kube-solo/deis/apps
 
 echo "Deis Workflow PaaS install is completed ..."
-echo "Deis Workflow PaaS IP is http://deis.$vm_ip.xip.io "
+echo "Deis Workflow PaaS IP is http://deis.$vm_ip.nip.io "
 echo " "
 echo "Please read how to:" 
-echo "Deploy Applications - http://docs-v2.readthedocs.org/en/latest/using-workflow/deploying-an-application/"
+echo "To deploy Applications - http://docs-v2.readthedocs.org/en/latest/using-workflow/deploying-an-application/"
 echo "To manage Applications - http://docs-v2.readthedocs.org/en/latest/using-workflow/managing-an-application/"
 echo "Understanding Deis Workflow PaaS - http://docs-v2.readthedocs.org/en/latest/understanding-workflow/concepts/"
 echo " "
