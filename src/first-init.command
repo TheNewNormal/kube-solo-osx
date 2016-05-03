@@ -112,7 +112,7 @@ echo " "
 echo "You can control this App via status bar icon... "
 echo " "
 
-echo "Also you can install Deis Workflow PaaS (https://deis.com) beta2 version with 'install_deis' command ..."
+echo "Also you can install Deis Workflow (https://deis.com) with 'install_deis' command ..."
 echo " "
 
 cd ~/kube-solo

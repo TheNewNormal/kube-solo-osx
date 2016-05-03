@@ -10,9 +10,9 @@ Zero to Kubernetes development environment
 
 Also there is [Kube-Cluster for OS X](https://github.com/TheNewNormal/kube-cluster-osx) App (master + 2 nodes)
 
-**Includes** [Helm](https://helm.sh) - The Kubernetes Package Manager
+**Includes:** [Helm](https://helm.sh) - The Kubernetes Package Manager
 
-**Includes:** an option from shell to install [Deis open source Workflow PaaS](https://deis.com) beta2 on top of Kubernetes: `$ install_deis`
+**Includes:** An option from shell to install [Deis Workflow](https://deis.com) on top of Kubernetes with a simple: `$ install_deis`
 
 Kube-Solo App can be used together with [CoreOS VM App](https://github.com/TheNewNormal/coreos-osx) which allows to build Docker containers and has a private local Docker registry v2 which is accessible from Kube-Solo App.
 
@@ -32,7 +32,7 @@ How to install Kube-Solo
  -----------
   - **OS X 10.10.3** Yosemite or later 
   - Mac 2010 or later for this to work.
-  - **Note:** For the fresh install it is recommended to restart your Mac if you have used VirtualBox based VM, as the VirtualBox sometimes messes up networking.
+  - **Note:** For the fresh App install it is recommended to restart your Mac if you have used VirtualBox based VM, as the VirtualBox sometimes messes networking up.
 
 
 ###Install:
