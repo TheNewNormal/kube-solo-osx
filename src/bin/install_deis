@@ -14,7 +14,7 @@ vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
 #
 echo " "
 echo "If you have installed previous beta version of Deis Workflow PaaS, please uninstall it first"
-echo "'$ helm uninstall workflow-beta1 -n deis' as currently upgrade between Workflow betas is not supported yet ..."
+echo "'$ helm uninstall workflow-beta2 -n deis' as currently any upgrade between Workflow betas is not supported yet ..."
 echo " "
 pause 'Press [Enter] key to continue...'
 echo " "
@@ -34,14 +34,16 @@ helm up
 helm repo add deis https://github.com/deis/charts
 # get the latest version of all Charts from all repos
 helm up
+# delete the old folder if such exists
+rm -rf ~/.helm/workspace/charts/workflow-beta3-kube-solo > /dev/null 2>&1
 # fetch Deis Workflow Chart to your helm's working directory
-helm fetch deis/workflow-beta2
+helm fetch deis/workflow-beta3 workflow-beta3-kube-solo
 # run helm generate
-helm generate -x manifests workflow-beta2
+helm generate -x manifests workflow-beta3-kube-solo
 # update minio rc with persistent volume
-cp -f "${res_folder}"/deis/deis-minio-rc.yaml ~/.helm/workspace/charts/workflow-beta2/manifests/deis-minio-rc.yaml
-# Install Deis PaaS
-helm install workflow-beta2
+cp -f "${res_folder}"/deis/deis-minio-rc.yaml ~/.helm/workspace/charts/workflow-beta3-kube-solo/manifests/deis-minio-rc.yaml
+# Install Deis
+helm install workflow-beta3-kube-solo
 
 # Install deis client
 current_folder=$(pwd)
@@ -55,7 +57,7 @@ echo "To learn more about deis client, execute:"
 echo "deis -h"
 echo " "
 #
-echo "Waiting for Deis Workflow PaaS to be ready... but first, coffee! "
+echo "Waiting for Deis Workflow to be ready... but first, coffee! "
 spin='-\|/'
 i=1
 until kubectl --namespace=deis get po | grep [d]eis-builder- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
@@ -75,7 +77,7 @@ deis register deis.$vm_ip.nip.io
 
 # add ssh key to Deis PaaS
 echo " "
-echo "Adding ssh key to Deis Workflow PaaS ... "
+echo "Adding ssh key to Deis Workflow ... "
 deis keys:add ~/.ssh/id_rsa.pub
 
 echo " "
@@ -90,12 +92,11 @@ echo " "
 
 cd ~/kube-solo/deis/apps
 
-echo "Deis Workflow PaaS install is completed ..."
-echo "Deis Workflow PaaS IP is http://deis.$vm_ip.nip.io "
+echo "Deis Workflow install is completed ..."
+echo "Deis Workflow IP is http://deis.$vm_ip.nip.io "
 echo " "
 echo "Please read how to:" 
 echo "To deploy Applications - http://docs-v2.readthedocs.org/en/latest/using-workflow/deploying-an-application/"
 echo "To manage Applications - http://docs-v2.readthedocs.org/en/latest/using-workflow/managing-an-application/"
-echo "Understanding Deis Workflow PaaS - http://docs-v2.readthedocs.org/en/latest/understanding-workflow/concepts/"
+echo "Understanding Deis Workflow - http://docs-v2.readthedocs.org/en/latest/understanding-workflow/concepts/"
 echo " "
-
