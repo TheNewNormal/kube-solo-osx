@@ -24,7 +24,7 @@ fi
 mkdir ~/kube-solo/logs > /dev/null 2>&1
 
 # copy bin files to ~/kube-solo/bin
-rsync -r --verbose --exclude 'helm' "${res_folder}"/bin/* ~/kube-solo/bin/ > /dev/null 2>&1
+rsync -r --verbose --exclude 'helmc' "${res_folder}"/bin/* ~/kube-solo/bin/ > /dev/null 2>&1
 rm -f ~/kube-solo/bin/gen_kubeconfig
 chmod 755 ~/kube-solo/bin/*
 
