@@ -14,36 +14,36 @@ vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
 #
 echo " "
 echo "If you have installed previous beta version of Deis Workflow PaaS, please uninstall it first"
-echo "'$ helm uninstall workflow-beta2 -n deis' as currently any upgrade between Workflow betas is not supported yet ..."
+echo "'$ helmc uninstall workflow-beta3 -n deis' as currently any upgrade between Workflow betas is not supported yet ..."
 echo " "
 pause 'Press [Enter] key to continue...'
 echo " "
 
-# get lastest OS X helm version
+# get lastest OS X helmc version
 current_folder=$(pwd)
 cd ~/kube-solo/bin
 echo " "
-echo "Installing latest helm ..."
+echo "Installing latest helmc ..."
 curl -s https://get.helm.sh | bash > /dev/null 2>&1
 cd $current_folder
-echo "helm is installed to ~/kube-solo/bin ... "
+echo "helmc is installed to ~/kube-solo/bin ... "
 
 # run helm for the first time
-helm up
+helmc up
 # add Deis Chart repo
-helm repo add deis https://github.com/deis/charts
+helmc repo add deis https://github.com/deis/charts
 # get the latest version of all Charts from all repos
-helm up
+helmc up
 # delete the old folder if such exists
-rm -rf ~/.helm/workspace/charts/workflow-beta3-kube-solo > /dev/null 2>&1
-# fetch Deis Workflow Chart to your helm's working directory
-helm fetch deis/workflow-beta3 workflow-beta3-kube-solo
-# run helm generate
-helm generate -x manifests workflow-beta3-kube-solo
+rm -rf ~/.helmc/workspace/charts/workflow-beta4-kube-solo > /dev/null 2>&1
+# fetch Deis Workflow Chart to your helmc's working directory
+helmc fetch deis/workflow-beta4 workflow-beta4-kube-solo
+# run helmc generate
+helmc generate -x manifests workflow-beta4-kube-solo
 # update minio rc with persistent volume
-cp -f "${res_folder}"/deis/deis-minio-rc.yaml ~/.helm/workspace/charts/workflow-beta3-kube-solo/manifests/deis-minio-rc.yaml
+cp -f "${res_folder}"/deis/deis-minio-rc.yaml ~/.helmc/workspace/charts/workflow-beta4-kube-solo/manifests/deis-minio-rc.yaml
 # Install Deis
-helm install workflow-beta3-kube-solo
+helmc install workflow-beta4-kube-solo
 
 # Install deis client
 current_folder=$(pwd)
@@ -68,7 +68,7 @@ until kubectl --namespace=deis get po | grep [d]eis-router- | grep "1/1"  >/dev/
 until kubectl --namespace=deis get po | grep [d]eis-controller- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 #
 
-sleep 5
+sleep 10
 
 # run deis register user
 echo " "
