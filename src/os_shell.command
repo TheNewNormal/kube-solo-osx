@@ -45,4 +45,4 @@ echo " "
 cd ~/kube-solo
 
 # open bash shell
-/bin/bash -l
+/bin/bash
