@@ -278,37 +278,57 @@ echo "Kubernetes cluster migth not work, so you will need to destroy the cluster
 echo " and boot VM again !!! "
 echo " "
 echo "Please type Kubernetes version you want to be installed e.g. v1.1.1 or v1.2.0-alpha.4"
+echo " "
+echo "Please type the word 'local' to use a local kubernetes.tar.gz file."
+echo " "
 echo "followed by [ENTER] to continue or press CMD + W to exit:"
 read K8S_VERSION
 
-url=https://github.com/kubernetes/kubernetes/releases/download/$K8S_VERSION/kubernetes.tar.gz
+if [ $K8S_VERSION != "local" ]; then
+  url=https://github.com/kubernetes/kubernetes/releases/download/$K8S_VERSION/kubernetes.tar.gz
 
-if curl --output /dev/null --silent --head --fail "$url"; then
+  if curl --output /dev/null --silent --head --fail "$url"; then
     echo "URL exists: $url" > /dev/null
-else
+  else
     echo " "
     echo "There is no such Kubernetes version to download !!!"
     pause 'Press [Enter] key to continue...'
     exit 1
-fi
-
-# we check the version of installed k8s cluster
-INSTALLED_VERSION=$(~/kube-solo/bin/kubectl version | grep "Server Version:" | awk '{print $5}' | awk -v FS='(:"|",)' '{print $2}')
-MATCH=$(echo "${INSTALLED_VERSION}" | grep -c "${K8S_VERSION}")
-if [ $MATCH -ne 0 ]; then
+  fi
+  # we check the version of installed k8s cluster
+  INSTALLED_VERSION=$(~/kube-solo/bin/kubectl version | grep "Server Version:" | awk '{print $5}' | awk -v FS='(:"|",)' '{print $2}')
+  MATCH=$(echo "${INSTALLED_VERSION}" | grep -c "${K8S_VERSION}")
+  if [ $MATCH -ne 0 ]; then
     echo " "
     echo "You have already the ${K8S_VERSION} of Kubernetes installed !!!"
     pause 'Press [Enter] key to continue...'
-    exit 1
+    exit
+  fi
+  # download required version of Kubernetes
+  echo " "
+  echo "Downloading Kubernetes $K8S_VERSION tar.gz from github ..."
+  curl -k -L https://github.com/kubernetes/kubernetes/releases/download/$K8S_VERSION/kubernetes.tar.gz >  kubernetes.tar.gz
+else
+  if [ ! -f ~/kube-solo/tmp/kubernetes.tar.gz ]; then
+    echo "Please Kubernetes file you want to be installed"
+    echo "followed by [ENTER] to continue or press CMD + W to exit:"
+    read K8S_FILE
+    # FIXME ~/kubernetes.tar.gz fails.  Hard path is fine but using ~/ as a directory
+    # fails
+    cp $K8S_FILE ~/kube-solo/tmp/kubernetes.tar.gz
+    if [ ! $? -eq 0 ]; then
+      echo " "
+      echo "There is no such Kubernetes file to install"
+      pause 'Press [Enter] key to continue...'
+      exit 1
+    fi
+    echo " "
+    echo "Using locally installed file."
+  fi
 fi
 
 k8s_upgrade=1
 
-# download required version of Kubernetes
-cd ~/kube-solo/tmp
-echo " "
-echo "Downloading Kubernetes $K8S_VERSION tar.gz from github ..."
-curl -k -L https://github.com/kubernetes/kubernetes/releases/download/$K8S_VERSION/kubernetes.tar.gz >  kubernetes.tar.gz
 #
 # extracting Kubernetes files
 echo "Extracting Kubernetes $K8S_VERSION files ..."
