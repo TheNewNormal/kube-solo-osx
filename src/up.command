@@ -118,4 +118,4 @@ echo " "
 cd ~/kube-solo/kubernetes
 
 # open bash shell
-/bin/bash -l
+/bin/bash
