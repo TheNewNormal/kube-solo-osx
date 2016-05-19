@@ -273,13 +273,14 @@ cd ~/kube-solo/tmp
 
 # ask for k8s version
 echo "You can install a particular version of Kubernetes you migh want to test..."
+echo " "
 echo "Bear in mind if the version you want is lower than the currently installed, "
 echo "Kubernetes cluster migth not work, so you will need to destroy the cluster first "
-echo " and boot VM again !!! "
+echo "and boot VM again !!! "
 echo " "
-echo "Please type Kubernetes version you want to be installed e.g. v1.1.1 or v1.2.0-alpha.4"
+echo "Please type Kubernetes version you want to be installed e.g. v1.2.1 or v1.3.0-alpha.4"
 echo " "
-echo "Please type the word 'local' to use a local kubernetes.tar.gz file."
+echo "Please type the word 'local' to use a local kubernetes.tar.gz file"
 echo " "
 echo "followed by [ENTER] to continue or press CMD + W to exit:"
 read K8S_VERSION
@@ -310,13 +311,9 @@ if [ $K8S_VERSION != "local" ]; then
   curl -k -L https://github.com/kubernetes/kubernetes/releases/download/$K8S_VERSION/kubernetes.tar.gz >  kubernetes.tar.gz
 else
   if [ ! -f ~/kube-solo/tmp/kubernetes.tar.gz ]; then
-    echo "Please Kubernetes file you want to be installed"
-    echo "followed by [ENTER] to continue or press CMD + W to exit:"
-    read K8S_FILE
-    # FIXME ~/kubernetes.tar.gz fails.  Hard path is fine but using ~/ as a directory
-    # fails
-    cp $K8S_FILE ~/kube-solo/tmp/kubernetes.tar.gz
-    if [ ! $? -eq 0 ]; then
+    echo "Place Kubernetes file 'kubernetes.tar.gz' you want to be installed to ~/kube-solo/tmp/ "
+    pause "Press [Enter] key to continue or press CMD + W to exit ..."
+    if [ ! -f ~/kube-solo/tmp/kubernetes.tar.gz ]; then
       echo " "
       echo "There is no such Kubernetes file to install"
       pause 'Press [Enter] key to continue...'

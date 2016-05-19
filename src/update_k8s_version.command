@@ -43,7 +43,7 @@ export FLEETCTL_ENDPOINT=http://$vm_ip:2379
 export FLEETCTL_DRIVER=etcd
 export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
 cd ~/kube-solo/fleet
-echo " Stopping Kubernetes fleet units ..."
+echo "Stopping Kubernetes fleet units ..."
 ~/kube-solo/bin/fleetctl stop kube-apiserver.service
 ~/kube-solo/bin/fleetctl stop kube-controller-manager.service
 ~/kube-solo/bin/fleetctl stop kube-scheduler.service
