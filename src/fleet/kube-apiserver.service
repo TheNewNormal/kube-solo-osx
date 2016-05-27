@@ -3,7 +3,11 @@ Description=Kubernetes API Server
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 Requires=etcd2.service fleet.service docker.service flanneld.service
 After=etcd2.service fleet.service docker.service flanneld.service
+
 [Service]
+# Check for certs
+ExecStartPre=/bin/sh -c '[[ -f /data/kubernetes/ca.crt ]] || /opt/sbin/kube-certs.sh'
+# Start API server
 ExecStart=/opt/bin/kube-apiserver \
  --client-ca-file=/data/kubernetes/ca.crt \
  --tls-cert-file=/data/kubernetes/server.cert \
