@@ -14,7 +14,7 @@ vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
 #
 echo " "
 echo "If you have installed previous beta version of Deis Workflow PaaS, please uninstall it first"
-echo "'$ helmc uninstall workflow-beta3 -n deis' as currently any upgrade between Workflow betas is not supported yet ..."
+echo "'$ helmc uninstall workflow-beta4 -n deis' as currently any upgrade between Workflow Betas/RCs is not supported yet ..."
 echo " "
 pause 'Press [Enter] key to continue...'
 echo " "
@@ -35,15 +35,15 @@ helmc repo add deis https://github.com/deis/charts
 # get the latest version of all Charts from all repos
 helmc up
 # delete the old folder if such exists
-rm -rf ~/.helmc/workspace/charts/workflow-beta4-kube-solo > /dev/null 2>&1
+rm -rf ~/.helmc/workspace/charts/workflow-rc1-kube-solo > /dev/null 2>&1
 # fetch Deis Workflow Chart to your helmc's working directory
-helmc fetch deis/workflow-beta4 workflow-beta4-kube-solo
+helmc fetch deis/workflow-rc1 workflow-rc1-kube-solo
 # run helmc generate
-helmc generate -x manifests workflow-beta4-kube-solo
+helmc generate -x manifests workflow-rc1-kube-solo
 # update minio rc with persistent volume
-cp -f "${res_folder}"/deis/deis-minio-rc.yaml ~/.helmc/workspace/charts/workflow-beta4-kube-solo/manifests/deis-minio-rc.yaml
+###cp -f "${res_folder}"/deis/deis-minio-rc.yaml ~/.helmc/workspace/charts/workflow-rc1-kube-solo/manifests/deis-minio-rc.yaml
 # Install Deis
-helmc install workflow-beta4-kube-solo
+helmc install workflow-rc1-kube-solo
 
 # Install deis client
 current_folder=$(pwd)
