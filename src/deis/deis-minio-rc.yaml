@@ -17,7 +17,7 @@ spec:
       serviceAccount: deis-minio
       containers:
         - name: deis-minio
-          image: quay.io/deis/minio:v2.0.0-beta4
+          image: quay.io/deis/minio:v2.0.0-rc1
           imagePullPolicy: IfNotPresent
           env:
             - name: HEALTH_SERVER_PORT
