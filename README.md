@@ -1,4 +1,4 @@
-Kubernetes Solo cluster for OS X
+Kubernetes Solo cluster for macOS
 ============================
 
 ![k8s-solo](k8s-singlenode.png)
@@ -6,9 +6,9 @@ Kubernetes Solo cluster for OS X
 Zero to Kubernetes development environment
 ---------------
 
-**Kube-Solo for Mac OS X** is a Mac Status bar App which works like a wrapper around the [corectl](https://github.com/TheNewNormal/corectl) command line tool (it makes easier to control [xhyve](https://github.com/xhyve-xyz/xhyve) based VMs) and bootstraps Kubernetes on a standalone [CoreOS](https://coreos.com) VM machine.
+**Kube-Solo for macOS** is a Mac Status bar App which works like a wrapper around the [corectl](https://github.com/TheNewNormal/corectl) command line tool (it makes easier to control [xhyve](https://github.com/xhyve-xyz/xhyve) based VMs) and bootstraps Kubernetes on a standalone [CoreOS](https://coreos.com) VM machine.
 
-Also there is [Kube-Cluster for OS X](https://github.com/TheNewNormal/kube-cluster-osx) App (master + 2 nodes)
+Also there is [Kube-Cluster for macOS](https://github.com/TheNewNormal/kube-cluster-osx) App (master + 2 nodes)
 
 **Includes:** [Helm](https://helm.sh) - The Kubernetes Package Manager
 
@@ -30,7 +30,7 @@ How to install Kube-Solo
 
 **Requirements**
  -----------
-  - **OS X 10.10.3** Yosemite or later 
+  - **macOS 10.10.3** Yosemite or later 
   - Mac 2010 or later for this to work.
   - **Note:** For the fresh App install it is recommended to restart your Mac if you have used VirtualBox based VM, as the VirtualBox sometimes messes networking up.
 
@@ -125,6 +125,6 @@ Other links
 -----------
 * Kubernetes Cluster (master + 2 nodes) CoreOS VM App can be found here [Kube-Cluster for OS X](https://github.com/TheNewNormal/kube-cluster-osx).
 
-* Standalone CoreOS VM version App can be found here [CoreOS OS X](https://github.com/TheNewNormal/coreos-osx).
+* Standalone CoreOS VM version App can be found here [CoreOS macOS](https://github.com/TheNewNormal/coreos-osx).
 
 * CoreOS Cluster one App can be found here [CoreOS-Vagrant Cluster](https://github.com/rimusz/coreos-osx-cluster).
