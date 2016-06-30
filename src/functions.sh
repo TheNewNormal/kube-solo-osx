@@ -10,6 +10,26 @@ function pause(){
 }
 
 
+function check_internet_from_vm(){
+#
+status=$(corectl ssh k8solo-01 "curl -s -I https://coreos.com 2>/dev/null | head -n 1 | cut -d' ' -f2")
+
+if [[ $(echo "${status//[$'\t\r\n ']}") = "200" ]]; then
+    echo "Yes, internet is available ..."
+else
+    echo "There is no internet access from the VM !!!"
+    echo " "
+    echo "Please check you Mac's firewall, network setup "
+    echo " "
+    echo "k8solo-01 VM is still running, so you can troubleshoot the network problem "
+    echo "and when you done just 'Halt' and 'Up' via menu and the installation will continue ... "
+    echo " "
+    pause 'Press [Enter] key to abort installation ...'
+    exit 1
+fi
+}
+
+
 function sshkey(){
 # add ssh key to *.toml files
 echo " "
@@ -50,8 +70,8 @@ do
     if [ $RESPONSE = 1 ]
     then
         VALID_MAIN=1
-        sed -i "" 's/channel = "stable"/channel = "alpha"/g' ~/kube-solo/settings/*.toml
-        sed -i "" 's/channel = "beta"/channel = "alpha"/g' ~/kube-solo/settings/*.toml
+        /usr/bin/sed -i "" 's/channel = "stable"/channel = "alpha"/g' ~/kube-solo/settings/*.toml
+        /usr/bin/sed -i "" 's/channel = "beta"/channel = "alpha"/g' ~/kube-solo/settings/*.toml
         channel="Alpha"
         LOOP=0
     fi
@@ -59,8 +79,8 @@ do
     if [ $RESPONSE = 2 ]
     then
         VALID_MAIN=1
-        sed -i "" 's/channel = "stable"/channel = "beta"/g' ~/kube-solo/settings/*.toml
-        sed -i "" 's/channel = "alpha"/channel = "beta"/g' ~/kube-solo/settings/*.toml
+        /usr/bin/sed -i "" 's/channel = "stable"/channel = "beta"/g' ~/kube-solo/settings/*.toml
+        /usr/bin/sed -i "" 's/channel = "alpha"/channel = "beta"/g' ~/kube-solo/settings/*.toml
         channel="Beta"
         LOOP=0
     fi
@@ -68,8 +88,8 @@ do
     if [ $RESPONSE = 3 ]
     then
         VALID_MAIN=1
-        sed -i "" 's/channel = "beta"/channel = "stable"/g' ~/kube-solo/settings/*.toml
-        sed -i "" 's/channel = "alpha"/channel = "stable"/g' ~/kube-solo/settings/*.toml
+        /usr/bin/sed -i "" 's/channel = "beta"/channel = "stable"/g' ~/kube-solo/settings/*.toml
+        /usr/bin/sed -i "" 's/channel = "alpha"/channel = "stable"/g' ~/kube-solo/settings/*.toml
         channel="Stable"
         LOOP=0
     fi
@@ -121,12 +141,12 @@ then
     ram_size=2
     echo "Changing VM's RAM to "$ram_size"GB..."
     ((new_ram_size=$ram_size*1024))
-    sed -i "" 's/\(memory = \)\(.*\)/\1'$new_ram_size'/g' ~/kube-solo/settings/k8solo-01.toml
+    /usr/bin/sed -i "" 's/\(memory = \)\(.*\)/\1'$new_ram_size'/g' ~/kube-solo/settings/k8solo-01.toml
     echo " "
 else
     echo "Changing VM's RAM to "$ram_size"GB..."
     ((new_ram_size=$ram_size*1024))
-    sed -i "" 's/\(memory = \)\(.*\)/\1'$new_ram_size'/g' ~/kube-solo/settings/k8solo-01.toml
+    /usr/bin/sed -i "" 's/\(memory = \)\(.*\)/\1'$new_ram_size'/g' ~/kube-solo/settings/k8solo-01.toml
     echo " "
 fi
 
@@ -144,6 +164,7 @@ cd ~/kube-solo
 echo " "
 echo "Starting VM ..."
 printf '%s\n' "$my_password" | sudo -Sv > /dev/null 2>&1
+
 #
 sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml 2>&1 | tee ~/kube-solo/logs/vm_up.log
 CHECK_VM_STATUS=$(cat ~/kube-solo/logs/vm_up.log | grep "started")
@@ -200,7 +221,7 @@ fi
 
 # get lastest OS X helm version from bintray
 cd ~/kube-solo/bin
-bin_version=$(curl -sI https://bintray.com/deis/helm/helmc/_latestVersion | grep "Location:" | sed -n 's%.*helm/%%;s%/view.*%%p')
+bin_version=$(curl -sI https://bintray.com/deis/helm/helmc/_latestVersion | grep "Location:" | /usr/bin/sed -n 's%.*helm/%%;s%/view.*%%p')
 echo "Downloading latest version of helmc for OS X"
 curl -s https://get.helm.sh | bash > /dev/null 2>&1
 echo " "
@@ -285,14 +306,15 @@ echo " "
 echo "followed by [ENTER] to continue or press CMD + W to exit:"
 read K8S_VERSION
 
-if [ $K8S_VERSION != "local" ]; then
+if [[ $K8S_VERSION != "local" ]]; then
   url=https://github.com/kubernetes/kubernetes/releases/download/$K8S_VERSION/kubernetes.tar.gz
 
   if curl --output /dev/null --silent --head --fail "$url"; then
     echo "URL exists: $url" > /dev/null
   else
-    echo " "
     echo "There is no such Kubernetes version to download !!!"
+    echo "List of available Kubernetes versions:"
+    curl -s https://api.github.com/repos/kubernetes/kubernetes/releases | grep "tag_name" | awk '{print $2}' | sed -e 's/"\(.*\)"./\1/' | sort -n
     pause 'Press [Enter] key to continue...'
     exit 1
   fi
@@ -399,7 +421,7 @@ echo " "
 echo "Creating kube-system namespace ..."
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-system-ns.yaml
 #
-sed -i "" "s/_MASTER_IP_/$1/" ~/kube-solo/kubernetes/skydns-rc.yaml
+/usr/bin/sed -i "" "s/_MASTER_IP_/$1/" ~/kube-solo/kubernetes/skydns-rc.yaml
 echo " "
 echo "Installing SkyDNS ..."
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/skydns-rc.yaml
@@ -409,6 +431,10 @@ echo " "
 echo "Installing Kubernetes Dashboard ..."
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/dashboard-controller.yaml
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/dashboard-service.yaml
+#
+echo " "
+echo "Installing Kubedash ..."
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kubedash.yaml
 sleep 1
 # clean up kubernetes folder
 rm -f ~/kube-solo/kubernetes/kube-system-ns.yaml
@@ -416,6 +442,7 @@ rm -f ~/kube-solo/kubernetes/skydns-rc.yaml
 rm -f ~/kube-solo/kubernetes/skydns-svc.yaml
 rm -f ~/kube-solo/kubernetes/dashboard-controller.yaml
 rm -f ~/kube-solo/kubernetes/dashboard-service.yaml
+rm -f ~/kube-solo/kubernetes/kubedash.yaml
 echo " "
 }
 
