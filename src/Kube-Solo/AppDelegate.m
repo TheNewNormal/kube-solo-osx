@@ -354,7 +354,7 @@
     }
 }
 
-- (IBAction)node1_cAdvisor:(id)sender {
+- (IBAction)Kubedash:(id)sender {
     VMStatus vmStatus = [self.vmManager checkVMStatus];
 
     switch (vmStatus) {
@@ -364,7 +364,7 @@
 
         case VMStatusUp: {
             NSString *vmIP = [NSString stringWithContentsOfURL:[NSURL ks_ipAddressURL] encoding:NSUTF8StringEncoding error:nil];
-            NSString *url = [NSString stringWithFormat:@"http://%@:4194", vmIP];
+            NSString *url = [NSString stringWithFormat:@"http://%@:8080/api/v1/proxy/namespaces/kube-system/services/kubedash", vmIP];
             [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
             break;
         }
