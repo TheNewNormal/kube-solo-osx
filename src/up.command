@@ -96,7 +96,7 @@ then
     echo "  "
     deploy_fleet_units
     # generate kubeconfig file
-    echo Generate kubeconfig file ...
+    echo "Generate kubeconfig file ..."
     "${res_folder}"/bin/gen_kubeconfig $vm_ip
     #
 fi
