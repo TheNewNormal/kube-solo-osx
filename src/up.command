@@ -58,9 +58,9 @@ start_vm
 # Set the environment variables
 # set etcd endpoint
 export ETCDCTL_PEERS=http://$vm_ip:2379
-# wait till VM is ready
+# wait till etcd service is ready
 echo " "
-echo "Waiting for VM to be ready..."
+echo "Waiting for etcd service to be ready on VM..."
 spin='-\|/'
 i=1
 until curl -o /dev/null http://$vm_ip:2379 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
@@ -75,16 +75,30 @@ export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
 #
 sleep 3
 
-#
-echo "fleetctl list-machines:"
-fleetctl list-machines
+# check if k8s files are on VM
+if "${res_folder}"/bin/corectl ssh k8solo-01 '[ -f /opt/bin/kube-apiserver ]' &> /dev/null
+then
+    new_vm=0
+else
+    new_vm=1
+fi
+
 #
 if [ $new_vm = 1 ]
 then
+    # check internet from VM
+    echo " "
+    echo "Checking internet availablity on VM..."
+    check_internet_from_vm
+    #
     install_k8s_files
     #
     echo "  "
     deploy_fleet_units
+    # generate kubeconfig file
+    echo Generate kubeconfig file ...
+    "${res_folder}"/bin/gen_kubeconfig $vm_ip
+    #
 fi
 
 echo " "
@@ -95,7 +109,7 @@ spin='-\|/'
 i=1
 until curl -o /dev/null -sIf http://$vm_ip:8080 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 i=1
-until ~/kube-solo/bin/kubectl get nodes | grep $vm_ip >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+until ~/kube-solo/bin/kubectl get nodes | grep -w [R]eady >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 #
 
 if [ $new_vm = 1 ]

@@ -10,7 +10,7 @@ Zero to Kubernetes development environment
 
 Also there is [Kube-Cluster for macOS](https://github.com/TheNewNormal/kube-cluster-osx) App (master + 2 nodes)
 
-**Includes:** [Helm](https://helm.sh) - The Kubernetes Package Manager
+**Includes:** [Helm Classic](https://helm.sh) - The Kubernetes Package Manager
 
 **Includes:** An option from shell to install [Deis Workflow](https://deis.com) on top of Kubernetes with a simple: `$ install_deis`
 
@@ -46,11 +46,10 @@ Open downloaded `dmg` file and drag the App e.g. to your Desktop. Start the `Kub
 * user-data file will have fleet and etcd enabled
 * Will download latest CoreOS ISO image and run `corectl` to initialise VM 
 * When you first time do install or 'Up' after destroying Kube-Solo setup, k8s binary files (with the version which was available when the App was built) get copied to CoreOS VM, this speeds up Kubernetes setup. To update Kubernetes just run from menu 'Updates' - Update Kubernetes to latest stable version.
-* It will install `fleetctl, etcdctl and kubectl` to `~/kube-solo/bin/`
+* It will install `fleetctl and kubectl` to `~/kube-solo/bin/`
 * Kubernetes services will be installed with fleet units which are placed in `~/kube-solo/fleet`, this allows very easy updates to fleet units if needed.
 * [Fleet-UI](http://fleetui.com) via unit file will be installed to check running fleet units
-* [Kubernetes Dashboard](http://kubernetes.io/docs/user-guide/ui/) will be instlled as an add-on
-* Also [DNS addon](https://github.com/kubernetes/kubernetes/blob/release-1.2/cluster/addons/dns/README.md) will be installed
+* [Kubernetes Dashboard](http://kubernetes.io/docs/user-guide/ui/), [DNS](https://github.com/kubernetes/kubernetes/blob/release-1.2/cluster/addons/dns/README.md) and [Kubedash](https://github.com/kubernetes/kubedash) will be instlled as add-ons
 * Via assigned static IP (it will be shown in first boot and will survive VM's reboots) you can access any port on CoreOS VM
 * Persistent disk `data.img` will be created and mounted to `/data` for these mount binds:
 
@@ -75,12 +74,12 @@ Just start `Kube-Solo` application and you will find a small icon of Kubernetes 
 2) etcd endpoint - export ETCDCTL_PEERS=http://192.168.64.xxx:2379
 3) fleetctl endpoint - export FLEETCTL_ENDPOINT=http://192.168.64.xxx:2379
 4) fleetctl driver - export FLEETCTL_DRIVER=etcd
-5) Path to ~/kube-solo/bin where etcdctl, fleetctl and kubernetes binaries are stored
+5) Path to ~/kube-solo/bin where fleetctl and kubectl are stored
 ````
 
 * [Fleet-UI](http://fleetui.com) dashboard will show running fleet units and etc
-* [Kubernetes Dashboard](http://kubernetes.io/docs/user-guide/ui/) will show nice Kubernetes Dashboard, where you can check Nodes, Pods, Replication and Service Controllers, deploy Apps and etc.
-* `k8solo-01 cAdvisor` will open cAdvisor URL in default browser
+* [Kubernetes Dashboard](http://kubernetes.io/docs/user-guide/ui/) will show nice Kubernetes Dashboard, where you can check Nodes, Pods, Replication, Deployments, Service Controllers, deploy Apps and etc.
+* [Kubedash](https://github.com/kubernetes/kubedash) is a performance analytics UI for Kubernetes Clusters
 * `Updates/Update Kubernetes to the latest version` will update to latest version of Kubernetes.
 * `Updates/Change Kubernetes version` will download and install specified Kubernetes version from GitHub.
 * `Updates/Update OS X fleetctl and helm clients` will update fleetctl to the same versions as CoreOS VM runs and helm to the latest version.

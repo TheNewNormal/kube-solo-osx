@@ -37,7 +37,7 @@ coreos:
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStart=/bin/sh -c '/usr/sbin/blkid -pi /dev/vda | grep TYPE= || /usr/sbin/mkfs.ext4 /dev/vda'
+        ExecStart=/bin/sh -c '/usr/sbin/blkid -pi /dev/vda | grep TYPE= || /usr/sbin/mkfs.ext4 -i 8192 /dev/vda'
     - name: data.mount
       command: start
       content: |
@@ -61,11 +61,13 @@ coreos:
         Type=oneshot
         RemainAfterExit=yes
         ExecStart=/bin/sh -c '[[ -d /data/var/lib/docker ]] || mkdir -p /data/var/lib/docker'
-        ExecStart=/bin/sh -c '[[ -d /data/var/lib/rkt ]] || mkdir -p /data/var/lib/rkt'
+        ExecStart=/bin/sh -c '[[ -d /data/var/lib/rkt ]] || mkdir -p /data/var/lib/rkt && /usr/bin/chown root:rkt /data/var/lib/rkt && /usr/bin/chmod g+s /data/var/lib/rkt'
         ExecStart=/bin/sh -c '[[ -d /data/var/lib/etcd2 ]] || mkdir -p /data/var/lib/etcd2 && /usr/bin/chown etcd:etcd /data/var/lib/etcd2'
         ExecStart=/bin/sh -c '[[ -d /data/opt/bin ]] || mkdir -p /data/opt/bin'
         ExecStart=/bin/sh -c '[[ -d /data/kubernetes ]] || mkdir -p /data/kubernetes'
         ExecStart=/bin/sh -c '[[ -d /data/mnt ]] || mkdir -p /data/mnt'
+        ExecStart=/bin/sh -c '/usr/bin/chown root:rkt /data/var/lib/rkt && /usr/bin/chmod g+s /data/var/lib/rkt'
+        ExecStart=/bin/sh -c '/usr/bin/chown etcd:etcd /data/var/lib/etcd2'
     - name: var-lib-etcd2.mount
       command: start
       content: |
@@ -155,19 +157,6 @@ coreos:
             Environment=DOCKER_OPTS='--insecure-registry="0.0.0.0/0"'
     - name: update-engine.service
       command: stop
-    - name: kube-certs.service
-      command: start
-      content: |
-        [Unit]
-        Description=Generate Kubernetes API Server certificates
-        ConditionPathExists=/opt/sbin/make-certs.sh
-        [Service]
-        EnvironmentFile=/etc/environment
-        ExecStartPre=-/usr/sbin/groupadd -r kube-cert
-        ExecStartPre=/usr/bin/chmod 755 /opt/sbin/make-certs.sh
-        ExecStart=/opt/sbin/make-certs.sh ${COREOS_PUBLIC_IPV4} IP:${COREOS_PUBLIC_IPV4},IP:10.100.0.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local
-        Type=oneshot
-        RemainAfterExit=true
 write-files:
  - path: /home/core/.ssh/id_rsa
    permissions: '0600'
@@ -279,3 +268,4 @@ write-files:
       #!/bin/bash
       source /etc/environment
       /opt/sbin/make-certs.sh ${COREOS_PUBLIC_IPV4} IP:${COREOS_PUBLIC_IPV4},IP:10.100.0.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local
+
