@@ -179,7 +179,7 @@ else
     echo "VM successfully started !!!" >> ~/kube-solo/logs/vm_up.log
 fi
 
-# check if /Users/homefolder is mounted, if not mount it
+# check if /Users/homefolder is mounted, if not, mount it
 "${res_folder}"/bin/corectl ssh k8solo-01 'source /etc/environment; if df -h | grep ${HOMEDIR}; then echo 0; else sudo systemctl restart ${HOMEDIR}; fi' > /dev/null 2>&1
 
 # save VM's IP
@@ -187,6 +187,14 @@ fi
 # get VM IP
 vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
 #
+
+# generate kubeconfig file
+if [ ! -f $HOME/kube-solo/kube/kubeconfig ]; then
+    echo " "
+    echo "Generating kubeconfig file ..."
+    "${res_folder}"/bin/gen_kubeconfig $vm_ip
+    echo " "
+fi
 
 }
 
