@@ -1,5 +1,7 @@
 #!/bin/bash
 
+WORKFLOW_RELEASE=v2.0.0
+
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
@@ -36,15 +38,15 @@ helmc repo add deis https://github.com/deis/charts
 # get the latest version of all Charts from all repos
 helmc up
 # delete the old folder if such exists
-rm -rf ~/.helmc/workspace/charts/workflow-v2.0.0-kube-solo > /dev/null 2>&1
+rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo > /dev/null 2>&1
 # fetch Deis Workflow Chart to your helmc's working directory
-helmc fetch deis/workflow-v2.0.0 workflow-v2.0.0-kube-solo
+helmc fetch deis/workflow-${WORKFLOW_RELEASE} workflow-${WORKFLOW_RELEASE}-kube-solo
 # run helmc generate
-helmc generate -x manifests workflow-v2.0.0-kube-solo
+helmc generate -x manifests workflow-${WORKFLOW_RELEASE}-kube-solo
 # update minio rc with persistent volume
-###cp -f "${res_folder}"/deis/deis-minio-rc.yaml ~/.helmc/workspace/charts/workflow-v2.0.0-kube-solo/manifests/deis-minio-rc.yaml
+cp -f "${res_folder}"/deis/deis-minio-rc.yaml ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/manifests/deis-minio-rc.yaml
 # Install Deis
-helmc install workflow-v2.0.0-kube-solo
+helmc install workflow-${WORKFLOW_RELEASE}-kube-solo
 
 # Install deis client
 current_folder=$(pwd)
@@ -96,8 +98,7 @@ cd ~/kube-solo/deis/apps
 echo "Deis Workflow install is completed ..."
 echo "Deis Workflow IP is http://deis.$vm_ip.nip.io "
 echo " "
-echo "Please read how to:" 
-echo "To deploy Applications - http://docs-v2.readthedocs.org/en/latest/using-workflow/deploying-an-application/"
-echo "To manage Applications - http://docs-v2.readthedocs.org/en/latest/using-workflow/managing-an-application/"
-echo "Understanding Deis Workflow - http://docs-v2.readthedocs.org/en/latest/understanding-workflow/concepts/"
+echo "Please read docs how to:" 
+echo "To deploy Applications - https://deis.com/docs/workflow/applications/deploying-apps/"
+echo "Understanding Deis Workflow - https://deis.com/docs/workflow/understanding-workflow/concepts/"
 echo " "

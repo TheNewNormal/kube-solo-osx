@@ -5,6 +5,7 @@ Requires=etcd2.service fleet.service docker.service flanneld.service
 After=etcd2.service fleet.service docker.service flanneld.service
 
 [Service]
+LimitNOFILE=491521
 # Check for certs
 ExecStartPre=/bin/sh -c '[[ -f /data/kubernetes/ca.crt ]] || /opt/sbin/kube-certs.sh'
 # Start API server
