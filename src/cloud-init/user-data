@@ -65,6 +65,7 @@ coreos:
         ExecStart=/bin/sh -c '[[ -d /data/var/lib/etcd2 ]] || mkdir -p /data/var/lib/etcd2 && /usr/bin/chown etcd:etcd /data/var/lib/etcd2'
         ExecStart=/bin/sh -c '[[ -d /data/opt/bin ]] || mkdir -p /data/opt/bin'
         ExecStart=/bin/sh -c '[[ -d /data/kubernetes ]] || mkdir -p /data/kubernetes'
+        ExecStart=/bin/sh -c '[[ -d /data/kubelet ]] || mkdir -p /data/kubelet'
         ExecStart=/bin/sh -c '[[ -d /data/mnt ]] || mkdir -p /data/mnt'
         ExecStart=/bin/sh -c '/usr/bin/chown root:rkt /data/var/lib/rkt && /usr/bin/chmod g+s /data/var/lib/rkt'
         ExecStart=/bin/sh -c '/usr/bin/chown etcd:etcd /data/var/lib/etcd2'
@@ -118,6 +119,19 @@ coreos:
         [Mount]
         What=/data/opt/bin
         Where=/opt/bin
+        Type=none
+        Options=bind
+    - name: var-lib-kubelet.mount
+      command: start
+      content: |
+        [Unit]
+        Description=Binds /data/kubelet to /var/lib/kubelet
+        Requires=persistent-data-checks.service
+        After=persistent-data-checks.service
+        Before=docker.service rkt-metadata.socket
+        [Mount]
+        What=/data/kubelet
+        Where=/var/lib/kubelet
         Type=none
         Options=bind
     - name: mnt.mount
@@ -268,4 +282,3 @@ write-files:
       #!/bin/bash
       source /etc/environment
       /opt/sbin/make-certs.sh ${COREOS_PUBLIC_IPV4} IP:${COREOS_PUBLIC_IPV4},IP:10.100.0.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local
-
