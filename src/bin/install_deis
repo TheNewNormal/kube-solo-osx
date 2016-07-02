@@ -1,7 +1,5 @@
 #!/bin/bash
 
-WORKFLOW_RELEASE=v2.0.0
-
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
@@ -15,9 +13,10 @@ vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
 
 #
 echo " "
-echo "If you have installed previous beta versions of Deis Workflow PaaS, please uninstall it first"
-echo "'$ helmc uninstall workflow-beta4 -n deis' as upgrades from Workflow Betas to GA is not supported ..."
-echo "If you have RC1/2 installed check out how to upgrade to GA at http://docs-v2.readthedocs.io/en/latest/managing-workflow/upgrading-workflow/ "
+echo "If you have installed previous versions of Deis Workflow PaaS, please uninstall it first"
+echo "with '$ helmc uninstall workflow-VERSION -n deis' ..."
+echo " "
+echo "If you want to upgrade already installed version, check out how to do upgrade at https://deis.com/docs/workflow/managing-workflow/upgrading-workflow/ "
 echo " "
 pause 'Press [Enter] key to continue...'
 echo " "
@@ -31,30 +30,40 @@ curl -s https://get.helm.sh | bash > /dev/null 2>&1
 cd $current_folder
 echo "helmc is installed to ~/kube-solo/bin ... "
 
-# run helm for the first time
+# run helmc for the first time
 helmc up
 # add Deis Chart repo
 helmc repo add deis https://github.com/deis/charts
 # get the latest version of all Charts from all repos
 helmc up
+
+# get latest Workflow version
+WORKFLOW_RELEASE=$(ls ~/.helmc/cache/deis | grep workflow-v2. | grep -v -e2e | sort -rn | head -1 | cut -d'-' -f2)
+
 # delete the old folder if such exists
 rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo > /dev/null 2>&1
+
 # fetch Deis Workflow Chart to your helmc's working directory
 helmc fetch deis/workflow-${WORKFLOW_RELEASE} workflow-${WORKFLOW_RELEASE}-kube-solo
 # run helmc generate
 helmc generate -x manifests workflow-${WORKFLOW_RELEASE}-kube-solo
-# update minio rc with persistent volume
-cp -f "${res_folder}"/deis/deis-minio-rc.yaml ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/manifests/deis-minio-rc.yaml
+
+# update minio RC with persistent volume
+cp "${res_folder}"/deis/* ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/manifests
+
+cd ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/manifests
+"${res_folder}"/bin/gsed -i '/readOnly: true/ r deis-minio-rc-1.txt' deis-minio-rc.yaml
+cat deis-minio-rc-2.txt >> deis-minio-rc.yaml
+rm -f *.txt
+
 # Install Deis
 helmc install workflow-${WORKFLOW_RELEASE}-kube-solo
 
 # Install deis client
-current_folder=$(pwd)
 cd ~/kube-solo/bin
 echo " "
 echo "Installing deis client ..."
 curl -sSL http://deis.io/deis-cli/install-v2.sh | bash > /dev/null 2>&1
-cd $current_folder
 echo "deis client is installed to ~/kube-solo/bin ..."
 echo "To learn more about deis client, execute:"
 echo "deis -h"
