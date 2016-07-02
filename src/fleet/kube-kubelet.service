@@ -4,6 +4,9 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
 EnvironmentFile=/etc/environment
+# small hacks around for Deis Workflow
+ExecStartPre=-/bin/sh -c 'sudo mkdir -p /data/deis/minio && sudo chown 106:107 /data/deis/minio'
+#
 ExecStartPre=/opt/sbin/wupiao 127.0.0.1:8080
 #
 ExecStart=/opt/bin/kubelet \
