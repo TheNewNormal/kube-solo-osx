@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#  update OS X clients
+#  update macOS clients
 #
 
 #

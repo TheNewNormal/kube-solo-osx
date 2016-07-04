@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #  download_k8s.command
-#  Kube-Solo for OS X
+#  Kube-Solo for macOS
 #
 #  Created by Rimantas on 03/06/2015.
 #  Copyright (c) 2014 Rimantas Mocevicius. All rights reserved.
@@ -21,8 +21,8 @@ function get_latest_version_number {
 
 K8S_VERSION=$(get_latest_version_number)
 
-# download latest version of kubectl for OS X
-echo "Downloading kubectl $K8S_VERSION for OS X"
+# download latest version of kubectl for macOS
+echo "Downloading kubectl $K8S_VERSION for macOS"
 curl -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/darwin/amd64/kubectl > kubectl
 chmod a+x kubectl
 

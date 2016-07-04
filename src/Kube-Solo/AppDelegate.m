@@ -1,6 +1,6 @@
 //
 //  AppDelegate.m
-//  Kube-Solo for OS X
+//  Kube-Solo for macOS
 //
 //  Created by Rimantas on 03/06/2015.
 //  Copyright (c) 2015 Rimantas Mocevicius. All rights reserved.

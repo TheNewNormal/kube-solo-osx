@@ -24,19 +24,19 @@
 
 // Notification Messages
 
-"ClientsWillBeUpdatedNotificationMessage" = "OS X clients will be updated";
+"ClientsWillBeUpdatedNotificationMessage" = "macOS clients will be updated";
 "ISOImageWillBeUpdatedNotificationMessage" = "CoreOS ISO image will be updated";
 "ReleaseChannelChangeNotificationMessage" = "CoreOS release channel change";
 "VMRAMChangeNotificationMessage" = "VM RAM size change";
 "SudoPasswordChangeNotificationMessage" = "sudo password change";
 "SSHShellWillOpenNotificationMessage" = "VM ssh shell will be opened";
-"ShellWillOpenNotificationMessage" = "OS X shell will be opened";
+"ShellWillOpenNotificationMessage" = "macOS shell will be opened";
 "ConsoleWillOpenNotificationMessage" = "VM's console will be opened";
 "WillSetupNotificationTitle" = "Kube Solo will be up shortly";
 "WillSetupNotificationMessage" = "and OS shell will be opened";
 "KubernetesUpdateNotificationTitle" = "Kube-Solo and";
-"KubernetedUpdateNotificationMessage" = "OS X kubectl will be updated";
-"KubernetesVersionChangeNotificationMessage" = "OS X kubectl version will be changed";
+"KubernetedUpdateNotificationMessage" = "macOS kubectl will be updated";
+"KubernetesVersionChangeNotificationMessage" = "macOS kubectl version will be changed";
 "RestoreFleetUnitsNotificationMessage" = "fleet units will be restored/upgraded";
 "QuittingNotificationTitle" = "Quitting Kube-Solo App";
 
@@ -47,7 +47,7 @@
 "SetupAlertMessage" = "You can set Kube-Solo from menu 'Setup':";
 "SetupAlertInformativeText" = " 'Initial setup of Kube-Solo' at any time later one !!! ";
 "HomeFolderExistsAlertInformativeText" = "Folder %@ exists, please delete or rename that folder !!!";
-"AboutAlertMessage" = "Kube-Solo for OS X v%@";
+"AboutAlertMessage" = "Kube-Solo for macOS v%@";
 "AboutInformativeText" = "It is a simple wrapper around corectl + CoreOS VM, which allows to control Kube-Solo via Status Bar !!!";
 "DmgAlertMessage" = "Kube Solo App cannot be started from DMG !!!";
 "DmgAlertInformativeText" = "Please copy App e.g. to your Applications folder ...";
