@@ -16,7 +16,7 @@
                 <menuItem title="Kube-Solo" id="56">
                     <menu key="submenu" title="Kube-Solo" systemMenu="apple" id="57" userLabel="Kube-Solo">
                         <items>
-                            <menuItem title="About CoreOS OS X GUI" id="58" userLabel="About Kube-Solo">
+                            <menuItem title="About CoreOS for macOS" id="58" userLabel="About Kube-Solo">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="orderFrontStandardAboutPanel:" target="-2" id="142"/>
@@ -35,7 +35,7 @@
                             <menuItem isSeparatorItem="YES" id="144">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Hide CoreOS OS X GUI" keyEquivalent="h" id="134" userLabel="Hide Kube-Solo">
+                            <menuItem title="Hide CoreOS for macOS" keyEquivalent="h" id="134" userLabel="Hide Kube-Solo">
                                 <connections>
                                     <action selector="hide:" target="-1" id="367"/>
                                 </connections>
@@ -54,7 +54,7 @@
                             <menuItem isSeparatorItem="YES" id="149">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
-                            <menuItem title="Quit CoreOS OS X GUI" keyEquivalent="q" id="136" userLabel="Quit Kube-Solo"/>
+                            <menuItem title="Quit CoreOS for macOS" keyEquivalent="q" id="136" userLabel="Quit Kube-Solo"/>
                         </items>
                     </menu>
                 </menuItem>
@@ -723,7 +723,7 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Um0-uP-0o3"/>
-                            <menuItem title="Update OS X fleetctl and helm clients" id="KSz-fW-Vbe">
+                            <menuItem title="Update macOS fleetctl, helmc and deis clients" id="KSz-fW-Vbe">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="updates:" target="494" id="Zus-fv-0H4"/>
@@ -789,7 +789,7 @@
                     </menu>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="amp-XY-DBJ"/>
-                <menuItem title="About Kube-Solo for OS X" id="UjW-Zi-qqY">
+                <menuItem title="About Kube-Solo for macOS" id="UjW-Zi-qqY">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="About:" target="494" id="W2K-DS-RDk"/>

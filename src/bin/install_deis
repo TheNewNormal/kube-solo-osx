@@ -21,14 +21,14 @@ echo " "
 pause 'Press [Enter] key to continue...'
 echo " "
 
-# get lastest OS X helmc version
+# get lastest macOS helmc cli version
 current_folder=$(pwd)
 cd ~/kube-solo/bin
+echo "Downloading latest version of helmc cli for macOS"
+curl -o helmc https://storage.googleapis.com/helm-classic/helmc-latest-darwin-amd64
+chmod +x helmc
 echo " "
-echo "Installing latest helmc ..."
-curl -s https://get.helm.sh | bash > /dev/null 2>&1
-cd $current_folder
-echo "helmc is installed to ~/kube-solo/bin ... "
+echo "Installed latest helmc cli to ~/kube-solo/bin ..."
 
 # run helmc for the first time
 helmc up
@@ -59,12 +59,14 @@ rm -f *.txt
 # Install Deis
 helmc install workflow-${WORKFLOW_RELEASE}-kube-solo
 
-# Install deis client
+# get lastest macOS deis cli version
 cd ~/kube-solo/bin
+echo "Downloading latest version of Workflow deis cli for macOS"
+curl -o deis https://storage.googleapis.com/workflow-cli/deis-latest-darwin-amd64
+chmod +x deis
 echo " "
-echo "Installing deis client ..."
-curl -sSL http://deis.io/deis-cli/install-v2.sh | bash > /dev/null 2>&1
-echo "deis client is installed to ~/kube-solo/bin ..."
+echo "Installed latest deis cli to ~/kube-solo/bin ..."
+echo " "
 echo "To learn more about deis client, execute:"
 echo "deis -h"
 echo " "
