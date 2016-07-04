@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #  update_k8s.command
-#  Kube-Solo for OS X
+#  Kube-Solo for macOS
 #
 #
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )

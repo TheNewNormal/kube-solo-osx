@@ -14,7 +14,7 @@ res_folder=$(cat ~/kube-solo/.env/resouces_path)
 export PATH=${HOME}/kube-solo/bin:$PATH
 
 echo " "
-echo "Setting up Kubernetes Solo Cluster on OS X"
+echo "Setting up Kubernetes Solo Cluster on macOS"
 
 # add ssh key to *.toml files
 sshkey

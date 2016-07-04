@@ -20,7 +20,7 @@
     # copy bin files to ~/kube-solo/bin
     cp -f "$1"/bin/* ~/kube-solo/bin
     rm -f ~/kube-solo/bin/gen_kubeconfig
-    chmod 755 ~/kube-solo/bin/*
+    chmod +x ~/kube-solo/bin/*
 
     # copy user-data
     cp -f "$1"/cloud-init/* ~/kube-solo/cloud-init
@@ -30,7 +30,7 @@
 
     # copy k8s files
     cp "$1"/k8s/kubectl ~/kube-solo/kube
-    chmod 755 ~/kube-solo/kube/kubectl
+    chmod +x ~/kube-solo/kube/kubectl
     cp "$1"/k8s/*.yaml ~/kube-solo/kubernetes
     # linux binaries
     cp "$1"/k8s/kube.tgz ~/kube-solo/kube
