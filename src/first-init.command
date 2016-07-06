@@ -24,10 +24,6 @@ if ! ssh-add -l | grep -q ssh/id_rsa; then
   ssh-add -K ~/.ssh/id_rsa &>/dev/null
 fi
 
-# save user's password to Keychain
-save_password
-#
-
 # Set release channel
 release_channel
 
@@ -59,6 +55,7 @@ helmc up
 # set etcd endpoint
 export ETCDCTL_PEERS=http://$vm_ip:2379
 # wait till etcd service is ready
+echo "--------"
 echo " "
 echo "Waiting for etcd service to be ready on VM..."
 spin='-\|/'
@@ -127,7 +124,7 @@ echo "kubectl get nodes:"
 ~/kube-solo/bin/kubectl get nodes
 echo " "
 
-echo "cluster info:"
+echo "kubectl cluster-info:"
 ~/kube-solo/bin/kubectl cluster-info
 echo " "
 

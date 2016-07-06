@@ -6,16 +6,17 @@ Kubernetes Solo cluster for macOS
 Zero to Kubernetes development environment
 ---------------
 
-**Kube-Solo for macOS** is a Mac Status bar App which works like a wrapper around the [corectl](https://github.com/TheNewNormal/corectl) command line tool (it makes easier to control [xhyve](https://github.com/xhyve-xyz/xhyve) based VMs) and bootstraps Kubernetes on a standalone [CoreOS](https://coreos.com) VM machine.
+**Kube-Solo for macOS** is `status bar App` which allows in an easy way to control and bootstrap Kubernetes cluster on a standalone [CoreOS](https://coreos.com) VM machine.
 
-Also there is [Kube-Cluster for macOS](https://github.com/TheNewNormal/kube-cluster-osx) App (master + 2 nodes)
+It leverages macOS native Hypervisor framework of using [xhyve](https://github.com/xhyve-xyz/xhyve) based [corectl](https://github.com/TheNewNormal/corectl) command line tool without any needs to use VirtualBox or similar virtualisation software.
+
+Also there is [Kube-Cluster for macOS](https://github.com/TheNewNormal/kube-cluster-osx) App (master + 2 nodes) if you are interested to run a multi-node Kubernetes cluster on your Mac.
 
 **Includes:** [Helm Classic](https://helm.sh) - The Kubernetes Package Manager
 
 **Includes:** An option from shell to install [Deis Workflow](https://deis.com) on top of Kubernetes with a simple: `$ install_deis`
 
 Kube-Solo App can be used together with [CoreOS VM App](https://github.com/TheNewNormal/coreos-osx) which allows to build Docker containers and has a private local Docker registry v2 which is accessible from Kube-Solo App.
-
 
 
 ![Kube-Solo](kube-solo-osx.png "Kubernetes-Solo")
@@ -32,6 +33,7 @@ How to install Kube-Solo
  -----------
   - **macOS 10.10.3** Yosemite or later 
   - Mac 2010 or later for this to work.
+  - [Corectl App](https://github.com/TheNewNormal/corectl.app) is installed
   - **Note:** For the fresh App install it is recommended to restart your Mac if you have used VirtualBox based VM, as the VirtualBox sometimes messes networking up.
 
 
@@ -120,10 +122,16 @@ You're now ready to use Kubernetes cluster.
 
 Some examples to start with [Kubernetes examples](http://kubernetes.io/docs/samples/).
 
-Other links
+Other CoreOS VM based Apps for macOS
 -----------
 * Kubernetes Cluster (master + 2 nodes) CoreOS VM App can be found here [Kube-Cluster for OS X](https://github.com/TheNewNormal/kube-cluster-osx).
 
 * Standalone CoreOS VM version App can be found here [CoreOS macOS](https://github.com/TheNewNormal/coreos-osx).
 
 * CoreOS Cluster one App can be found here [CoreOS-Vagrant Cluster](https://github.com/rimusz/coreos-osx-cluster).
+
+## Contributing
+
+**Corectl App** is an [open source](http://opensource.org/osd) project release under
+the [Apache License, Version 2.0](http://opensource.org/licenses/Apache-2.0),
+hence contributions and suggestions are gladly welcomed! 

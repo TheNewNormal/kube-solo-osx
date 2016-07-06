@@ -19,7 +19,7 @@ echo " "
 echo "Fetching lastest CoreOS $CHANNEL channel ISO ..."
 echo " "
 #
-"${res_folder}"/bin/corectl pull --channel="$CHANNEL" 2>&1 | tee ~/kube-solo/tmp/check_channel
+/usr/local/sbin/corectl pull --channel="$CHANNEL" 2>&1 | tee ~/kube-solo/tmp/check_channel
 CHECK_CHANNEL=$(cat ~/kube-solo/tmp/check_channel | grep "already available")
 #
 if [[ "$CHECK_CHANNEL" == "" ]]; then

@@ -11,21 +11,14 @@ res_folder=$(cat ~/kube-solo/.env/resouces_path)
 # path to the bin folder where we store our binary files
 export PATH=${HOME}/kube-solo/bin:$PATH
 
-# get password for sudo
-my_password=$(security find-generic-password -wa kube-solo-app)
-# reset sudo
-sudo -k
-
-
 # check if k8s files are on VM
-if "${res_folder}"/bin/corectl ssh k8solo-01 '[ ! -f /opt/bin/kube-apiserver ]' &> /dev/null
+if /usr/local/sbin/corectl ssh k8solo-01 '[ ! -f /opt/bin/kube-apiserver ]' &> /dev/null
 then
     echo " "
     echo "Found unfinished installation, aborting VM's boot !!!"
     echo "Stopping VM ..."
     # send halt to VM
-    echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
-    sudo "${res_folder}"/bin/corectl halt k8solo-01
+    /usr/local/sbin/corectl halt k8solo-01
     echo " "
     echo "Just do 'Up' via menu to boot the VM and the installation will continue ... "
     echo " "
@@ -37,10 +30,13 @@ fi
 echo " "
 echo "Stopping VM ..."
 # send halt to VM
-echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
-sudo "${res_folder}"/bin/corectl halt k8solo-01
+/usr/local/sbin/corectl halt k8solo-01
 
+#
 sleep 3
+
+# check corectld server
+check_corectld_server
 
 # Start VM
 start_vm
