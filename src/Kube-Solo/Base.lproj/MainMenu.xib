@@ -736,13 +736,6 @@
                                     <action selector="restoreFleetUnits:" target="494" id="e7L-uZ-VLY"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="XkV-sa-RCz"/>
-                            <menuItem title="Fetch latest CoreOS ISO" id="1Lj-FO-yQv" userLabel="Force CoreOS update">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="fetchLatestISO:" target="494" id="nGJ-oZ-3ux"/>
-                                </connections>
-                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
@@ -765,13 +758,6 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="NmB-Yu-0V6"/>
-                            <menuItem title="Change 'sudo' password" id="TTp-IO-ybw">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="changeSudoPassword:" target="494" id="DX4-cn-wRQ"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="IpY-jd-Luh"/>
                             <menuItem title="Destroy Kube-Solo VM" id="FxG-t4-gXU">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>

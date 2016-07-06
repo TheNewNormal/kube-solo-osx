@@ -9,6 +9,19 @@ function pause(){
     read -p "$*"
 }
 
+function check_corectld_server() {
+# check corectld server
+#
+CHECK_SERVER_STATUS=$(/usr/local/sbin/corectld status 2>&1 | grep "Uptime:")
+if [[ "$CHECK_SERVER_STATUS" == "" ]]; then
+    open -a /Applications/corectl.app
+fi
+
+if [[ "$CHECK_SERVER_STATUS" == "" ]]; then
+    sleep 3
+fi
+}
+
 
 function check_internet_from_vm(){
 #
@@ -154,19 +167,13 @@ fi
 
 
 start_vm() {
-# get password for sudo
-my_password=$(security find-generic-password -wa kube-solo-app)
-# reset sudo
-sudo -k > /dev/null 2>&1
 
 # Start VM
 cd ~/kube-solo
 echo " "
 echo "Starting VM ..."
-printf '%s\n' "$my_password" | sudo -Sv > /dev/null 2>&1
-
 #
-sudo "${res_folder}"/bin/corectl load settings/k8solo-01.toml 2>&1 | tee ~/kube-solo/logs/vm_up.log
+/usr/local/sbin/corectl load settings/k8solo-01.toml 2>&1 | tee ~/kube-solo/logs/vm_up.log
 CHECK_VM_STATUS=$(cat ~/kube-solo/logs/vm_up.log | grep "started")
 #
 if [[ "$CHECK_VM_STATUS" == "" ]]; then
@@ -179,13 +186,10 @@ else
     echo "VM successfully started !!!" >> ~/kube-solo/logs/vm_up.log
 fi
 
-# check if /Users/homefolder is mounted, if not, mount it
-"${res_folder}"/bin/corectl ssh k8solo-01 'source /etc/environment; if df -h | grep ${HOMEDIR}; then echo 0; else sudo systemctl restart ${HOMEDIR}; fi' > /dev/null 2>&1
-
 # save VM's IP
-"${res_folder}"/bin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
+/usr/local/sbin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
 # get VM IP
-vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
+vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
 #
 
 # generate kubeconfig file
@@ -201,7 +205,7 @@ fi
 
 function download_osx_clients() {
 # download fleetctl file
-FLEETCTL_VERSION=$("${res_folder}"/bin/corectl ssh k8solo-01 'fleetctl --version' | awk '{print $3}' | tr -d '\r')
+FLEETCTL_VERSION=$(/usr/local/sbin/corectl ssh k8solo-01 'fleetctl --version' | awk '{print $3}' | tr -d '\r')
 FILE=fleetctl
 if [ ! -f ~/kube-solo/bin/$FILE ]; then
     cd ~/kube-solo/bin
@@ -238,6 +242,7 @@ echo "Installed latest helmc cli to ~/kube-solo/bin ..."
 
 # get lastest macOS deis cli version
 cd ~/kube-solo/bin
+echo " "
 echo "Downloading latest version of Workflow deis cli for macOS"
 curl -o deis https://storage.googleapis.com/workflow-cli/deis-latest-darwin-amd64
 chmod +x deis
@@ -416,7 +421,7 @@ function install_k8s_files {
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
 # get VM IP
-vm_ip=$("${res_folder}"/bin/corectl q -i k8solo-01)
+vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
 
 # check if file ~/kube-solo/kube/kube.tgz exists
 if [ ! -f ~/kube-solo/kube/kube.tgz ]
@@ -433,9 +438,9 @@ echo " "
 echo "Installing Kubernetes files on to VM..."
 cd ~/kube-solo/kube
 ###scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet kube.tgz core@$vm_ip:/home/core
-"${res_folder}"/bin/corectl scp kube.tgz k8solo-01:/home/core/
-"${res_folder}"/bin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
-"${res_folder}"/bin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /opt/tmp && sudo mv /opt/bin/easy-rsa.tar.gz /opt/tmp'
+/usr/local/sbin/corectl scp kube.tgz k8solo-01:/home/core/
+/usr/local/sbin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
+/usr/local/sbin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /opt/tmp && sudo mv /opt/bin/easy-rsa.tar.gz /opt/tmp'
 
 echo "Done with k8solo-01 "
 echo " "
@@ -473,43 +478,6 @@ echo " "
 }
 
 
-function save_password {
-# save user's password to Keychain
-echo "  "
-echo "Your Mac user's password will be saved in to 'Keychain' "
-echo "and later one used for 'sudo' command to start VM !!!"
-echo " "
-echo "This is not the password to access VM via ssh or console !!!"
-echo " "
-echo "Please type your Mac user's password followed by [ENTER]:"
-read -s -r my_password
-passwd_ok=0
-
-# check if sudo password is correct
-while [ ! $passwd_ok = 1 ]
-do
-    # reset sudo
-    sudo -k
-    # check sudo
-    printf '%s\n' "$my_password" | sudo -Sv > /dev/null 2>&1
-    CAN_I_RUN_SUDO=$(sudo -n uptime 2>&1|grep "load"|wc -l)
-    if [ ${CAN_I_RUN_SUDO} -gt 0 ]
-    then
-        echo "The sudo password is fine !!!"
-        echo " "
-        passwd_ok=1
-    else
-        echo " "
-        echo "The password you entered does not match your Mac user password !!!"
-        echo "Please type your Mac user's password followed by [ENTER]:"
-        read -s -r my_password
-    fi
-done
-
-security add-generic-password -a kube-solo-app -s kube-solo-app -w $my_password -U
-}
-
-
 function clean_up_after_vm {
 sleep 1
 
@@ -522,15 +490,8 @@ export PATH=${HOME}/kube-solo/bin:$PATH
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
-# get password for sudo
-my_password=$(security find-generic-password -wa kube-solo-app)
-# reset sudo
-sudo -k
-# enable sudo
-printf '%s\n' "$my_password" | sudo -Sv > /dev/null 2>&1
-
 # send halt to VM
-sudo "${res_folder}"/bin/corectl halt k8solo-01
+/usr/local/sbin/corectl halt k8solo-01
 
 # kill all other scripts
 pkill -f [K]ube-Solo.app/Contents/Resources/fetch_latest_iso.command

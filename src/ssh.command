@@ -13,4 +13,4 @@ res_folder=$(cat ~/kube-solo/.env/resouces_path)
 export PATH=${HOME}/kube-solo/bin:$PATH
 
 # ssh into VM
-"${res_folder}"/bin/corectl ssh k8solo-01
+/usr/local/sbin/corectl ssh k8solo-01
