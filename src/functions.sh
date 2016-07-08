@@ -450,9 +450,9 @@ echo " "
 function install_k8s_add_ons {
 echo " "
 echo "Creating kube-system namespace ..."
-~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-system-ns.yaml
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-system-ns.yaml > /dev/null 2>&1
 #
-/usr/bin/sed -i "" "s/_MASTER_IP_/$1/" ~/kube-solo/kubernetes/skydns-rc.yaml
+#/usr/bin/sed -i "" "s/_MASTER_IP_/$1/" ~/kube-solo/kubernetes/skydns-rc.yaml
 echo " "
 echo "Installing SkyDNS ..."
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/skydns-rc.yaml
