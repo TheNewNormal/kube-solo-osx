@@ -95,12 +95,12 @@ until curl -o /dev/null http://$vm_ip:8080 >/dev/null 2>&1; do i=$(( (i+1) %4 ))
 i=1
 until ~/kube-solo/bin/kubectl version | grep 'Server Version' >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\b${spin:i++%${#sp}:1}"; sleep .1; done
 i=1
-until ~/kube-solo/bin/kubectl get nodes | grep -w [R]eady >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+until ~/kube-solo/bin/kubectl get nodes | grep -w "k8solo-01" | grep -w "Ready" >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 echo " "
 # attach label to the node
-~/kube-solo/bin/kubectl label nodes $vm_ip node=worker1
+~/kube-solo/bin/kubectl label nodes k8solo-01 node=worker1
 #
-install_k8s_add_ons "$vm_ip"
+install_k8s_add_ons
 #
 echo "fleetctl list-machines:"
 fleetctl list-machines

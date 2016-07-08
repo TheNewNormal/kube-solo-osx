@@ -102,17 +102,17 @@ spin='-\|/'
 i=1
 until curl -o /dev/null -sIf http://$vm_ip:8080 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 i=1
-until ~/kube-solo/bin/kubectl get nodes | grep -w [R]eady >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+until ~/kube-solo/bin/kubectl get nodes | grep -w "k8solo-01" | grep -w "Ready" >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 #
 
 if [ $new_vm = 1 ]
 then
     # attach label to the node
     echo " "
-    ~/kube-solo/bin/kubectl label nodes $vm_ip node=worker1
+    ~/kube-solo/bin/kubectl label nodes k8solo-01 node=worker1
     # copy add-ons files
     cp "${res_folder}"/k8s/*.yaml ~/kube-solo/kubernetes
-    install_k8s_add_ons "$vm_ip"
+    install_k8s_add_ons
     #
 fi
 #
