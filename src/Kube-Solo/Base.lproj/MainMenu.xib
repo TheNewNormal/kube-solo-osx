@@ -664,13 +664,6 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="Ah8-uo-CTW"/>
-                <menuItem title="Reload" id="UTs-as-EKD">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="Restart:" target="494" id="nYy-CL-GXl"/>
-                    </connections>
-                </menuItem>
-                <menuItem isSeparatorItem="YES" id="jV7-Ne-Ped"/>
                 <menuItem title="SSH to k8solo-01" id="dvF-TI-XNx">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
