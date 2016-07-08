@@ -6,16 +6,17 @@ Kubernetes Solo cluster for macOS
 Zero to Kubernetes development environment
 ---------------
 
-**Kube-Solo for macOS** is a Mac Status bar App which works like a wrapper around the [corectl](https://github.com/TheNewNormal/corectl) command line tool (it makes easier to control [xhyve](https://github.com/xhyve-xyz/xhyve) based VMs) and bootstraps Kubernetes on a standalone [CoreOS](https://coreos.com) VM machine.
+**Kube-Solo for macOS** is `status bar App` which allows in an easy way to control and bootstrap Kubernetes cluster on a standalone [CoreOS](https://coreos.com) VM machine.
 
-Also there is [Kube-Cluster for macOS](https://github.com/TheNewNormal/kube-cluster-osx) App (master + 2 nodes)
+It leverages macOS native Hypervisor framework of using [xhyve](https://github.com/xhyve-xyz/xhyve) based [corectl](https://github.com/TheNewNormal/corectl) command line tool without any needs to use VirtualBox or similar virtualisation software.
+
+Also there is [Kube-Cluster for macOS](https://github.com/TheNewNormal/kube-cluster-osx) App (master + 2 nodes) if you are interested to run a multi-node Kubernetes cluster on your Mac.
 
 **Includes:** [Helm Classic](https://helm.sh) - The Kubernetes Package Manager
 
 **Includes:** An option from shell to install [Deis Workflow](https://deis.com) on top of Kubernetes with a simple: `$ install_deis`
 
 Kube-Solo App can be used together with [CoreOS VM App](https://github.com/TheNewNormal/coreos-osx) which allows to build Docker containers and has a private local Docker registry v2 which is accessible from Kube-Solo App.
-
 
 
 ![Kube-Solo](kube-solo-osx.png "Kubernetes-Solo")
@@ -32,6 +33,7 @@ How to install Kube-Solo
  -----------
   - **macOS 10.10.3** Yosemite or later 
   - Mac 2010 or later for this to work.
+  - [Corectl App](https://github.com/TheNewNormal/corectl.app) is installed, which will serve as `corectld` server daemon control.
   - **Note:** For the fresh App install it is recommended to restart your Mac if you have used VirtualBox based VM, as the VirtualBox sometimes messes networking up.
 
 
@@ -40,9 +42,7 @@ How to install Kube-Solo
 Open downloaded `dmg` file and drag the App e.g. to your Desktop. Start the `Kube-Solo` App and `Initial setup of Kube-Solo VM` will run.
 
 
-* All dependent files/folders will be put under `kube-solo` folder in the user's home folder e.g /Users/someuser/kube-solo.
-* User's Mac password will be stored in `OS X Keychain`, it will be used to pass to `sudo` command which needs to be used starting the VM, this allows to avoid using `sudo` for `corectl` to start a VM. 
-* ISO images are stored under `~/.coreos/images`. That allows to share the same images between different `corectl` based Apps
+* All dependent files/folders will be put under `kube-solo` folder in the user's home folder e.g /Users/someuser/kube-solo. 
 * user-data file will have fleet and etcd enabled
 * Will download latest CoreOS ISO image and run `corectl` to initialise VM 
 * When you first time do install or 'Up' after destroying Kube-Solo setup, k8s binary files (with the version which was available when the App was built) get copied to CoreOS VM, this speeds up Kubernetes setup. To update Kubernetes just run from menu 'Updates' - Update Kubernetes to latest stable version.
@@ -65,7 +65,7 @@ How it works
 
 Just start `Kube-Solo` application and you will find a small icon of Kubernetes logo with `S` in the Status Bar.
 
-* There you can `Up`, `Halt`, `Reload` CoreOS VM + Kubernetes Cluster
+* There you can `Up` and `Halt` CoreOS VM + Kubernetes Cluster
 * `SSH to k8solo-01` will open VM shell
 * Under `Up` OS Shell will be opened when VM boot finishes up and it will have such environment pre-set:
 
@@ -82,8 +82,7 @@ Just start `Kube-Solo` application and you will find a small icon of Kubernetes 
 * [Kubedash](https://github.com/kubernetes/kubedash) is a performance analytics UI for Kubernetes Clusters
 * `Updates/Update Kubernetes to the latest version` will update to latest version of Kubernetes.
 * `Updates/Change Kubernetes version` will download and install specified Kubernetes version from GitHub.
-* `Updates/Update OS X fleetctl and helm clients` will update fleetctl to the same versions as CoreOS VM runs and helm to the latest version.
-* `Updates/Fetch latest CoreOS ISO` will download latest ISO file of CoreOS VM.
+* `Updates/Update macOS fleetctl, helmc and deis clients` will update fleetctl to the same versions as CoreOS VM runs and update `helmc` and `deis` to the latest version.
 
 Example ouput of succesfull CoreOS + Kubernetes Solo install:
 
@@ -106,8 +105,8 @@ kube-proxy.service				c576b883.../192.168.64.2	active	running
 kube-scheduler.service			c576b883.../192.168.64.2	active	running
 
 kubectl get nodes:
-NAME           LABELS         STATUS
-192.168.64.2   node=worker1   Ready
+NAME           	LABELS         STATUS
+k8solo-01		node=worker1   Ready
 
 ````
 
@@ -120,10 +119,16 @@ You're now ready to use Kubernetes cluster.
 
 Some examples to start with [Kubernetes examples](http://kubernetes.io/docs/samples/).
 
-Other links
+Other CoreOS VM based Apps for macOS
 -----------
 * Kubernetes Cluster (master + 2 nodes) CoreOS VM App can be found here [Kube-Cluster for OS X](https://github.com/TheNewNormal/kube-cluster-osx).
 
 * Standalone CoreOS VM version App can be found here [CoreOS macOS](https://github.com/TheNewNormal/coreos-osx).
 
 * CoreOS Cluster one App can be found here [CoreOS-Vagrant Cluster](https://github.com/rimusz/coreos-osx-cluster).
+
+## Contributing
+
+**Corectl App** is an [open source](http://opensource.org/osd) project release under
+the [Apache License, Version 2.0](http://opensource.org/licenses/Apache-2.0),
+hence contributions and suggestions are gladly welcomed! 

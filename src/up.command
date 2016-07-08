@@ -7,6 +7,9 @@
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source "${DIR}"/functions.sh
 
+# check corectld server
+check_corectld_server
+
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
@@ -31,16 +34,6 @@ chmod 755 ~/kube-solo/bin/*
 # add ssh key to Keychain
 if ! ssh-add -l | grep -q ssh/id_rsa; then
   ssh-add -K ~/.ssh/id_rsa &>/dev/null
-fi
-
-# check for password in Keychain
-my_password=$(security 2>&1 >/dev/null find-generic-password -wa kube-solo-app)
-if [ "$my_password" = "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain." ]
-then
-    echo " "
-    echo "Saved password could not be found in the 'Keychain': "
-    # save user password to Keychain
-    save_password
 fi
 
 new_vm=0
@@ -76,7 +69,7 @@ export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
 sleep 3
 
 # check if k8s files are on VM
-if "${res_folder}"/bin/corectl ssh k8solo-01 '[ -f /opt/bin/kube-apiserver ]' &> /dev/null
+if /usr/local/sbin/corectl ssh k8solo-01 '[ -f /opt/bin/kube-apiserver ]' &> /dev/null
 then
     new_vm=0
 else
@@ -109,22 +102,22 @@ spin='-\|/'
 i=1
 until curl -o /dev/null -sIf http://$vm_ip:8080 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 i=1
-until ~/kube-solo/bin/kubectl get nodes | grep -w [R]eady >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+until ~/kube-solo/bin/kubectl get nodes | grep -w "k8solo-01" | grep -w "Ready" >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 #
 
 if [ $new_vm = 1 ]
 then
     # attach label to the node
     echo " "
-    ~/kube-solo/bin/kubectl label nodes $vm_ip node=worker1
+    ~/kube-solo/bin/kubectl label nodes k8solo-01 node=worker1
     # copy add-ons files
     cp "${res_folder}"/k8s/*.yaml ~/kube-solo/kubernetes
-    install_k8s_add_ons "$vm_ip"
+    install_k8s_add_ons
     #
 fi
 #
 echo " "
-echo "kubernetes nodes list:"
+echo "kubectl get nodes:"
 ~/kube-solo/bin/kubectl get nodes
 echo " "
 #

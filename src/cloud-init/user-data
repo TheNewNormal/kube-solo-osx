@@ -7,13 +7,13 @@ coreos:
     reboot-strategy: off
   etcd2:
     name: k8solo-01
-    initial-advertise-peer-urls: http://$private_ipv4:2380
+    initial-advertise-peer-urls: http://k8solo-01:2380
     initial-cluster-token: k8solo-01_etcd
-    initial-cluster: k8solo-01=http://$private_ipv4:2380
+    initial-cluster: k8solo-01=http://k8solo-01:2380
     initial-cluster-state: new
-    listen-peer-urls: http://$private_ipv4:2380,http://$private_ipv4:7001
+    listen-peer-urls: http://k8solo-01:2380,http://k8solo-01:7001
     listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
-    advertise-client-urls:  http://$private_ipv4:2379,http://$private_ipv4:4001
+    advertise-client-urls:  http://k8solo-01:2379,http://k8solo-01:4001
   units:
     - name: docker-tcp.socket
       command: start

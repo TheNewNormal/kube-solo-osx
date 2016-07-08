@@ -51,3 +51,6 @@
 "AboutInformativeText" = "It is a simple wrapper around corectl + CoreOS VM, which allows to control Kube-Solo via Status Bar !!!";
 "DmgAlertMessage" = "Kube Solo App cannot be started from DMG !!!";
 "DmgAlertInformativeText" = "Please copy App e.g. to your Applications folder ...";
+"CorectlAppAlertMessage" = "Kube Solo App cannot start !!!";
+"CorectlAppAlertInformativeText" = "corectl.app cannot be found in /Applications folder, the download link will be opened in your browser ...";
+"UpAppAlertMessage" = "Cannot start VM !!!";

@@ -24,10 +24,6 @@ if ! ssh-add -l | grep -q ssh/id_rsa; then
   ssh-add -K ~/.ssh/id_rsa &>/dev/null
 fi
 
-# save user's password to Keychain
-save_password
-#
-
 # Set release channel
 release_channel
 
@@ -59,6 +55,7 @@ helmc up
 # set etcd endpoint
 export ETCDCTL_PEERS=http://$vm_ip:2379
 # wait till etcd service is ready
+echo "--------"
 echo " "
 echo "Waiting for etcd service to be ready on VM..."
 spin='-\|/'
@@ -98,12 +95,12 @@ until curl -o /dev/null http://$vm_ip:8080 >/dev/null 2>&1; do i=$(( (i+1) %4 ))
 i=1
 until ~/kube-solo/bin/kubectl version | grep 'Server Version' >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\b${spin:i++%${#sp}:1}"; sleep .1; done
 i=1
-until ~/kube-solo/bin/kubectl get nodes | grep -w [R]eady >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+until ~/kube-solo/bin/kubectl get nodes | grep -w "k8solo-01" | grep -w "Ready" >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 echo " "
 # attach label to the node
-~/kube-solo/bin/kubectl label nodes $vm_ip node=worker1
+~/kube-solo/bin/kubectl label nodes k8solo-01 node=worker1
 #
-install_k8s_add_ons "$vm_ip"
+install_k8s_add_ons
 #
 echo "fleetctl list-machines:"
 fleetctl list-machines
@@ -127,7 +124,7 @@ echo "kubectl get nodes:"
 ~/kube-solo/bin/kubectl get nodes
 echo " "
 
-echo "cluster info:"
+echo "kubectl cluster-info:"
 ~/kube-solo/bin/kubectl cluster-info
 echo " "
 

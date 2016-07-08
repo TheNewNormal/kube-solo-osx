@@ -10,11 +10,6 @@ source "${DIR}"/functions.sh
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
-# get password for sudo
-my_password=$(security find-generic-password -wa kube-solo-app)
-# reset sudo
-sudo -k
-
 LOOP=1
 while [ $LOOP -gt 0 ]
 do
@@ -29,17 +24,11 @@ do
     then
         VALID_MAIN=1
 
-        # enable sudo
-        echo -e "$my_password\n" | sudo -Sv > /dev/null 2>&1
-
         # send halt to VM
-        echo -e "$my_password\n" | sudo -S "${res_folder}"/bin/corectl halt k8solo-01 > /dev/null 2>&1
+        /usr/local/sbin/corectl halt k8solo-01 > /dev/null 2>&1
 
         # delete data image
         rm -f ~/kube-solo/data.img
-
-        # delete password in keychain
-        security 2>&1 >/dev/null delete-generic-password -a kube-solo-app 2>&1 >/dev/null
 
         echo "-"
         echo "Done, please start VM with 'Up' and the VM will be recreated ..."
