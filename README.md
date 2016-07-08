@@ -129,6 +129,6 @@ Other CoreOS VM based Apps for macOS
 
 ## Contributing
 
-**Corectl App** is an [open source](http://opensource.org/osd) project release under
+**Kube-Solo for macOS** is an [open source](http://opensource.org/osd) project release under
 the [Apache License, Version 2.0](http://opensource.org/licenses/Apache-2.0),
 hence contributions and suggestions are gladly welcomed! 
