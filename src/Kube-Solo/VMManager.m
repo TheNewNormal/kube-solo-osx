@@ -97,6 +97,10 @@
     [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"change_vm_ram.command"]];
 }
 
+- (void)changeNFSsettings {
+    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"enable_disable_nfs.command"]];
+}
+
 - (void)destroy {
     [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"destroy.command"]];
 }
