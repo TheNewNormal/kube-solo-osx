@@ -28,6 +28,7 @@
 "ISOImageWillBeUpdatedNotificationMessage" = "CoreOS ISO image will be updated";
 "ReleaseChannelChangeNotificationMessage" = "CoreOS release channel change";
 "VMRAMChangeNotificationMessage" = "VM RAM size change";
+"NFSChangeNotificationMessage" = "NFS settings change";
 "SudoPasswordChangeNotificationMessage" = "sudo password change";
 "SSHShellWillOpenNotificationMessage" = "VM ssh shell will be opened";
 "ShellWillOpenNotificationMessage" = "macOS shell will be opened";

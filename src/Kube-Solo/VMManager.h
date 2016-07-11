@@ -26,6 +26,7 @@ typedef NS_ENUM(NSInteger, VMStatus) {
 - (void)restoreFleetUnits;
 - (void)changeReleaseChannel;
 - (void)changeVMRAM;
+- (void)changeNFSsettings;
 - (void)destroy;
 - (void)install;
 - (void)runShell;

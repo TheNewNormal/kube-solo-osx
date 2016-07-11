@@ -83,6 +83,15 @@ Just start `Kube-Solo` application and you will find a small icon of Kubernetes 
 * `Updates/Update Kubernetes to the latest version` will update to latest version of Kubernetes.
 * `Updates/Change Kubernetes version` will download and install specified Kubernetes version from GitHub.
 * `Updates/Update macOS fleetctl, helmc and deis clients` will update fleetctl to the same versions as CoreOS VM runs and update `helmc` and `deis` to the latest version.
+* `Setup/` will allow you to:
+
+```
+1) Change CoreOS Release Channel
+2) Change VM's RAM size
+3) Enable/disable shared NFS user home folder
+4) Destroy Kube-Solo VM (just deletes data.img file)
+5) Initial setup of Kube-Solo VM
+```
 
 Example ouput of succesfull CoreOS + Kubernetes Solo install:
 
