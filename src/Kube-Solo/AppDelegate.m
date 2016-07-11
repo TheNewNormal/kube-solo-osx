@@ -278,6 +278,12 @@
 }
 
 
+- (IBAction)enableNFS:(id)sender {
+    [self notifyUserWithText:NSLocalizedString(@"NFSChangeNotificationMessage", nil)];
+    [self.vmManager changeNFSsettings];
+}
+
+
 - (IBAction)destroy:(id)sender {
     [self notifyUserWithText:NSLocalizedString(@"VMStateWillDestroy", nil)];
     [self.vmManager destroy];

@@ -6,3 +6,5 @@
    cpus = 2
    memory = 2048
    local = "true"
+   #shared-homedir = "true"
+

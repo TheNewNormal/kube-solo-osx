@@ -751,6 +751,13 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="NmB-Yu-0V6"/>
+                            <menuItem title="Enable/disable shared NFS user home folder" id="BfD-1l-oND">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="enableNFS:" target="494" id="0Ft-kp-Sgb"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="bJx-5u-1d1"/>
                             <menuItem title="Destroy Kube-Solo VM" id="FxG-t4-gXU">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
