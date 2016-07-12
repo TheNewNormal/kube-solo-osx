@@ -31,5 +31,6 @@ typedef NS_ENUM(NSInteger, VMStatus) {
 - (void)install;
 - (void)runShell;
 - (void)runSSH;
+- (NSString*)getAppVersionGithub;
 
 @end
