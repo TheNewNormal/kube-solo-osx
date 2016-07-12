@@ -28,6 +28,10 @@
     [self.statusItem setImage: [NSImage imageNamed:@"StatusItemIcon"]];
     [self.statusItem setHighlightMode:YES];
     
+    //check for latest app version and notify user if there is such one
+    NSString *popup = [[NSString alloc] init];
+    [self checkAppVersionGithub:popup = @"no"];
+    
     // get resourcePath
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
     NSLog(@"App resource path: '%@'", resourcePath);
@@ -250,6 +254,12 @@
     }
 }
 
+- (IBAction)checkForAppUpdates:(id)sender {
+    NSString *popup = [[NSString alloc] init];
+    [self checkAppVersionGithub:popup = @"yes"];
+}
+
+
 - (IBAction)restoreFleetUnits:(id)sender {
     VMStatus vmStatus = [self.vmManager checkVMStatus];
     
@@ -440,6 +450,42 @@
 
     [[NSApplication sharedApplication] terminate:self];
 }
+
+
+#pragma mark - App update check
+
+- (void)checkAppVersionGithub:(NSString*)popup {
+    // get App's current version'
+    NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    NSString *app_version = [NSString stringWithFormat:@"%@%@", @"v", version];
+    NSLog (@"Installed App version:\n%@", app_version);
+    
+    // get lates github version
+    NSString *githubVersion = [self.vmManager getAppVersionGithub];
+    
+    if (app_version == githubVersion) {
+        if ([popup  isEqual: @"yes"]) {
+            // show alert message
+            NSString *message = [NSString stringWithFormat:NSLocalizedString(@"NoAppUpdateMessage", nil)];
+            NSString *infoText = NSLocalizedString(@"NoAppUpdatenformativeText", nil);
+            [self alertWithMessage:message infoText:infoText];
+        }
+        else {
+            NSLog (@"App is up-to-date!!!");
+        }
+    }
+    else {
+        // show alert message
+        NSString *message = [NSString stringWithFormat:NSLocalizedString(@"AppUpdateMessage", nil)];
+        NSString *infoText = NSLocalizedString(@"AppUpdatenformativeText", nil);
+        [self alertWithMessage:message infoText:infoText];
+        
+        // open kube-solo.app releases URL
+        NSString *url = [NSString stringWithFormat:@"https://github.com/TheNewNormal/kube-solo-osx/releases"];
+        [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
+    }
+}
+
 
 #pragma mark - NSUserNotificationCenterDelegate
 

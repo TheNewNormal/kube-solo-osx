@@ -55,3 +55,7 @@
 "CorectlAppAlertMessage" = "Kube Solo App cannot start !!!";
 "CorectlAppAlertInformativeText" = "corectl.app cannot be found in /Applications folder, the download link will be opened in your browser ...";
 "UpAppAlertMessage" = "Cannot start VM !!!";
+"AppUpdateMessage" = "There is a new Kube-Solo App version available !!!";
+"AppUpdatenformativeText" = "The download link will be opened in your browser ...";
+"NoAppUpdateMessage" = "Kube-Solo for macOS";
+"NoAppUpdatenformativeText" = "You are-up-to-date !!!";
