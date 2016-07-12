@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "VMManager.h"
 #import "NSURL+KubeSolo.h"
+#import "Kube_Solo-Swift.h"
 
 @interface AppDelegate ()
 
@@ -28,55 +29,24 @@
     [self.statusItem setImage: [NSImage imageNamed:@"StatusItemIcon"]];
     [self.statusItem setHighlightMode:YES];
     
+    // check resourcePath and exit the App if it runs from the dmg
+    Helpers *run_check_for_dmg = [Helpers new];
+    [run_check_for_dmg check_for_dmg];
+    
+    // check that corectl.app is installed in /Applications folder
+    Helpers *run_check_for_corectl_app = [Helpers new];
+    [run_check_for_corectl_app check_for_corectl_app];
+    
     //check for latest app version and notify user if there is such one
-    NSString *popup = [[NSString alloc] init];
-    [self checkAppVersionGithub:popup = @"no"];
+    Updates *run_checkAppVersionGithub = [Updates new];
+    [run_checkAppVersionGithub checkAppVersionGithub:@"no"];
     
     // get resourcePath
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
     NSLog(@"App resource path: '%@'", resourcePath);
-    
-    NSString *dmgPath = @"/Volumes/Kube-Solo/Kube-Solo.app/Contents/Resources";
-    NSLog(@"DMG resource path: '%@'", dmgPath);
-    
-    // check resourcePath and exit the App if it runs from the dmg
-    if ( [resourcePath isEqual: dmgPath] ) {
-        // show alert message
-        NSString *message = [NSString stringWithFormat:NSLocalizedString(@"DmgAlertMessage", nil)];
-        NSString *infoText = NSLocalizedString(@"DmgAlertInformativeText", nil);
-        [self alertWithMessage:message infoText:infoText];
-        
-        // show quitting App message
-        [self notifyUserWithTitle:NSLocalizedString(@"QuittingNotificationTitle", nil) text:nil];
 
-        // exiting App
-        [[NSApplication sharedApplication] terminate:self];
-    }
-    
-    
-    // check that corectl.app is installed at /Applications folder
-    if(![[NSWorkspace sharedWorkspace] launchApplication:@"/Applications/corectl.app"]) {
-        NSLog(@"corectl failed to launch");
-        
-        // show alert message
-        NSString *message = [NSString stringWithFormat:NSLocalizedString(@"CorectlAppAlertMessage", nil)];
-        NSString *infoText = NSLocalizedString(@"CorectlAppAlertInformativeText", nil);
-        [self alertWithMessage:message infoText:infoText];
-        
-        // open corectl.app releases URL
-        NSString *url = [@[@"https://github.com/TheNewNormal/corectl.app/releases"] componentsJoinedByString:@""];
-        [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
-        
-        // show quitting App message
-        [self notifyUserWithTitle:NSLocalizedString(@"QuittingNotificationTitle", nil) text:nil];
-        
-        // exiting App
-        [[NSApplication sharedApplication] terminate:self];
-    }
-    
-
-    BOOL isDir;
     // check if the Apps' home folder exits
+    BOOL isDir;
     if ([[NSFileManager defaultManager] fileExistsAtPath:[[NSURL ks_homeURL] path] isDirectory:&isDir] && isDir) {
         // write down App's resource path a file
         [resourcePath writeToURL:[NSURL ks_resourcePathURL] atomically:YES encoding:NSUTF8StringEncoding error:nil];
@@ -109,25 +79,10 @@
 #pragma mark - Menu Items
 
 - (IBAction)Start:(id)sender {
-    // check that corectl.app is installed at /Applications folder
-    if(![[NSWorkspace sharedWorkspace] launchApplication:@"/Applications/corectl.app"]) {
-        NSLog(@"corectl failed to launch");
-        
-        // show alert message
-        NSString *message = [NSString stringWithFormat:NSLocalizedString(@"UpAppAlertMessage", nil)];
-        NSString *infoText = NSLocalizedString(@"CorectlAppAlertInformativeText", nil);
-        [self alertWithMessage:message infoText:infoText];
-        
-        // open corectl.app releases URL
-        NSString *url = [@[@"https://github.com/TheNewNormal/corectl.app/releases"] componentsJoinedByString:@""];
-        [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
-        
-        // show quitting App message
-        [self notifyUserWithTitle:NSLocalizedString(@"QuittingNotificationTitle", nil) text:nil];
-        
-        // exiting App
-        [[NSApplication sharedApplication] terminate:self];
-    }
+    // check that corectl.app is installed in /Applications folder
+    Helpers *run_check_for_corectl_app = [Helpers new];
+    [run_check_for_corectl_app check_for_corectl_app];
+    
     // give a few secs for server to start
     DELAY(5);
     
@@ -255,8 +210,9 @@
 }
 
 - (IBAction)checkForAppUpdates:(id)sender {
-    NSString *popup = [[NSString alloc] init];
-    [self checkAppVersionGithub:popup = @"yes"];
+    //check for latest app version and notify user if there is such one
+    Updates *run_checkAppVersionGithub = [Updates new];
+    [run_checkAppVersionGithub checkAppVersionGithub:@"yes"];
 }
 
 
@@ -450,42 +406,6 @@
 
     [[NSApplication sharedApplication] terminate:self];
 }
-
-
-#pragma mark - App update check
-
-- (void)checkAppVersionGithub:(NSString*)popup {
-    // get App's current version'
-    NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    NSString *app_version = [NSString stringWithFormat:@"%@%@", @"v", version];
-    NSLog (@"Installed App version:\n%@", app_version);
-    
-    // get lates github version
-    NSString *githubVersion = [self.vmManager getAppVersionGithub];
-    
-    if (app_version == githubVersion) {
-        if ([popup  isEqual: @"yes"]) {
-            // show alert message
-            NSString *message = [NSString stringWithFormat:NSLocalizedString(@"NoAppUpdateMessage", nil)];
-            NSString *infoText = NSLocalizedString(@"NoAppUpdatenformativeText", nil);
-            [self alertWithMessage:message infoText:infoText];
-        }
-        else {
-            NSLog (@"App is up-to-date!!!");
-        }
-    }
-    else {
-        // show alert message
-        NSString *message = [NSString stringWithFormat:NSLocalizedString(@"AppUpdateMessage", nil)];
-        NSString *infoText = NSLocalizedString(@"AppUpdatenformativeText", nil);
-        [self alertWithMessage:message infoText:infoText];
-        
-        // open kube-solo.app releases URL
-        NSString *url = [NSString stringWithFormat:@"https://github.com/TheNewNormal/kube-solo-osx/releases"];
-        [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
-    }
-}
-
 
 #pragma mark - NSUserNotificationCenterDelegate
 
