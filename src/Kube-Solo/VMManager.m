@@ -42,6 +42,34 @@
     }
 }
 
+
+- (NSString*)getAppVersionGithub {
+    // get App github version and return the shell script output
+    NSTask *task = [[NSTask alloc] init];
+    task.launchPath = [NSString stringWithFormat:@"%@", [[NSBundle mainBundle] pathForResource:@"check_app_version_github" ofType:@"command"]];
+    //    task.arguments  = @[@"status"];
+    
+    NSPipe *pipe;
+    pipe = [NSPipe pipe];
+    [task setStandardOutput: pipe];
+    
+    NSFileHandle *file;
+    file = [pipe fileHandleForReading];
+    
+    [task launch];
+    [task waitUntilExit];
+    
+    NSData *data;
+    data = [file readDataToEndOfFile];
+    
+    NSString *string;
+    string = [[NSString alloc] initWithData: data encoding: NSUTF8StringEncoding];
+    NSLog (@"App latest github version:\n%@", string);
+    
+    return string;
+}
+
+
 - (void)start {
     [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"up.command"]];
 }
