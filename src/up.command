@@ -7,6 +7,9 @@
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 source "${DIR}"/functions.sh
 
+# check if offline setting is present in settings file
+check_iso_offline_setting
+
 # check corectld server
 check_corectld_server
 

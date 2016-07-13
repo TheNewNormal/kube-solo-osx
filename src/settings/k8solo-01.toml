@@ -6,3 +6,4 @@
    cpus = 2
    memory = 2048
    local = "true"
+   offline = "true"
