@@ -51,7 +51,31 @@ fi
 # Start VM
 start_vm
 
-# Set the environment variables
+# get VM's IP
+vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
+
+### Run some checks
+# check if k8s files are on VM
+if /usr/local/sbin/corectl ssh k8solo-01 '[ -f /opt/bin/kube-apiserver ]' &> /dev/null
+then
+    new_vm=0
+else
+    new_vm=1
+fi
+#
+
+# if the new setup check for internet from VM
+if [ $new_vm = 1 ]
+then
+    echo " "
+    echo "Checking internet availablity on VM..."
+    check_internet_from_vm
+fi
+#
+### done with checks
+
+
+# Set the shell environment variables
 # set etcd endpoint
 export ETCDCTL_PEERS=http://$vm_ip:2379
 # wait till etcd service is ready
@@ -71,31 +95,28 @@ export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
 #
 sleep 3
 
-# check if k8s files are on VM
-if /usr/local/sbin/corectl ssh k8solo-01 '[ -f /opt/bin/kube-apiserver ]' &> /dev/null
-then
-    new_vm=0
-else
-    new_vm=1
-fi
+#
+echo "fleetctl list-machines:"
+fleetctl list-machines
+#
 
 #
 if [ $new_vm = 1 ]
 then
-    # check internet from VM
-    echo " "
-    echo "Checking internet availablity on VM..."
-    check_internet_from_vm
-    #
+    # copy k8s files to VM
     install_k8s_files
     #
     echo "  "
     deploy_fleet_units
-    # generate kubeconfig file
+fi
+#
+
+# generate kubeconfig file
+if [ ! -f $HOME/kube-solo/kube/kubeconfig ]; then
     echo "Generate kubeconfig file ..."
     "${res_folder}"/bin/gen_kubeconfig $vm_ip
-    #
 fi
+#
 
 echo " "
 # set kubernetes master
@@ -119,6 +140,7 @@ then
     #
 fi
 #
+
 echo " "
 echo "kubectl get nodes:"
 ~/kube-solo/bin/kubectl get nodes

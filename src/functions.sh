@@ -43,10 +43,11 @@ if [[ $(echo "${status//[$'\t\r\n ']}") = "200" ]]; then
 else
     echo "There is no internet access from the VM !!!"
     echo " "
-    echo "Please check you Mac's firewall, network setup "
+    echo "Please check you Mac's firewall, network setup, stop dnsmasq (if you have installed such) "
+    echo "and try to fix the problem !!!"
     echo " "
     echo "k8solo-01 VM is still running, so you can troubleshoot the network problem "
-    echo "and when you done just 'Halt' and 'Up' via menu and the installation will continue ... "
+    echo "and when you done fixing it, just 'Halt' and 'Up' via menu and the installation will continue ... "
     echo " "
     pause 'Press [Enter] key to abort installation ...'
     exit 1
@@ -199,7 +200,7 @@ fi
 
 # save VM's IP
 /usr/local/sbin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
-# get VM IP
+# get VM's IP
 vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
 #
 
