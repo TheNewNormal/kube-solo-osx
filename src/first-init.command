@@ -36,6 +36,9 @@ create_data_disk
 # Start VM
 start_vm
 
+# get VM's IP
+vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
+
 # check internet from VM
 echo " "
 echo "Checking internet availablity on VM..."
