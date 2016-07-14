@@ -39,9 +39,11 @@ if ! ssh-add -l | grep -q ssh/id_rsa; then
   ssh-add -K ~/.ssh/id_rsa &>/dev/null
 fi
 
+#
 new_vm=0
+
 # check if root disk exists, if not create it
-if [ ! -f $HOME/kube-solo/data.img ]; then
+if [ ! -f "$HOME"/kube-solo/data.img ]; then
     echo " "
     echo "Data disk does not exist, it will be created now ..."
     create_data_disk
@@ -51,18 +53,21 @@ fi
 # Start VM
 start_vm
 
-# get VM's IP
-vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
-
 ### Run some checks
 # check if k8s files are on VM
-if /usr/local/sbin/corectl ssh k8solo-01 '[ -f /opt/bin/kube-apiserver ]' &> /dev/null
+check_files=$(/usr/local/sbin/corectl ssh k8solo-01 "/opt/sbin/check-kube-files.sh" | tr -d '\r')
+echo "fe: ${check_files}"
+#
+if [[ "${check_files}" == "1" ]]
 then
-    new_vm=0
-else
+    echo "Unfinished install, new Kubernetes bootstraping will be triggered !!!"
     new_vm=1
+else
+    new_vm=0
 fi
 #
+
+echo "vm: $new_vm"
 
 # if the new setup check for internet from VM
 if [ $new_vm = 1 ]
@@ -74,16 +79,19 @@ fi
 #
 ### done with checks
 
+# get VM's IP
+vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
 
 # Set the shell environment variables
 # set etcd endpoint
 export ETCDCTL_PEERS=http://$vm_ip:2379
+
 # wait till etcd service is ready
 echo " "
 echo "Waiting for etcd service to be ready on VM..."
 spin='-\|/'
 i=1
-until curl -o /dev/null http://$vm_ip:2379 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+until curl -o /dev/null http://"$vm_ip":2379 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 echo " "
 #
 
@@ -112,9 +120,9 @@ fi
 #
 
 # generate kubeconfig file
-if [ ! -f $HOME/kube-solo/kube/kubeconfig ]; then
+if [ ! -f "$HOME"/kube-solo/kube/kubeconfig ]; then
     echo "Generate kubeconfig file ..."
-    "${res_folder}"/bin/gen_kubeconfig $vm_ip
+    "${res_folder}"/bin/gen_kubeconfig "$vm_ip"
 fi
 #
 
@@ -124,7 +132,7 @@ export KUBERNETES_MASTER=http://$vm_ip:8080
 echo "Waiting for Kubernetes cluster to be ready. This can take a few minutes..."
 spin='-\|/'
 i=1
-until curl -o /dev/null -sIf http://$vm_ip:8080 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+until curl -o /dev/null -sIf http://"$vm_ip":8080 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 i=1
 until ~/kube-solo/bin/kubectl get nodes | grep -w "k8solo-01" | grep -w "Ready" >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 #

@@ -63,10 +63,10 @@ file="$HOME/.ssh/id_rsa.pub"
 
 while [ ! -f "$file" ]
 do
-echo " "
-echo "$file not found."
-echo "please run 'ssh-keygen -t rsa' before you continue !!!"
-pause 'Press [Enter] key to continue...'
+    echo " "
+    echo "$file not found."
+    echo "please run 'ssh-keygen -t rsa' before you continue !!!"
+    pause 'Press [Enter] key to continue...'
 done
 
 echo " "
@@ -146,10 +146,10 @@ then
     echo "Created 15GB Data disk"
 else
     echo " "
-    echo "Creating "$disk_size"GB disk (it could take a while for big disks)..."
+    echo "Creating '$disk_size'GB disk (it could take a while for big disks)..."
 ##    mkfile "$disk_size"g data.img
     ~/kube-solo/bin/pv -s "$disk_size"g -S < /dev/zero > data.img
-    echo "Created "$disk_size"GB Data disk"
+    echo "Created '$disk_size'GB Data disk"
 fi
 
 }
@@ -164,12 +164,12 @@ read ram_size
 if [ -z "$ram_size" ]
 then
     ram_size=2
-    echo "Changing VM's RAM to "$ram_size"GB..."
+    echo "Changing VM's RAM to '$ram_size''GB..."
     ((new_ram_size=$ram_size*1024))
     /usr/bin/sed -i "" 's/\(memory = \)\(.*\)/\1'$new_ram_size'/g' ~/kube-solo/settings/k8solo-01.toml
     echo " "
 else
-    echo "Changing VM's RAM to "$ram_size"GB..."
+    echo "Changing VM's RAM to '$ram_size'GB..."
     ((new_ram_size=$ram_size*1024))
     /usr/bin/sed -i "" 's/\(memory = \)\(.*\)/\1'$new_ram_size'/g' ~/kube-solo/settings/k8solo-01.toml
     echo " "
@@ -197,20 +197,9 @@ if [[ "$CHECK_VM_STATUS" == "" ]]; then
 else
     echo "VM successfully started !!!" >> ~/kube-solo/logs/vm_up.log
 fi
-
 # save VM's IP
 /usr/local/sbin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
-# get VM's IP
-vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
 #
-
-# generate kubeconfig file
-if [ ! -f $HOME/kube-solo/kube/kubeconfig ]; then
-    echo " "
-    echo "Generating kubeconfig file ..."
-    "${res_folder}"/bin/gen_kubeconfig $vm_ip
-    echo " "
-fi
 
 }
 

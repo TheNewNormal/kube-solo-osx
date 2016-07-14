@@ -282,3 +282,16 @@ write-files:
       #!/bin/bash
       source /etc/environment
       /opt/sbin/make-certs.sh ${COREOS_PUBLIC_IPV4} IP:${COREOS_PUBLIC_IPV4},IP:10.100.0.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local
+ - path: /opt/sbin/check-kube-files.sh
+   permissions: '0755'
+   content: |
+      #!/bin/bash
+      new_vm=0
+      k8s_file=( kubectl kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
+      for b in "${k8s_file[@]}"; do
+         if [ ! -f /opt/bin/"${b}" ]; then
+           new_vm=1
+           break
+         fi
+      done
+      echo ${new_vm}
