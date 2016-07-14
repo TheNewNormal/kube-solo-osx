@@ -70,7 +70,7 @@ fi
 echo "vm: $new_vm"
 
 # if the new setup check for internet from VM
-if [ $new_vm = 1 ]
+if [[ "${new_vm}" == "1" ]]
 then
     echo " "
     echo "Checking internet availablity on VM..."
@@ -109,7 +109,7 @@ fleetctl list-machines
 #
 
 #
-if [ $new_vm = 1 ]
+if [[ "${new_vm}" == "1" ]]
 then
     # copy k8s files to VM
     install_k8s_files
@@ -137,7 +137,7 @@ i=1
 until ~/kube-solo/bin/kubectl get nodes | grep -w "k8solo-01" | grep -w "Ready" >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 #
 
-if [ $new_vm = 1 ]
+if [[ "${new_vm}" == "1" ]]
 then
     # attach label to the node
     echo " "
