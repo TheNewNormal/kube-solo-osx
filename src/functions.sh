@@ -128,9 +128,6 @@ done
 
 
 create_data_disk() {
-# path to the bin folder where we store our binary files
-export PATH=${HOME}/kube-solo/bin:$PATH
-
 # create persistent disk
 cd ~/kube-solo/
 echo "  "
@@ -140,17 +137,19 @@ read disk_size
 if [ -z "$disk_size" ]
 then
     echo " "
-    echo "Creating 15GB disk ..."
-##    mkfile 10g data.img
-    ~/kube-solo/bin/pv -s 15g -S < /dev/zero > data.img
+    echo "Creating 15GB disk (QCow2)..."
+    /usr/local/sbin/qcow-tool create --size=15GiB data.img
+    echo "-"
     echo "Created 15GB Data disk"
 else
     echo " "
-    echo "Creating '$disk_size'GB disk (it could take a while for big disks)..."
-##    mkfile "$disk_size"g data.img
-    ~/kube-solo/bin/pv -s "$disk_size"g -S < /dev/zero > data.img
+    echo "Creating '$disk_size'GB disk (QCow2)..."
+    /usr/local/sbin/qcow-tool create --size="$disk_size"GiB data.img
+    echo "-"
     echo "Created '$disk_size'GB Data disk"
 fi
+
+sleep 2
 
 }
 

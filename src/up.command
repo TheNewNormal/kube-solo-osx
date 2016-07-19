@@ -39,6 +39,14 @@ if ! ssh-add -l | grep -q ssh/id_rsa; then
   ssh-add -K ~/.ssh/id_rsa &>/dev/null
 fi
 
+# generate kubeconfig file if there is no such one file
+if [ ! -f "$HOME"/kube-solo/kube/kubeconfig ]; then
+    echo "Generate kubeconfig file ..."
+"   ${res_folder}"/bin/gen_kubeconfig "$vm_ip"
+fi
+#
+
+
 #
 new_vm=0
 
@@ -116,13 +124,6 @@ then
     #
     echo "  "
     deploy_fleet_units
-fi
-#
-
-# generate kubeconfig file
-if [ ! -f "$HOME"/kube-solo/kube/kubeconfig ]; then
-    echo "Generate kubeconfig file ..."
-    "${res_folder}"/bin/gen_kubeconfig "$vm_ip"
 fi
 #
 
