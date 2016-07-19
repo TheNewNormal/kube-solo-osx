@@ -63,15 +63,18 @@ start_vm
 
 ### Run some checks
 # check if k8s files are on VM
-check_files=$(/usr/local/sbin/corectl ssh k8solo-01 "/opt/sbin/check-kube-files.sh" | tr -d '\r')
-echo "fe: ${check_files}"
-#
-if [[ "${check_files}" == "1" ]]
+if [[ "${new_vm}" == "0" ]]
 then
-    echo "Unfinished install, new Kubernetes bootstraping will be triggered !!!"
-    new_vm=1
-else
-    new_vm=0
+    check_files=$(/usr/local/sbin/corectl ssh k8solo-01 "/opt/sbin/check-kube-files.sh" | tr -d '\r')
+    echo "fe: ${check_files}"
+    #
+    if [[ "${check_files}" == "1" ]]
+    then
+        echo "Unfinished install, new Kubernetes bootstraping will be triggered !!!"
+        new_vm=1
+    else
+        new_vm=0
+    fi
 fi
 #
 

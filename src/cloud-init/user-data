@@ -37,7 +37,7 @@ coreos:
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStart=/bin/sh -c '/usr/sbin/blkid -pi /dev/vda | grep TYPE= || /usr/sbin/mkfs.ext4 -i 8192 /dev/vda'
+        ExecStart=/bin/sh -c '/usr/sbin/blkid -pi /dev/vda | grep TYPE= || /usr/sbin/mkfs.ext4 -i 8192 -L OEM /dev/vda'
     - name: data.mount
       command: start
       content: |
@@ -294,4 +294,4 @@ write-files:
            break
          fi
       done
-      echo ${new_vm}
+      echo "new_vm=${new_vm}"
