@@ -102,27 +102,16 @@ export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
 #
 if [[ "${new_vm}" == "1" ]]
 then
+    # restart fleet on VM
+    /usr/local/sbin/corectl ssh k8solo-01 "sudo systemctl restart fleet"
+    sleep 2
+
     echo " "
     echo "fleetctl list-machines:"
     fleetctl list-machines
     echo " "
     #
-    submit_fleet_units
-    sleep 3
-
-    #
     start_fleet_units
-
-    # Reboot VM
-    reboot_vm
-
-    # wait till etcd service is ready
-    echo " "
-    echo "Waiting for etcd service to be ready on VM..."
-    spin='-\|/'
-    i=1
-    until curl -o /dev/null http://"$vm_ip":2379 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-    echo " "
 fi
 
 echo " "

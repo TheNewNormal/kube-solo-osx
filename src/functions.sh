@@ -443,26 +443,8 @@ install_k8s_files
 
 }
 
-
-function submit_fleet_units() {
-# deploy fleet units from ~/kube-solo/fleet
-cd ~/kube-solo/fleet
-echo "Deploying all fleet units in ~/kube-solo/fleet:"
-fleetctl submit fleet-ui.service
-fleetctl submit kube-apiserver.service
-fleetctl submit kube-controller-manager.service
-fleetctl submit kube-scheduler.service
-fleetctl submit kube-kubelet.service
-fleetctl submit kube-proxy.service
-echo " "
-echo "fleetctl list-units:"
-fleetctl list-units
-echo " "
-
-}
-
-function start_fleet_units() {
-# deploy fleet units from ~/kube-solo/fleet
+function start_k8s_units() {
+# restart units from ~/kube-solo/fleet
 cd ~/kube-solo/fleet
 echo "Starting all fleet units in ~/kube-solo/fleet:"
 fleetctl start fleet-ui.service
