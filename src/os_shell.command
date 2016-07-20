@@ -39,5 +39,9 @@ echo " "
 
 cd ~/kube-solo
 
-# open bash shell
-/bin/bash
+# open user's preferred shell
+if [[ ! -z "$SHELL" ]]; then
+  $SHELL
+else
+  /bin/bash
+fi
