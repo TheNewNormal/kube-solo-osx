@@ -5,12 +5,12 @@
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 
-function pause(){
+ pause(){
     read -p "$*"
 }
 
 
-function check_iso_offline_setting() {
+ check_iso_offline_setting() {
 # check if offline setting is present in settings file
 check=$(cat ~/kube-solo/settings/k8solo-01.toml | grep "offline" )
 
@@ -20,7 +20,7 @@ then
 fi
 }
 
-function check_corectld_server() {
+ check_corectld_server() {
 # check corectld server
 #
 CHECK_SERVER_STATUS=$(/usr/local/sbin/corectld status 2>&1 | grep "Uptime:")
@@ -34,7 +34,7 @@ fi
 }
 
 
-function check_internet_from_vm(){
+ check_internet_from_vm(){
 #
 status=$(/usr/local/sbin/corectl ssh k8solo-01 "curl -s -I https://coreos.com 2>/dev/null | head -n 1 | cut -d' ' -f2")
 
@@ -55,7 +55,7 @@ fi
 }
 
 
-function sshkey(){
+ sshkey(){
 # add ssh key to *.toml files
 echo " "
 echo "Reading ssh key from $HOME/.ssh/id_rsa.pub  "
@@ -75,7 +75,7 @@ echo "   sshkey = '$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/settings/k8solo
 #
 }
 
-function release_channel(){
+ release_channel(){
 # Set release channel
 LOOP=1
 while [ $LOOP -gt 0 ]
@@ -83,7 +83,7 @@ do
     VALID_MAIN=0
     echo " "
     echo "Set CoreOS Release Channel:"
-    echo " 1)  Alpha (may not always function properly)"
+    echo " 1)  Alpha (may not always  properly)"
     echo " 2)  Beta "
     echo " 3)  Stable (recommended)"
     echo " "
@@ -146,10 +146,30 @@ else
     echo "Creating '$disk_size'GB sparse disk (QCow2)..."
     /usr/local/sbin/qcow-tool create --size="$disk_size"GiB data.img
     echo "-"
-    echo "Created '$disk_size'GB Data disk"
+    echo "Created $disk_sizeGB Data disk"
 fi
+}
 
-sleep 2
+
+format_disk() {
+# Format data disk
+echo " "
+echo "Data disk will be formated ... "
+echo " "
+echo "Waiting for 'format-vm' to boot up ..."
+echo " "
+
+corectl run --channel=stable --offline --cloud_config=cloud-init/user-data-format-disk --name=format-VM --uuid=87605675-D868-433D-A0B6-002F54762053 --volume=data.img
+
+echo " "
+echo "Shutting down 'format-vm' ..."
+spin='-\|/'
+i=1
+while $(corectl query --up format-vm) >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+echo " "
+
+echo "Data disk is formated ... "
+
 
 }
 
@@ -170,7 +190,7 @@ then
     echo " "
 else
     echo " "
-    echo "Changing VM's RAM to '$ram_size'GB..."
+    echo "Changing VM's RAM to $ram_sizeGB..."
     ((new_ram_size=$ram_size*1024))
     /usr/bin/sed -i "" 's/\(memory = \)\(.*\)/\1'$new_ram_size'/g' ~/kube-solo/settings/k8solo-01.toml
     echo " "
@@ -205,7 +225,7 @@ fi
 }
 
 
-function download_osx_clients() {
+ download_osx_clients() {
 # download fleetctl file
 FLEETCTL_VERSION=$(/usr/local/sbin/corectl ssh k8solo-01 'fleetctl --version' | awk '{print $3}' | tr -d '\r')
 FILE=fleetctl
@@ -254,12 +274,12 @@ echo "Installed latest deis cli to ~/kube-solo/bin ..."
 }
 
 
-function download_k8s_files() {
+ download_k8s_files() {
 #
 cd ~/kube-solo/tmp
 
 # get latest stable k8s version
-function get_latest_version_number {
+ get_latest_version_number {
     local -r latest_url="https://storage.googleapis.com/kubernetes-release/release/stable.txt"
     curl -Ss ${latest_url}
 }
@@ -311,7 +331,7 @@ install_k8s_files
 }
 
 
-function download_k8s_files_version() {
+ download_k8s_files_version() {
 #
 cd ~/kube-solo/tmp
 
@@ -400,7 +420,7 @@ install_k8s_files
 }
 
 
-function deploy_fleet_units() {
+ deploy_fleet_units() {
 # deploy fleet units from ~/kube-solo/fleet
 cd ~/kube-solo/fleet
 echo "Starting all fleet units in ~/kube-solo/fleet:"
@@ -418,7 +438,7 @@ echo " "
 }
 
 
-function install_k8s_files {
+ install_k8s_files {
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
@@ -449,7 +469,7 @@ echo " "
 }
 
 
-function install_k8s_add_ons {
+ install_k8s_add_ons {
 echo " "
 echo "Creating kube-system namespace ..."
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-system-ns.yaml > /dev/null 2>&1
@@ -479,7 +499,7 @@ echo " "
 }
 
 
-function clean_up_after_vm {
+ clean_up_after_vm {
 sleep 1
 
 # get App's Resources folder
