@@ -8,6 +8,8 @@ After=etcd2.service fleet.service docker.service flanneld.service
 LimitNOFILE=491521
 # Check for certs
 ExecStartPre=/bin/sh -c '[[ -f /data/kubernetes/ca.crt ]] || /opt/sbin/kube-certs.sh'
+# Check for binary
+ExecStartPre=/bin/sh -c 'while [ ! -f /opt/bin/kube-apiserver ]; do sleep 1; done'
 # Start API server
 ExecStart=/opt/bin/kube-apiserver \
  --client-ca-file=/data/kubernetes/ca.crt \

@@ -53,35 +53,25 @@ fi
 # Start VM
 start_vm
 
-### Run some checks
-# check if k8s files are on VM
-#if [[ "${new_vm}" == "0" ]]
-#then
-#    check_files=$(/usr/local/sbin/corectl ssh k8solo-01 "/opt/sbin/check-kube-files.sh" | tr -d '\r')
-#    echo "fe: ${check_files}"
-    #
-#    if [[ "${check_files}" == "new_vm=1" ]]
-#    then
-#        echo "Unfinished install, new Kubernetes bootstraping will be triggered !!!"
-#        new_vm=1
-#    else
-#        new_vm=0
-#    fi
-#fi
-#
+# get VM's IP
+vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
 
-# if the new setup check for internet from VM
+#
 if [[ "${new_vm}" == "1" ]]
 then
+    # check internet from VM
     echo " "
     echo "Checking internet availablity on VM..."
     check_internet_from_vm
-fi
-#
-### done with checks
 
-# get VM's IP
-vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
+    # download latest version of fleetctl and helmc clients
+    download_osx_clients
+    #
+
+    # install k8s files on to VM
+    install_k8s_files
+    #
+fi
 
 # generate kubeconfig file if there is no such one file
 if [ ! -f "$HOME"/kube-solo/kube/kubeconfig ]; then
@@ -110,34 +100,35 @@ export FLEETCTL_ENDPOINT=http://$vm_ip:2379
 export FLEETCTL_DRIVER=etcd
 export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
 #
-sleep 3
-
-#
-echo "fleetctl list-machines:"
-fleetctl list-machines
-#
-
-#
 if [[ "${new_vm}" == "1" ]]
 then
-    # copy k8s files to VM
-    install_k8s_files
-    # generate kubeconfig file if there is no such one file
-    if [ ! -f "$HOME"/kube-solo/kube/kubeconfig ]; then
-        echo " "
-        echo "Generate kubeconfig file ..."
-        "${res_folder}"/bin/gen_kubeconfig "$vm_ip"
-    fi
+    echo " "
+    echo "fleetctl list-machines:"
+    fleetctl list-machines
+    echo " "
     #
-    echo "  "
-    deploy_fleet_units
+    submit_fleet_units
+    sleep 3
+
+    #
+    start_fleet_units
+
+    # Reboot VM
+    reboot_vm
+
+    # wait till etcd service is ready
+    echo " "
+    echo "Waiting for etcd service to be ready on VM..."
+    spin='-\|/'
+    i=1
+    until curl -o /dev/null http://"$vm_ip":2379 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+    echo " "
 fi
-#
 
 echo " "
 # set kubernetes master
 export KUBERNETES_MASTER=http://$vm_ip:8080
-echo "Waiting for Kubernetes cluster to be ready. This can take a few minutes..."
+echo "Waiting for Kubernetes cluster to be ready. This can take a bit..."
 spin='-\|/'
 i=1
 until curl -o /dev/null -sIf http://"$vm_ip":8080 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
@@ -160,6 +151,11 @@ fi
 echo " "
 echo "kubectl get nodes:"
 ~/kube-solo/bin/kubectl get nodes
+echo " "
+#
+
+#
+echo "Assigned static IP to VM: $vm_ip"
 echo " "
 #
 

@@ -5,6 +5,9 @@ Requires=kube-apiserver.service
 After=kube-apiserver.service
 
 [Service]
+# Check for binary
+ExecStartPre=/bin/sh -c 'while [ ! -f /opt/bin/kube-controller-manager ]; do sleep 1; done'
+# Wait for api server
 ExecStartPre=/opt/sbin/wupiao 127.0.0.1:8080
 ExecStart=/opt/bin/kube-controller-manager \
  --root-ca-file=/data/kubernetes/ca.crt \

@@ -5,6 +5,9 @@ Requires=kube-apiserver.service
 After=kube-apiserver.service
 
 [Service]
+# Check for binary
+ExecStartPre=/bin/sh -c 'while [ ! -f /opt/bin/kube-scheduler ]; do sleep 1; done'
+# Wait for api server
 ExecStartPre=/opt/sbin/wupiao 127.0.0.1:8080
 ExecStart=/opt/bin/kube-scheduler \
  --master=127.0.0.1:8080

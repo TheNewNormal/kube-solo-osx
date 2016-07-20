@@ -4,13 +4,12 @@
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-
- pause(){
+function pause(){
     read -p "$*"
 }
 
 
- check_iso_offline_setting() {
+function check_iso_offline_setting() {
 # check if offline setting is present in settings file
 check=$(cat ~/kube-solo/settings/k8solo-01.toml | grep "offline" )
 
@@ -20,7 +19,7 @@ then
 fi
 }
 
- check_corectld_server() {
+function check_corectld_server() {
 # check corectld server
 #
 CHECK_SERVER_STATUS=$(/usr/local/sbin/corectld status 2>&1 | grep "Uptime:")
@@ -34,7 +33,7 @@ fi
 }
 
 
- check_internet_from_vm(){
+function check_internet_from_vm(){
 #
 status=$(/usr/local/sbin/corectl ssh k8solo-01 "curl -s -I https://coreos.com 2>/dev/null | head -n 1 | cut -d' ' -f2")
 
@@ -47,7 +46,10 @@ else
     echo "and try to fix the problem !!!"
     echo " "
     echo "k8solo-01 VM is still running, so you can troubleshoot the network problem "
-    echo "and when you done fixing it, just 'Halt' and 'Up' via menu and the installation will continue ... "
+    echo " "
+    echo "When you done fixing it, do via menu 'Setup/Destroy Kube-solo VM' !!! "
+    echo " "
+    echo "and then via menu do 'Up' and the installation will start again ... "
     echo " "
     pause 'Press [Enter] key to abort installation ...'
     exit 1
@@ -55,7 +57,7 @@ fi
 }
 
 
- sshkey(){
+function sshkey(){
 # add ssh key to *.toml files
 echo " "
 echo "Reading ssh key from $HOME/.ssh/id_rsa.pub  "
@@ -75,7 +77,7 @@ echo "   sshkey = '$(cat $HOME/.ssh/id_rsa.pub)'" >> ~/kube-solo/settings/k8solo
 #
 }
 
- release_channel(){
+function release_channel(){
 # Set release channel
 LOOP=1
 while [ $LOOP -gt 0 ]
@@ -83,7 +85,7 @@ do
     VALID_MAIN=0
     echo " "
     echo "Set CoreOS Release Channel:"
-    echo " 1)  Alpha (may not always  properly)"
+    echo " 1)  Alpha (may not always function properly)"
     echo " 2)  Beta "
     echo " 3)  Stable (recommended)"
     echo " "
@@ -127,7 +129,7 @@ done
 }
 
 
-create_data_disk() {
+function create_data_disk() {
 # create persistent disk
 cd ~/kube-solo/
 echo "  "
@@ -143,15 +145,36 @@ then
     echo "Created 20GB Data disk"
 else
     echo " "
-    echo "Creating '$disk_size'GB sparse disk (QCow2)..."
+    echo "Creating "$disk_size"GB sparse disk (QCow2)..."
     /usr/local/sbin/qcow-tool create --size="$disk_size"GiB data.img
     echo "-"
     echo "Created $disk_sizeGB Data disk"
 fi
+#
+}
+
+function reboot_vm() {
+echo " "
+echo "The VM will be rebooted to allow CoreOS to properly initilalise itself ... "
+
+echo " "
+echo "Shutting down VM..."
+# send halt to VM
+/usr/local/sbin/corectl halt k8solo-01 >/dev/null 2>&1
+echo " "
+spin='-\|/'
+while $(/usr/local/sbin/corectl query --up k8solo-01) >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+
+#
+echo "VM is off ... "
+
+# start VM
+start_vm
+
 }
 
 
-format_disk() {
+function format_disk() {
 # Format data disk
 echo " "
 echo "Data disk will be formated ... "
@@ -165,16 +188,15 @@ echo " "
 echo "Shutting down 'format-vm' ..."
 spin='-\|/'
 i=1
-while $(corectl query --up format-vm) >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+while $(/usr/local/sbin/corectl query --up format-vm) >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 echo " "
 
 echo "Data disk is formated ... "
 
-
 }
 
 
-change_vm_ram() {
+function change_vm_ram() {
 echo " "
 echo " "
 echo "Please type VM's RAM size in GBs followed by [ENTER]:"
@@ -190,7 +212,7 @@ then
     echo " "
 else
     echo " "
-    echo "Changing VM's RAM to $ram_sizeGB..."
+    echo "Changing VM's RAM to "$ram_size"GB..."
     ((new_ram_size=$ram_size*1024))
     /usr/bin/sed -i "" 's/\(memory = \)\(.*\)/\1'$new_ram_size'/g' ~/kube-solo/settings/k8solo-01.toml
     echo " "
@@ -199,7 +221,7 @@ fi
 }
 
 
-start_vm() {
+function start_vm() {
 
 # Start VM
 cd ~/kube-solo
@@ -211,8 +233,10 @@ CHECK_VM_STATUS=$(cat ~/kube-solo/logs/vm_up.log | grep "started")
 #
 if [[ "$CHECK_VM_STATUS" == "" ]]; then
     echo " "
-    echo "VM have not booted, please check '~/kube-solo/logs/vm_up.log' and report the problem !!! "
+    echo "VM has not booted, please check '~/kube-solo/logs/vm_up.log' and report the problem !!! "
     echo " "
+    # delete data.img file so on next boot fresh install gets triggered again !!!
+    rm -f ~/kube-solo/data.img > /dev/null 2>&1
     pause 'Press [Enter] key to continue...'
     exit 0
 else
@@ -225,7 +249,7 @@ fi
 }
 
 
- download_osx_clients() {
+function download_osx_clients() {
 # download fleetctl file
 FLEETCTL_VERSION=$(/usr/local/sbin/corectl ssh k8solo-01 'fleetctl --version' | awk '{print $3}' | tr -d '\r')
 FILE=fleetctl
@@ -274,12 +298,12 @@ echo "Installed latest deis cli to ~/kube-solo/bin ..."
 }
 
 
- download_k8s_files() {
+function download_k8s_files() {
 #
 cd ~/kube-solo/tmp
 
 # get latest stable k8s version
- get_latest_version_number {
+ function get_latest_version_number {
     local -r latest_url="https://storage.googleapis.com/kubernetes-release/release/stable.txt"
     curl -Ss ${latest_url}
 }
@@ -331,7 +355,7 @@ install_k8s_files
 }
 
 
- download_k8s_files_version() {
+function download_k8s_files_version() {
 #
 cd ~/kube-solo/tmp
 
@@ -420,7 +444,24 @@ install_k8s_files
 }
 
 
- deploy_fleet_units() {
+function submit_fleet_units() {
+# deploy fleet units from ~/kube-solo/fleet
+cd ~/kube-solo/fleet
+echo "Deploying all fleet units in ~/kube-solo/fleet:"
+fleetctl submit fleet-ui.service
+fleetctl submit kube-apiserver.service
+fleetctl submit kube-controller-manager.service
+fleetctl submit kube-scheduler.service
+fleetctl submit kube-kubelet.service
+fleetctl submit kube-proxy.service
+echo " "
+echo "fleetctl list-units:"
+fleetctl list-units
+echo " "
+
+}
+
+function start_fleet_units() {
 # deploy fleet units from ~/kube-solo/fleet
 cd ~/kube-solo/fleet
 echo "Starting all fleet units in ~/kube-solo/fleet:"
@@ -437,8 +478,7 @@ echo " "
 
 }
 
-
- install_k8s_files {
+function install_k8s_files {
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
@@ -459,7 +499,6 @@ fi
 echo " "
 echo "Installing Kubernetes files on to VM..."
 cd ~/kube-solo/kube
-###scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet kube.tgz core@$vm_ip:/home/core
 /usr/local/sbin/corectl scp kube.tgz k8solo-01:/home/core/
 /usr/local/sbin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
 /usr/local/sbin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /opt/tmp && sudo mv /opt/bin/easy-rsa.tar.gz /opt/tmp'
@@ -469,7 +508,7 @@ echo " "
 }
 
 
- install_k8s_add_ons {
+function install_k8s_add_ons() {
 echo " "
 echo "Creating kube-system namespace ..."
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-system-ns.yaml > /dev/null 2>&1
@@ -499,7 +538,7 @@ echo " "
 }
 
 
- clean_up_after_vm {
+function clean_up_after_vm() {
 sleep 1
 
 # get App's Resources folder

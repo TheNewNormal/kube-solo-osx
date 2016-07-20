@@ -3,6 +3,9 @@ Description=Kubernetes Proxy
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
+# Check for binary
+ExecStartPre=/bin/sh -c 'while [ ! -f /opt/bin/kube-proxy ]; do sleep 1; done'
+# Wait for api server
 ExecStartPre=/opt/sbin/wupiao 127.0.0.1:8080
 ExecStart=/opt/bin/kube-proxy \
  --master=http://127.0.0.1:8080 \

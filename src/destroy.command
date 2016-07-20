@@ -28,7 +28,7 @@ do
         /usr/local/sbin/corectl halt k8solo-01 > /dev/null 2>&1
 
         # delete data image
-        rm -f ~/kube-solo/data.img
+        rm -f ~/kube-solo/data.img > /dev/null 2>&1
 
         echo "-"
         echo "Done, please start VM with 'Up' and the new VM will be recreated ..."

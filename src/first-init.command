@@ -44,16 +44,16 @@ echo " "
 echo "Checking internet availablity on VM..."
 check_internet_from_vm
 
-# install k8s files on to VM
-install_k8s_files
-#
-
 # download latest version of fleetctl and helmc clients
 download_osx_clients
 #
 
 # run helmc for the first time
 helmc up
+
+# install k8s files on to VM
+install_k8s_files
+#
 
 # set etcd endpoint
 export ETCDCTL_PEERS=http://$vm_ip:2379
@@ -77,10 +77,24 @@ echo "fleetctl list-machines:"
 fleetctl list-machines
 echo " "
 #
-deploy_fleet_units
+submit_fleet_units
+sleep 3
 #
 
-sleep 2
+#
+start_fleet_units
+
+# Reboot VM
+reboot_vm
+
+# wait till etcd service is ready
+echo " "
+echo "Waiting for etcd service to be ready on VM..."
+spin='-\|/'
+i=1
+until curl -o /dev/null http://"$vm_ip":2379 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+echo " "
+
 
 # generate kubeconfig file
 echo Generate kubeconfig file ...
@@ -115,7 +129,7 @@ echo " "
 #
 echo "Installation has finished, Kube Solo VM is up and running !!!"
 echo " "
-echo "Assigned static IP for VM: $vm_ip"
+echo "Assigned static IP to VM: $vm_ip"
 echo " "
 echo "You can control this App via status bar icon... "
 echo " "
