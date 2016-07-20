@@ -14,7 +14,7 @@ ExecStart=/opt/bin/kube-controller-manager \
  --logtostderr=true
 
 Restart=always
-RestartSec=10
+RestartSec=5
 
 [X-Fleet]
 MachineOf=kube-apiserver.service

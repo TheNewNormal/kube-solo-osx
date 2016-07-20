@@ -132,18 +132,18 @@ create_data_disk() {
 cd ~/kube-solo/
 echo "  "
 echo "Please type Data disk size in GBs followed by [ENTER]:"
-echo -n "[default is 15]: "
+echo -n "[default is 20]: "
 read disk_size
 if [ -z "$disk_size" ]
 then
     echo " "
-    echo "Creating 15GB disk (QCow2)..."
-    /usr/local/sbin/qcow-tool create --size=15GiB data.img
+    echo "Creating 20GB sparse disk (QCow2)..."
+    /usr/local/sbin/qcow-tool create --size=20GiB data.img
     echo "-"
-    echo "Created 15GB Data disk"
+    echo "Created 20GB Data disk"
 else
     echo " "
-    echo "Creating '$disk_size'GB disk (QCow2)..."
+    echo "Creating '$disk_size'GB sparse disk (QCow2)..."
     /usr/local/sbin/qcow-tool create --size="$disk_size"GiB data.img
     echo "-"
     echo "Created '$disk_size'GB Data disk"
@@ -158,16 +158,18 @@ change_vm_ram() {
 echo " "
 echo " "
 echo "Please type VM's RAM size in GBs followed by [ENTER]:"
-echo -n "[default is 2]: "
+echo -n "[default is 3]: "
 read ram_size
 if [ -z "$ram_size" ]
 then
-    ram_size=2
-    echo "Changing VM's RAM to '$ram_size''GB..."
+    ram_size=3
+    echo " "
+    echo "Setting VM's RAM to 3GB..."
     ((new_ram_size=$ram_size*1024))
     /usr/bin/sed -i "" 's/\(memory = \)\(.*\)/\1'$new_ram_size'/g' ~/kube-solo/settings/k8solo-01.toml
     echo " "
 else
+    echo " "
     echo "Changing VM's RAM to '$ram_size'GB..."
     ((new_ram_size=$ram_size*1024))
     /usr/bin/sed -i "" 's/\(memory = \)\(.*\)/\1'$new_ram_size'/g' ~/kube-solo/settings/k8solo-01.toml

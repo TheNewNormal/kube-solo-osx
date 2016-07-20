@@ -9,5 +9,5 @@ ExecStart=/opt/bin/kube-proxy \
  --logtostderr=true
 
 Restart=always
-RestartSec=10
+RestartSec=5
 

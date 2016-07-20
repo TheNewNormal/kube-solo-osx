@@ -39,15 +39,7 @@ if ! ssh-add -l | grep -q ssh/id_rsa; then
   ssh-add -K ~/.ssh/id_rsa &>/dev/null
 fi
 
-# generate kubeconfig file if there is no such one file
-if [ ! -f "$HOME"/kube-solo/kube/kubeconfig ]; then
-    echo "Generate kubeconfig file ..."
-"   ${res_folder}"/bin/gen_kubeconfig "$vm_ip"
-fi
-#
-
-
-#
+# set variable to 0
 new_vm=0
 
 # check if root disk exists, if not create it
@@ -63,22 +55,20 @@ start_vm
 
 ### Run some checks
 # check if k8s files are on VM
-if [[ "${new_vm}" == "0" ]]
-then
-    check_files=$(/usr/local/sbin/corectl ssh k8solo-01 "/opt/sbin/check-kube-files.sh" | tr -d '\r')
-    echo "fe: ${check_files}"
+#if [[ "${new_vm}" == "0" ]]
+#then
+#    check_files=$(/usr/local/sbin/corectl ssh k8solo-01 "/opt/sbin/check-kube-files.sh" | tr -d '\r')
+#    echo "fe: ${check_files}"
     #
-    if [[ "${check_files}" == "1" ]]
-    then
-        echo "Unfinished install, new Kubernetes bootstraping will be triggered !!!"
-        new_vm=1
-    else
-        new_vm=0
-    fi
-fi
+#    if [[ "${check_files}" == "new_vm=1" ]]
+#    then
+#        echo "Unfinished install, new Kubernetes bootstraping will be triggered !!!"
+#        new_vm=1
+#    else
+#        new_vm=0
+#    fi
+#fi
 #
-
-echo "vm: $new_vm"
 
 # if the new setup check for internet from VM
 if [[ "${new_vm}" == "1" ]]
@@ -92,6 +82,14 @@ fi
 
 # get VM's IP
 vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
+
+# generate kubeconfig file if there is no such one file
+if [ ! -f "$HOME"/kube-solo/kube/kubeconfig ]; then
+    echo " "
+    echo "Generate kubeconfig file ..."
+    "${res_folder}"/bin/gen_kubeconfig "$vm_ip"
+fi
+#
 
 # Set the shell environment variables
 # set etcd endpoint
@@ -124,6 +122,12 @@ if [[ "${new_vm}" == "1" ]]
 then
     # copy k8s files to VM
     install_k8s_files
+    # generate kubeconfig file if there is no such one file
+    if [ ! -f "$HOME"/kube-solo/kube/kubeconfig ]; then
+        echo " "
+        echo "Generate kubeconfig file ..."
+        "${res_folder}"/bin/gen_kubeconfig "$vm_ip"
+    fi
     #
     echo "  "
     deploy_fleet_units

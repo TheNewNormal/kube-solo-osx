@@ -25,5 +25,5 @@ ExecStart=/opt/bin/kubelet \
  --healthz_port=10248
 
 Restart=always
-RestartSec=10
+RestartSec=5
 

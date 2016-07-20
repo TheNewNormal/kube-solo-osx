@@ -43,9 +43,9 @@ coreos:
       content: |
         [Unit]
         Description=Mounts ephemeral to /data
-        Requires=format-persistent-disk.service
+        Requires=format-persistent-disk.service etcd2.service fleet.service docker.service rkt-metadata.socket usr-share-oem.mount
         After=format-persistent-disk.service
-        Before=etcd2.service fleet.service docker.service rkt-metadata.socket
+        Before=etcd2.service fleet.service docker.service rkt-metadata.socket usr-share-oem.mount
         [Mount]
         What=/dev/vda
         Where=/data
@@ -75,7 +75,7 @@ coreos:
         [Unit]
         Description=Binds /data/var/lib/etcd2 to /var/lib/etcd2
         After=persistent-data-checks.service
-        Requires=persistent-data-checks docker.service
+        Requires=persistent-data-checks.service etcd2.service
         Before=etcd2.service
         [Mount]
         What=/data/var/lib/etcd2
@@ -88,7 +88,7 @@ coreos:
         [Unit]
         Description=Binds /data/var/lib/docker to /var/lib/docker
         After=persistent-data-checks.service
-        Requires=persistent-data-checks docker.service
+        Requires=persistent-data-checks.service docker.service
         Before=docker.service
         [Mount]
         What=/data/var/lib/docker
@@ -113,7 +113,7 @@ coreos:
       content: |
         [Unit]
         Description=Binds /data/opt/bin to /opt/bin
-        Requires=persistent-data-checks.service
+        Requires=persistent-data-checks.service docker.service rkt-metadata.socket
         After=persistent-data-checks.service
         Before=docker.service rkt-metadata.socket
         [Mount]
@@ -126,7 +126,7 @@ coreos:
       content: |
         [Unit]
         Description=Binds /data/kubelet to /var/lib/kubelet
-        Requires=persistent-data-checks.service
+        Requires=persistent-data-checks.service docker.service rkt-metadata.socket
         After=persistent-data-checks.service
         Before=docker.service rkt-metadata.socket
         [Mount]
@@ -139,7 +139,7 @@ coreos:
       content: |
         [Unit]
         Description=Binds /data/mnt to /mnt
-        Requires=persistent-data-checks.service
+        Requires=persistent-data-checks.service docker.service rkt-metadata.socket
         After=persistent-data-checks.service
         Before=docker.service rkt-metadata.socket
         [Mount]
@@ -151,6 +151,13 @@ coreos:
       command: start
     - name: fleet.service
       command: start
+      drop-ins:
+      - name: 50-start-delay.conf
+        content: |
+          [Unit]
+          Requires=fleet.service
+          [Service]
+          ExecStartPre=/bin/sh -c 'sleep 5'
     - name: flanneld.service
       command: start
       drop-ins:
