@@ -216,22 +216,6 @@
 }
 
 
-- (IBAction)restoreFleetUnits:(id)sender {
-    VMStatus vmStatus = [self.vmManager checkVMStatus];
-    
-    switch (vmStatus) {
-        case VMStatusDown:
-            [self notifyUserWithText:NSLocalizedString(@"VMStateOff", nil)];
-            break;
-            
-        case VMStatusUp:
-            [self notifyUserWithText:NSLocalizedString(@"RestoreFleetUnitsNotificationMessage", nil)];
-            [self.vmManager restoreFleetUnits];
-            break;
-    }
-}
-
-
 - (IBAction)changeReleaseChannel:(id)sender {
     [self notifyUserWithText:NSLocalizedString(@"ReleaseChannelChangeNotificationMessage", nil)];
     [self.vmManager changeReleaseChannel];
@@ -322,23 +306,6 @@
             [self notifyUserWithText:NSLocalizedString(@"SSHShellWillOpenNotificationMessage", nil)];
             [self.vmManager runSSH];
             break;
-    }
-}
-
-- (IBAction)fleetUI:(id)sender {
-    VMStatus vmStatus = [self.vmManager checkVMStatus];
-
-    switch (vmStatus) {
-        case VMStatusDown:
-            [self notifyUserWithText:NSLocalizedString(@"VMStateOff", nil)];
-            break;
-
-        case VMStatusUp: {
-            NSString *vmIP = [NSString stringWithContentsOfURL:[NSURL ks_ipAddressURL] encoding:NSUTF8StringEncoding error:nil];
-            NSString *url = [NSString stringWithFormat:@"http://%@:3000", vmIP];
-            [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
-            break;
-        }
     }
 }
 

@@ -7,6 +7,7 @@ coreos:
     reboot-strategy: off
   etcd2:
     name: k8solo-01
+    data-dir: /data/var/lib/etcd2
     initial-advertise-peer-urls: http://k8solo-01:2380
     initial-cluster-token: k8solo-01_etcd
     initial-cluster: k8solo-01=http://k8solo-01:2380
@@ -37,15 +38,15 @@ coreos:
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStart=/bin/sh -c '/usr/sbin/blkid -pi /dev/vda | grep TYPE= || /usr/sbin/mkfs.ext4 -i 8192 -L OEM /dev/vda'
+        ExecStart=/bin/sh -c '/usr/sbin/blkid -pi /dev/vda | grep TYPE= || /usr/sbin/mkfs.ext4 -i 8192 -L k8s_data /dev/vda'
     - name: data.mount
       command: start
       content: |
         [Unit]
         Description=Mounts ephemeral to /data
-        Requires=format-persistent-disk.service etcd2.service fleet.service docker.service rkt-metadata.socket usr-share-oem.mount
+        Requires=format-persistent-disk.service etcd2.service docker.service rkt-metadata.socket
         After=format-persistent-disk.service
-        Before=etcd2.service fleet.service docker.service rkt-metadata.socket usr-share-oem.mount
+        Before=etcd2.service docker.service rkt-metadata.socket
         [Mount]
         What=/dev/vda
         Where=/data
@@ -55,31 +56,32 @@ coreos:
       content: |
         [Unit]
         Description=prepare for etcd,docker,rkt,opt
-        Requires=data.mount
+        Requires=data.mount etcd2.service
+        Before=etcd2.service
         After=data.mount
         [Service]
         Type=oneshot
         RemainAfterExit=yes
+        ExecStart=/bin/sh -c '[[ -d /data/var/lib/etcd2 ]] || mkdir -p /data/var/lib/etcd2 && /usr/bin/chown etcd:etcd /data/var/lib/etcd2'
+        ExecStart=/bin/sh -c '/usr/bin/chown etcd:etcd /data/var/lib/etcd2'
         ExecStart=/bin/sh -c '[[ -d /data/var/lib/docker ]] || mkdir -p /data/var/lib/docker'
         ExecStart=/bin/sh -c '[[ -d /data/var/lib/rkt ]] || mkdir -p /data/var/lib/rkt && /usr/bin/chown root:rkt /data/var/lib/rkt && /usr/bin/chmod g+s /data/var/lib/rkt'
-        ExecStart=/bin/sh -c '[[ -d /data/var/lib/etcd2 ]] || mkdir -p /data/var/lib/etcd2 && /usr/bin/chown etcd:etcd /data/var/lib/etcd2'
+        ExecStart=/bin/sh -c '/usr/bin/chown root:rkt /data/var/lib/rkt && /usr/bin/chmod g+s /data/var/lib/rkt'
         ExecStart=/bin/sh -c '[[ -d /data/opt/bin ]] || mkdir -p /data/opt/bin'
-        ExecStart=/bin/sh -c '[[ -d /data/kubernetes ]] || mkdir -p /data/kubernetes'
+        ExecStart=/bin/sh -c '[[ -d /data/kubernetes/manifests ]] || mkdir -p /data/kubernetes/manifests'
         ExecStart=/bin/sh -c '[[ -d /data/kubelet ]] || mkdir -p /data/kubelet'
         ExecStart=/bin/sh -c '[[ -d /data/mnt ]] || mkdir -p /data/mnt'
-        ExecStart=/bin/sh -c '/usr/bin/chown root:rkt /data/var/lib/rkt && /usr/bin/chmod g+s /data/var/lib/rkt'
-        ExecStart=/bin/sh -c '/usr/bin/chown etcd:etcd /data/var/lib/etcd2'
-    - name: var-lib-etcd2.mount
+    - name: opt-bin.mount
       command: start
       content: |
         [Unit]
-        Description=Binds /data/var/lib/etcd2 to /var/lib/etcd2
+        Description=Binds /data/opt/bin to /opt/bin
+        Requires=persistent-data-checks.service docker.service rkt-metadata.socket
         After=persistent-data-checks.service
-        Requires=persistent-data-checks.service etcd2.service
-        Before=etcd2.service
+        Before=docker.service rkt-metadata.socket
         [Mount]
-        What=/data/var/lib/etcd2
-        Where=/var/lib/etcd2
+        What=/data/opt/bin
+        Where=/opt/bin
         Type=none
         Options=bind
     - name: var-lib-docker.mount
@@ -106,19 +108,6 @@ coreos:
         [Mount]
         What=/data/var/lib/rkt
         Where=/var/lib/rkt
-        Type=none
-        Options=bind
-    - name: opt-bin.mount
-      command: start
-      content: |
-        [Unit]
-        Description=Binds /data/opt/bin to /opt/bin
-        Requires=persistent-data-checks.service docker.service rkt-metadata.socket
-        After=persistent-data-checks.service
-        Before=docker.service rkt-metadata.socket
-        [Mount]
-        What=/data/opt/bin
-        Where=/opt/bin
         Type=none
         Options=bind
     - name: var-lib-kubelet.mount
@@ -150,14 +139,7 @@ coreos:
     - name: etcd2.service
       command: start
     - name: fleet.service
-      command: start
-      drop-ins:
-      - name: 50-start-delay.conf
-        content: |
-          [Unit]
-          Requires=fleet.service
-          [Service]
-          ExecStartPre=/bin/sh -c 'sleep 5'
+      command: stop
     - name: flanneld.service
       command: start
       drop-ins:
@@ -178,43 +160,127 @@ coreos:
             Environment=DOCKER_OPTS='--insecure-registry="0.0.0.0/0"'
     - name: update-engine.service
       command: stop
+    - name: kube-apiserver.service
+      command: start
+      content: |
+        [Unit]
+        Description=Kubernetes API Server
+        Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+        Requires=etcd2.service docker.service flanneld.service persistent-data-checks.service
+        After=etcd2.service docker.service flanneld.service persistent-data-checks.service
+        [Service]
+        LimitNOFILE=491521
+        # Check for certs
+        ExecStartPre=/bin/sh -c '[[ -f /data/kubernetes/ca.crt ]] || /opt/sbin/kube-certs.sh'
+        # Check for binary
+        ExecStartPre=/bin/sh -c 'while [ ! -f /opt/bin/kube-apiserver ]; do sleep 1; done'
+        # Start API server
+        ExecStart=/opt/bin/kube-apiserver \
+          --client-ca-file=/data/kubernetes/ca.crt \
+          --tls-cert-file=/data/kubernetes/server.cert \
+          --tls-private-key-file=/data/kubernetes/server.key \
+          --admission_control=NamespaceLifecycle,NamespaceAutoProvision,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota \
+          --service_account_key_file=/data/kubernetes/server.key \
+          --service_account_lookup=false \
+          --allow_privileged=true \
+          --insecure_bind_address=0.0.0.0 \
+          --insecure_port=8080 \
+          --kubelet_https=true \
+          --secure_port=6443 \
+          --service-cluster-ip-range=10.100.0.0/16 \
+          --etcd_servers=http://127.0.0.1:2379 \
+          --bind-address=0.0.0.0 \
+          --logtostderr=true
+        Restart=always
+        RestartSec=10
+    - name: kube-controller-manager.service
+      command: start
+      content: |
+        [Unit]
+        Description=Kubernetes Controller Manager
+        Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+        Requires=kube-apiserver.service
+        After=kube-apiserver.service
+        [Service]
+        # Check for binary
+        ExecStartPre=/bin/sh -c 'while [ ! -f /opt/bin/kube-controller-manager ]; do sleep 1; done'
+        # Wait for api server
+        ExecStartPre=/opt/sbin/wupiao 127.0.0.1:8080
+        ExecStart=/opt/bin/kube-controller-manager \
+          --root-ca-file=/data/kubernetes/ca.crt \
+          --service-account-private-key-file=/data/kubernetes/server.key \
+          --master=127.0.0.1:8080 \
+          --pod_eviction_timeout=30s \
+          --logtostderr=true
+        Restart=always
+        RestartSec=10
+    - name: kube-scheduler.service
+      command: start
+      content: |
+        [Unit]
+        Description=Kubernetes API Server
+        Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+        Requires=kube-apiserver.service
+        After=kube-apiserver.service
+        [Service]
+        # Check for binary
+        ExecStartPre=/bin/sh -c 'while [ ! -f /opt/bin/kube-scheduler ]; do sleep 1; done'
+        # Wait for api server
+        ExecStartPre=/opt/sbin/wupiao 127.0.0.1:8080
+        ExecStart=/opt/bin/kube-scheduler \
+          --master=127.0.0.1:8080 \
+          --logtostderr=true
+        Restart=always
+        RestartSec=10
+    - name: kube-proxy.service
+      command: start
+      content: |
+        [Unit]
+        Description=Kubernetes Proxy
+        Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+        [Service]
+        # Check for binary
+        ExecStartPre=/bin/sh -c 'while [ ! -f /opt/bin/kube-proxy ]; do sleep 1; done'
+        # Wait for api server
+        ExecStartPre=/opt/sbin/wupiao 127.0.0.1:8080
+        ExecStart=/opt/bin/kube-proxy \
+          --master=http://127.0.0.1:8080 \
+          --logtostderr=true
+        Restart=always
+        RestartSec=10
+    - name: kube-kubelet.service
+      command: start
+      content: |
+        [Unit]
+        Description=Kubernetes Kubelet
+        Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+        [Service]
+        EnvironmentFile=/etc/environment
+        # small hacks around for Deis Workflow
+        ExecStartPre=-/bin/sh -c 'sudo mkdir -p /data/deis/minio && sudo chown 106:107 /data/deis/minio'
+        # Check for binary
+        ExecStartPre=/bin/sh -c 'while [ ! -f /opt/bin/kubelet ]; do sleep 1; done'
+        # Wait for api server
+        ExecStartPre=/opt/sbin/wupiao 127.0.0.1:8080
+        #
+        ExecStart=/opt/bin/kubelet \
+          --address=0.0.0.0 \
+          --port=10250 \
+          --hostname_override=${HOSTNAME} \
+          --register-node=true \
+          --container_runtime=docker \
+          --api_servers=http://127.0.0.1:8080 \
+          --allow_privileged=true \
+          --cluster_dns=10.100.0.10 \
+          --cluster_domain=cluster.local \
+          --logtostderr=true \
+          --config=/data/kubernetes/manifests \
+          --cadvisor_port=4194 \
+          --healthz_bind_address=0.0.0.0 \
+          --healthz_port=10248
+        Restart=always
+        RestartSec=10
 write-files:
- - path: /home/core/.ssh/id_rsa
-   permissions: '0600'
-   owner: core:core
-   content: |
-     -----BEGIN RSA PRIVATE KEY-----
-     MIIEowIBAAKCAQEA18VKh3nRpHTOC+AAyg+YB1P0SSISR/2TjHG89c7ZhPTGCXr5
-     P60H5vU/YOrV8sQR542inDwxfAvhn86yHe/w8dX/g4krNDB+0NFL1fbQ9BktGsao
-     Apg5bWMGjBgVTp8WJlDfW7zYqJQu/wjZ90oz6EpL4+DhzAn/W0JUXWiFgCUpKDHJ
-     zZIZzebywLcJ/8jngMhxpae9OSDIkR9i5QNkeqLZhR0kB65Bq/8KbtFibduxAUyG
-     qxXnou3QB5VH9c4Ura8vzhMqsBCohKPuH5OLz2V4jcijZJY7vyNahXG3PB8Gw1c0
-     7XZUAlEUDuJaLA5kIBXSOMM9X5Tjq7Cvtfrz2wIDAQABAoIBAC3R0pLUVqWCvGKf
-     Leu6xgEAXgbNum4ZNiUD3imgxGZMiGVo/Nb9yojMGapeFBLaeibe1+Ivkh6Sc1Y5
-     UW+0DUl9tSXckhUiGzwCxgToxdSgKAjgmLr8Um2dMr27O4MXm1+FmvjjMGsUFKrJ
-     2Wd/FWjFpjn8/lYS5WweuMWhNYBRf8lwA4VdjU/pnlPDro8PqMysf4h+tRw26nJb
-     NXzqzJ5zQGfBJ0wIYuZSa25SF9l9gRWEUM/KxL36S/SpwuXSdBv/GtqKB21ogyOn
-     S3UZZjfTlkX0KvaLG0eVXptSRjqSJbZkzBbDX1WsBEJIvV1XqeJcptNtO6Ez7Kou
-     NqE4cfkCgYEA/IX2AZCLBmCfYsQm1M6WaQ/hgaWFrcimr/huNbASuc3fE4e5vFSR
-     Dh6jFikDg5t6Q8nUTySpRXovCHEfnvYFrS5s4tPOe/2JqBwK63KqjpeC/JPNGC1E
-     sXPEttiFo49kkTOOh1ImCbqHJT2EIPEIuXE3RUXlTk/+MwOwYL2HaHUCgYEA2r3K
-     5O1gf7Cfws3lRxOdS+eK+m4z8oF92tcX7sEVphJTG6wqRR0z2Llj8SsyGbFWSYfK
-     zalFkk66zr55MzTrOhJ35+LyJUx+IBAcYkQLTtTsp54JlJ8CMD1EcRPASYTg3L8R
-     Rf8+cgfcSslBiL/nyhnTN0hmyjVJp7ucvbep4Q8CgYEAhFn99xH4G86WmyBtrcnd
-     QZGGQvorF0t8Oey+brsrBWFmkwjnC1NTd5ANMDcs1VSu/0qQUS7I3VZNwmHwDdOq
-     Y/taLISQy6G1/Xs9Kew+gl/c0l7w9sP7JfqkVqUjXfdw4T2hbUFcGGtAG/+i+dT7
-     Gp7BNjiNF7+LXteHIR0VFGUCgYAaMorfOhLJmDS6FwCzr4SyN4vsjFBKZfnVwNcL
-     8DIQjrdHZCo31tSDy0hN9PduHlAQRGQkl3ZOnIFBC4zmdhsJ/HZB3mtTzkJ4wpUz
-     q6STD2s8c+//zb9sWZod1Ni9tV1c8sE12ej3rTtT9aCUqS8whEFIqLIu24zzusN9
-     8UY2PwKBgHWyekUzaQRcteEYsCWsl9KeX777EdtbK6bGh5JlD9rK5YVK3Ogq24Ts
-     9+yKbdYPv6KjXbAnb3ywDeifIx9vna+4jtXZ8cUuZQcj4nmBtKfeaxZeN7OlHv0d
-     LwDeOM4DDptEENhfzc0sPYHyGqUsfH6c4kq5KwtDAoY9MCS5/dGN
-     -----END RSA PRIVATE KEY-----
- - path: /home/core/.ssh/id_rsa.pub
-   permissions: '0600'
-   owner: core:core
-   content: |
-     ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXxUqHedGkdM4L4ADKD5gHU/RJIhJH/ZOMcbz1ztmE9MYJevk/rQfm9T9g6tXyxBHnjaKcPDF8C+GfzrId7/Dx1f+DiSs0MH7Q0UvV9tD0GS0axqgCmDltYwaMGBVOnxYmUN9bvNiolC7/CNn3SjPoSkvj4OHMCf9bQlRdaIWAJSkoMcnNkhnN5vLAtwn/yOeAyHGlp705IMiRH2LlA2R6otmFHSQHrkGr/wpu0WJt27EBTIarFeei7dAHlUf1zhStry/OEyqwEKiEo+4fk4vPZXiNyKNklju/I1qFcbc8HwbDVzTtdlQCURQO4losDmQgFdI4wz1flOOrsK+1+vPb core@k8solo-01
  - path: /opt/sbin/wupiao
    permissions: '0755'
    content: |
@@ -294,3 +360,7 @@ write-files:
    content: |
       #!/bin/bash
       systemctl restart kube-apiserver
+      systemctl restart kube-controller-manager
+      systemctl restart kube-scheduler
+      systemctl restart kube-kubelet
+      systemctl restart kube-proxy

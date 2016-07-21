@@ -36,41 +36,26 @@ echo Generate kubeconfig file ...
 echo " "
 #
 
-# restart fleet units
-echo "Restarting fleet units:"
-# set fleetctl tunnel
-export FLEETCTL_ENDPOINT=http://$vm_ip:2379
-export FLEETCTL_DRIVER=etcd
-export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
-cd ~/kube-solo/fleet
-echo "Stopping Kubernetes fleet units ..."
-~/kube-solo/bin/fleetctl stop kube-apiserver.service
-~/kube-solo/bin/fleetctl stop kube-controller-manager.service
-~/kube-solo/bin/fleetctl stop kube-scheduler.service
-~/kube-solo/bin/fleetctl stop kube-kubelet.service
-~/kube-solo/bin/fleetctl stop kube-proxy.service
-sleep 5
-echo "Starting Kubernetes fleet units ..."
-~/kube-solo/bin/fleetctl start kube-apiserver.service
-~/kube-solo/bin/fleetctl start kube-controller-manager.service
-~/kube-solo/bin/fleetctl start kube-scheduler.service
-~/kube-solo/bin/fleetctl start kube-kubelet.service
-~/kube-solo/bin/fleetctl start kube-proxy.service
-#
-sleep 5
+# trigger k8s units restart on VM
 echo " "
-echo "fleetctl list-units:"
-~/kube-solo/bin/fleetctl list-units
+echo "Restarting Kubernetes systemd units on VM ..."
+/usr/local/sbin/corectl ssh k8solo-01 "sudo /opt/sbin/restart-kube-units.sh"
+#&>/dev/null
 echo " "
 
 # set kubernetes master
 export KUBERNETES_MASTER=http://$vm_ip:8080
-echo Waiting for Kubernetes cluster to be ready. This can take a few minutes...
+# wait for Kubernetes cluster readiness
+echo "Waiting for Kubernetes cluster to be ready. This can take a bit..."
 spin='-\|/'
 i=1
 until ~/kube-solo/bin/kubectl version | grep 'Server Version' >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\b${spin:i++%${#sp}:1}"; sleep .1; done
+echo "..."
+echo " "
+echo "Waiting for Kubernetes node to be ready. This can take a bit..."
 i=1
 until ~/kube-solo/bin/kubectl get nodes | grep -w "k8solo-01" | grep -w "Ready" >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+echo "..."
 echo " "
 #
 echo " "
@@ -90,4 +75,6 @@ echo "Cluster info:"
 echo " "
 
 echo "Kubernetes cluster update has finished !!!"
+echo " "
 pause 'Press [Enter] key to continue...'
+echo " "

@@ -38,7 +38,6 @@
 "KubernetesUpdateNotificationTitle" = "Kube-Solo and";
 "KubernetedUpdateNotificationMessage" = "macOS kubectl will be updated";
 "KubernetesVersionChangeNotificationMessage" = "macOS kubectl version will be changed";
-"RestoreFleetUnitsNotificationMessage" = "fleet units will be restored/upgraded";
 "QuittingNotificationTitle" = "Quitting Kube-Solo App";
 
 // Alerts

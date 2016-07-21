@@ -10,7 +10,6 @@
     mkdir ~/kube-solo/bin
     mkdir ~/kube-solo/cloud-init
     mkdir ~/kube-solo/settings
-    mkdir ~/kube-solo/fleet
     mkdir ~/kube-solo/kubernetes
     mkdir ~/kube-solo/kube
 
@@ -31,15 +30,9 @@
     # copy k8s files
     cp "$1"/k8s/kubectl ~/kube-solo/kube
     chmod +x ~/kube-solo/kube/kubectl
-    cp "$1"/k8s/*.yaml ~/kube-solo/kubernetes
+    cp "$1"/k8s/add-ons/*.yaml ~/kube-solo/kubernetes
     # linux binaries
     cp "$1"/k8s/kube.tgz ~/kube-solo/kube
-
-    # copy fleetctl
-    cp -f "$1"/files/fleetctl ~/kube-solo/bin
-
-    # copy fleet units
-    cp -R "$1"/fleet/ ~/kube-solo/fleet
 
     # check if iTerm.app exists
     App="/Applications/iTerm.app"

@@ -34,6 +34,7 @@ change_vm_ram
 create_data_disk
 
 # Start VM
+echo " "
 start_vm
 
 # get VM's IP
@@ -44,111 +45,93 @@ echo " "
 echo "Checking internet availablity on VM..."
 check_internet_from_vm
 
-# download latest version of fleetctl and helmc clients
+# download latest version of deis and helmc clients
 download_osx_clients
 #
 
-# run helmc for the first time
-helmc up
-
+echo " "
 # install k8s files on to VM
 install_k8s_files
 #
 
+# Set the shell environment variables
 # set etcd endpoint
 export ETCDCTL_PEERS=http://$vm_ip:2379
+# set kubernetes master endpoint
+export KUBERNETES_MASTER=http://$vm_ip:8080
+
 # wait till etcd service is ready
 echo "--------"
-echo " "
 echo "Waiting for etcd service to be ready on VM..."
 spin='-\|/'
 i=1
 until curl -o /dev/null http://$vm_ip:2379 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+echo "..."
 echo " "
-
-
-# set fleetctl endpoint and install fleet units
-export FLEETCTL_TUNNEL=
-export FLEETCTL_ENDPOINT=http://$vm_ip:2379
-export FLEETCTL_DRIVER=etcd
-export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
-echo " "
-echo "fleetctl list-machines:"
-fleetctl list-machines
-echo " "
-#
-submit_fleet_units
-sleep 3
-#
-
-#
-start_fleet_units
-
-# Reboot VM
-reboot_vm
-
-# wait till etcd service is ready
-echo " "
-echo "Waiting for etcd service to be ready on VM..."
-spin='-\|/'
-i=1
-until curl -o /dev/null http://"$vm_ip":2379 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-echo " "
-
 
 # generate kubeconfig file
 echo Generate kubeconfig file ...
 "${res_folder}"/bin/gen_kubeconfig $vm_ip
 #
 
-# set kubernetes master
-export KUBERNETES_MASTER=http://$vm_ip:8080
-#
+# wait for Kubernetes cluster readiness
 echo " "
-echo "Waiting for Kubernetes cluster to be ready. This can take a few minutes..."
+echo "Waiting for Kubernetes cluster to be ready. This can take a bit..."
 spin='-\|/'
 i=1
 until curl -o /dev/null http://$vm_ip:8080 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 i=1
 until ~/kube-solo/bin/kubectl version | grep 'Server Version' >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\b${spin:i++%${#sp}:1}"; sleep .1; done
+echo "..."
+echo " "
+echo "Waiting for Kubernetes node to be ready. This can take a bit..."
 i=1
 until ~/kube-solo/bin/kubectl get nodes | grep -w "k8solo-01" | grep -w "Ready" >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
+echo "..."
 echo " "
+
 # attach label to the node
 ~/kube-solo/bin/kubectl label nodes k8solo-01 node=worker1
 #
 install_k8s_add_ons
-#
-echo "fleetctl list-machines:"
-fleetctl list-machines
-echo " "
-echo "fleetctl list-units:"
-fleetctl list-units
-echo " "
 
 #
+echo " "
 echo "Installation has finished, Kube Solo VM is up and running !!!"
 echo " "
-echo "Assigned static IP to VM: $vm_ip"
+echo "Assigned static IP to VM/node: $vm_ip"
 echo " "
 echo "You can control this App via status bar icon... "
-echo " "
+echo "--------"
 
-echo "Also you can install Deis Workflow (https://deis.com) with 'install_deis' command ..."
-echo " "
+# remove unfinished_setup file if there is such one
+rm -f ~/kube-solo/logs/unfinished_setup > /dev/null 2>&1
 
-echo "kubectl get nodes:"
-~/kube-solo/bin/kubectl get nodes
-echo " "
-
+#
 echo "kubectl cluster-info:"
 ~/kube-solo/bin/kubectl cluster-info
 echo " "
+echo "Cluster version:"
+CLIENT_INSTALLED_VERSION=$(~/kube-solo/bin/kubectl version | grep "Client Version:" | awk '{print $5}' | awk -v FS='(:"|",)' '{print $2}')
+SERVER_INSTALLED_VERSION=$(~/kube-solo/bin/kubectl version | grep "Server Version:" | awk '{print $5}' | awk -v FS='(:"|",)' '{print $2}')
+echo "Client version: $CLIENT_INSTALLED_VERSION"
+echo "Server version: $SERVER_INSTALLED_VERSION"
+#
+echo " "
+echo "kubectl get nodes:"
+~/kube-solo/bin/kubectl get nodes
+#
+echo " "
+echo "Also you can install Deis Workflow PaaS (https://deis.com) with 'install_deis' command ..."
+echo " "
 
 cd ~/kube-solo
-# open bash shell
-/bin/bash
 
-
+# open user's preferred shell
+if [[ ! -z "$SHELL" ]]; then
+    $SHELL
+else
+    /bin/bash
+fi
 
 

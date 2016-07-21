@@ -20,7 +20,7 @@ export PATH=${HOME}/kube-solo/bin:$PATH
 cp -f "${res_folder}"/bin/* ~/kube-solo/bin
 chmod 755 ~/kube-solo/bin/*
 
-# download latest version of fleetctl and helmc clients
+# download latest version of deis and helmc clients
 download_osx_clients
 #
 

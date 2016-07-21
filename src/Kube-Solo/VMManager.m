@@ -98,9 +98,6 @@
     [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"update_osx_clients_files.command"]];
 }
 
-- (void)restoreFleetUnits {
-    [self runApp:@"iTerm" arguments:[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"restore_update_fleet_units.command"]];
-}
 
 - (void)runScript:(NSString *)scriptName arguments:(NSString *)arguments {
     NSTask *task = [[NSTask alloc] init];

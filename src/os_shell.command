@@ -14,6 +14,7 @@ res_folder=$(cat ~/kube-solo/.env/resouces_path)
 # get VM IP
 vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
 
+# Set the shell environment variables
 # path to the bin folder where we store our binary files
 export PATH=${HOME}/kube-solo/bin:$PATH
 
@@ -21,23 +22,22 @@ export PATH=${HOME}/kube-solo/bin:$PATH
 export ETCDCTL_PEERS=http://$vm_ip:2379
 echo " "
 
-# set fleetctl endpoint
-export FLEETCTL_TUNNEL=
-export FLEETCTL_ENDPOINT=http://$vm_ip:2379
-export FLEETCTL_DRIVER=etcd
-export FLEETCTL_STRICT_HOST_KEY_CHECKING=false
-
-echo "fleetctl list-units:"
-fleetctl list-units
-echo " "
-
-# set kubernetes master
+# set kubernetes master endpoint
 export KUBERNETES_MASTER=http://$vm_ip:8080
 echo "kubectl get nodes:"
 kubectl get nodes
 echo " "
 
+#
+echo "Assigned static IP to VM/node: $vm_ip"
+echo " "
+#
+
 cd ~/kube-solo
 
-# open bash shell
-/bin/bash
+# open user's preferred shell
+if [[ ! -z "$SHELL" ]]; then
+    $SHELL
+else
+    /bin/bash
+fi

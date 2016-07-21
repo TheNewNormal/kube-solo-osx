@@ -1,0 +1,70 @@
+---
+  apiVersion: "extensions/v1beta1"
+  kind: "Deployment"
+  metadata:
+    labels:
+      name: "kubedash"
+    name: "kubedash"
+    namespace: "kube-system"
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        name: "kubedash"
+    template:
+      metadata:
+        labels:
+          name: "kubedash"
+      spec:
+        containers:
+          - image: "gcr.io/google_containers/kubedash:v0.2.1"
+            name: "kubedash"
+            command:
+              - "/kubedash"
+              - "--headless=true"
+              - "--heapster_url=http://localhost:8082"
+            resources:
+              limits:
+                cpu: 50m
+                memory: 100Mi
+            volumeMounts:
+              - name: "ssl-certs"
+                mountPath: "/etc/ssl/certs"
+                readOnly: true
+          - image: gcr.io/google_containers/heapster:v0.18.5
+            name: "heapster"
+            resources:
+              limits:
+                cpu: 100m
+                memory: 300Mi
+              requests:
+                cpu: 100m
+                memory: 300Mi
+            command:
+              - "/heapster"
+              - "--source=kubernetes:''"
+              - "--stats_resolution=30s"
+              - "--sink_frequency=1m"
+            volumeMounts:
+              - name: "ssl-certs"
+                mountPath: "/etc/ssl/certs"
+                readOnly: true
+        volumes:
+          - name: "ssl-certs"
+            hostPath:
+              path: "/etc/ssl/certs"
+---
+  apiVersion: "v1"
+  kind: "Service"
+  metadata:
+    labels:
+      name: "kubedash"
+    name: "kubedash"
+    namespace: "kube-system"
+  spec:
+    ports:
+      -
+        port: 80
+        targetPort: 8289
+    selector:
+      name: "kubedash"

@@ -663,7 +663,7 @@
                         <action selector="Stop:" target="494" id="XLC-oI-B5u"/>
                     </connections>
                 </menuItem>
-                <menuItem isSeparatorItem="YES" id="Ah8-uo-CTW"/>
+                <menuItem isSeparatorItem="YES" id="yPY-cF-ZhX"/>
                 <menuItem title="SSH to k8solo-01" id="dvF-TI-XNx">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
@@ -678,12 +678,6 @@
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="g1q-tp-f1W"/>
-                <menuItem title="Fleet-UI" id="lAb-dI-Mub" userLabel="Fleet-UI">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="fleetUI:" target="494" id="H66-cr-Sz1"/>
-                    </connections>
-                </menuItem>
                 <menuItem title="Kubernetes Dashboard" id="p5T-fc-xnA">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
@@ -703,6 +697,7 @@
                         <action selector="checkForAppUpdates:" target="494" id="BkQ-re-H7A"/>
                     </connections>
                 </menuItem>
+                <menuItem isSeparatorItem="YES" id="Ah8-uo-CTW"/>
                 <menuItem title="Updates" id="VT6-tu-oxP" userLabel="Menu Item - Updates">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="Updates" id="DFA-8C-ne3">
@@ -722,19 +717,13 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="Um0-uP-0o3"/>
-                            <menuItem title="Update macOS fleetctl, helmc and deis clients" id="KSz-fW-Vbe">
+                            <menuItem title="Update macOS helmc and deis clients" id="KSz-fW-Vbe">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="updates:" target="494" id="Zus-fv-0H4"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="vyH-FE-ksB"/>
-                            <menuItem title="Restore/update fleet units" id="KYE-xq-LpJ" userLabel="Restore/update fleet units">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="restoreFleetUnits:" target="494" id="e7L-uZ-VLY"/>
-                                </connections>
-                            </menuItem>
                         </items>
                     </menu>
                 </menuItem>
@@ -763,7 +752,7 @@
                                     <action selector="enableNFS:" target="494" id="0Ft-kp-Sgb"/>
                                 </connections>
                             </menuItem>
-                            <menuItem isSeparatorItem="YES" id="bJx-5u-1d1"/>
+                            <menuItem isSeparatorItem="YES" id="OBc-fm-Pxz"/>
                             <menuItem title="Destroy Kube-Solo VM" id="FxG-t4-gXU">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
@@ -771,6 +760,7 @@
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="iDa-Hf-lxm"/>
+                            <menuItem isSeparatorItem="YES" id="sL2-4d-ECa"/>
                             <menuItem title="Initial setup of Kube-Solo VM" id="dRI-wk-81S">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
