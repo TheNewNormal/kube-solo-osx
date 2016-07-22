@@ -28,10 +28,13 @@ do
         /usr/local/sbin/corectl halt k8solo-01 > /dev/null 2>&1
 
         # delete data image
-        rm -f ~/kube-solo/data.img
+        rm -f ~/kube-solo/data.img > /dev/null 2>&1
+
+        # remove unfinished_setup file
+        rm -f ~/kube-solo/logs/unfinished_setup > /dev/null 2>&1
 
         echo "-"
-        echo "Done, please start VM with 'Up' and the VM will be recreated ..."
+        echo "Done, please start VM with 'Up' and the new VM will be created ..."
         echo " "
         pause 'Press [Enter] key to continue...'
         LOOP=0

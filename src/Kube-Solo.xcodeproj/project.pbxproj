@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		011BBA3B1A2A842A00AAB35B /* change_release_channel.command in Resources */ = {isa = PBXBuildFile; fileRef = 011BBA3A1A2A842A00AAB35B /* change_release_channel.command */; };
-		01689B731A2D1A260099CB78 /* fleet in Resources */ = {isa = PBXBuildFile; fileRef = 01689B721A2D1A260099CB78 /* fleet */; };
 		01741B63190DB80500BB1F91 /* first-init.command in Resources */ = {isa = PBXBuildFile; fileRef = 01741B62190DB80500BB1F91 /* first-init.command */; };
 		019410681BE11DFA00723E19 /* kill_VM.command in Resources */ = {isa = PBXBuildFile; fileRef = 019410671BE11DFA00723E19 /* kill_VM.command */; };
 		01BB60D31AB74AE60069BF30 /* k8s in Resources */ = {isa = PBXBuildFile; fileRef = 01BB60D21AB74AE60069BF30 /* k8s */; };
@@ -32,7 +31,6 @@
 		1329DE9A1BD4FA58008AA719 /* kube-solo-install.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DE991BD4FA58008AA719 /* kube-solo-install.command */; };
 		1329DEAC1BD4FB5F008AA719 /* check_vm_status.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEA11BD4FB5F008AA719 /* check_vm_status.command */; };
 		1329DEAE1BD4FB5F008AA719 /* destroy.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEA31BD4FB5F008AA719 /* destroy.command */; };
-		1329DEAF1BD4FB5F008AA719 /* fetch_latest_iso.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEA41BD4FB5F008AA719 /* fetch_latest_iso.command */; };
 		1329DEB01BD4FB5F008AA719 /* functions.sh in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEA51BD4FB5F008AA719 /* functions.sh */; };
 		1329DEB11BD4FB5F008AA719 /* halt.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEA61BD4FB5F008AA719 /* halt.command */; };
 		1329DEB31BD4FB5F008AA719 /* ssh.command in Resources */ = {isa = PBXBuildFile; fileRef = 1329DEA81BD4FB5F008AA719 /* ssh.command */; };
@@ -42,7 +40,7 @@
 		1345D2771C57002B000BCBC6 /* change_vm_ram.command in Resources */ = {isa = PBXBuildFile; fileRef = 1345D2761C57002B000BCBC6 /* change_vm_ram.command */; };
 		136C48141D3408EC001B0DA3 /* enable_disable_nfs.command in Resources */ = {isa = PBXBuildFile; fileRef = 136C48131D3408EC001B0DA3 /* enable_disable_nfs.command */; };
 		13BCE1C01BEBC0BD00A1A48E /* update_k8s_version.command in Resources */ = {isa = PBXBuildFile; fileRef = 13BCE1BF1BEBC0BD00A1A48E /* update_k8s_version.command */; };
-		13D9B8671C35B09B00EBB078 /* restore_update_fleet_units.command in Resources */ = {isa = PBXBuildFile; fileRef = 13D9B8661C35B09B00EBB078 /* restore_update_fleet_units.command */; };
+		13D9B8671C35B09B00EBB078 /* restore_cloud-init.command in Resources */ = {isa = PBXBuildFile; fileRef = 13D9B8661C35B09B00EBB078 /* restore_cloud-init.command */; };
 		13FE22171C1C40C700F465F1 /* bin in Resources */ = {isa = PBXBuildFile; fileRef = 13FE22161C1C40C700F465F1 /* bin */; };
 		13FE22191C1C410100F465F1 /* cloud-init in Resources */ = {isa = PBXBuildFile; fileRef = 13FE22181C1C410100F465F1 /* cloud-init */; };
 		CA4F6FFF1BE1910A00D87763 /* NSURL+KubeSolo.m in Sources */ = {isa = PBXBuildFile; fileRef = CA4F6FFE1BE1910A00D87763 /* NSURL+KubeSolo.m */; };
@@ -53,7 +51,6 @@
 /* Begin PBXFileReference section */
 		011BBA3A1A2A842A00AAB35B /* change_release_channel.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = change_release_channel.command; sourceTree = "<group>"; };
 		0133608F18A70E0C0024B1CB /* Kube-Solo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Kube-Solo.entitlements"; sourceTree = "<group>"; };
-		01689B721A2D1A260099CB78 /* fleet */ = {isa = PBXFileReference; lastKnownFileType = folder; path = fleet; sourceTree = SOURCE_ROOT; };
 		01741B62190DB80500BB1F91 /* first-init.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "first-init.command"; sourceTree = SOURCE_ROOT; };
 		019410671BE11DFA00723E19 /* kill_VM.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = kill_VM.command; sourceTree = "<group>"; };
 		01BB60D21AB74AE60069BF30 /* k8s */ = {isa = PBXFileReference; lastKnownFileType = folder; path = k8s; sourceTree = SOURCE_ROOT; };
@@ -86,7 +83,6 @@
 		1329DE991BD4FA58008AA719 /* kube-solo-install.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "kube-solo-install.command"; sourceTree = SOURCE_ROOT; };
 		1329DEA11BD4FB5F008AA719 /* check_vm_status.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = check_vm_status.command; sourceTree = "<group>"; };
 		1329DEA31BD4FB5F008AA719 /* destroy.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = destroy.command; sourceTree = "<group>"; };
-		1329DEA41BD4FB5F008AA719 /* fetch_latest_iso.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = fetch_latest_iso.command; sourceTree = "<group>"; };
 		1329DEA51BD4FB5F008AA719 /* functions.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = functions.sh; sourceTree = "<group>"; };
 		1329DEA61BD4FB5F008AA719 /* halt.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = halt.command; sourceTree = "<group>"; };
 		1329DEA81BD4FB5F008AA719 /* ssh.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = ssh.command; sourceTree = "<group>"; };
@@ -96,7 +92,7 @@
 		1345D2761C57002B000BCBC6 /* change_vm_ram.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = change_vm_ram.command; sourceTree = "<group>"; };
 		136C48131D3408EC001B0DA3 /* enable_disable_nfs.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = enable_disable_nfs.command; sourceTree = "<group>"; };
 		13BCE1BF1BEBC0BD00A1A48E /* update_k8s_version.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = update_k8s_version.command; sourceTree = "<group>"; };
-		13D9B8661C35B09B00EBB078 /* restore_update_fleet_units.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = restore_update_fleet_units.command; sourceTree = "<group>"; };
+		13D9B8661C35B09B00EBB078 /* restore_cloud-init.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "restore_cloud-init.command"; sourceTree = "<group>"; };
 		13FE22161C1C40C700F465F1 /* bin */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bin; sourceTree = SOURCE_ROOT; };
 		13FE22181C1C410100F465F1 /* cloud-init */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "cloud-init"; sourceTree = SOURCE_ROOT; };
 		CA4F6FFD1BE1910A00D87763 /* NSURL+KubeSolo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+KubeSolo.h"; sourceTree = "<group>"; };
@@ -126,7 +122,6 @@
 				13FE22181C1C410100F465F1 /* cloud-init */,
 				1329DE911BD4F974008AA719 /* files */,
 				1329DE8F1BD4F95F008AA719 /* settings */,
-				01689B721A2D1A260099CB78 /* fleet */,
 				01BB60D21AB74AE60069BF30 /* k8s */,
 				1329DE991BD4FA58008AA719 /* kube-solo-install.command */,
 				01741B62190DB80500BB1F91 /* first-init.command */,
@@ -224,8 +219,7 @@
 				1329DEA81BD4FB5F008AA719 /* ssh.command */,
 				01F0282B1A7C54C8008C37AA /* os_shell.command */,
 				1329DEA61BD4FB5F008AA719 /* halt.command */,
-				1329DEA41BD4FB5F008AA719 /* fetch_latest_iso.command */,
-				13D9B8661C35B09B00EBB078 /* restore_update_fleet_units.command */,
+				13D9B8661C35B09B00EBB078 /* restore_cloud-init.command */,
 				13BCE1BF1BEBC0BD00A1A48E /* update_k8s_version.command */,
 				1329DEB71BD526A3008AA719 /* update_k8s.command */,
 				1329DEAB1BD4FB5F008AA719 /* update_osx_clients_files.command */,
@@ -304,7 +298,6 @@
 				1329DEAC1BD4FB5F008AA719 /* check_vm_status.command in Resources */,
 				1329DEB51BD4FB5F008AA719 /* up.command in Resources */,
 				136C48141D3408EC001B0DA3 /* enable_disable_nfs.command in Resources */,
-				1329DEAF1BD4FB5F008AA719 /* fetch_latest_iso.command in Resources */,
 				01D3685918E5C184006510B5 /* icon.icns in Resources */,
 				1329DEB81BD526A3008AA719 /* update_k8s.command in Resources */,
 				1329DEB11BD4FB5F008AA719 /* halt.command in Resources */,
@@ -315,7 +308,6 @@
 				011BBA3B1A2A842A00AAB35B /* change_release_channel.command in Resources */,
 				1309B1F81D3509AD0054C730 /* check_app_version_github.command in Resources */,
 				13FE22191C1C410100F465F1 /* cloud-init in Resources */,
-				01689B731A2D1A260099CB78 /* fleet in Resources */,
 				01BB60D31AB74AE60069BF30 /* k8s in Resources */,
 				01E2854E18A6C4E300BC630D /* Credits.rtf in Resources */,
 				019410681BE11DFA00723E19 /* kill_VM.command in Resources */,
@@ -327,7 +319,7 @@
 				01E2855418A6C4E300BC630D /* MainMenu.xib in Resources */,
 				01F0282C1A7C54C8008C37AA /* os_shell.command in Resources */,
 				1329DEB61BD4FB5F008AA719 /* update_osx_clients_files.command in Resources */,
-				13D9B8671C35B09B00EBB078 /* restore_update_fleet_units.command in Resources */,
+				13D9B8671C35B09B00EBB078 /* restore_cloud-init.command in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

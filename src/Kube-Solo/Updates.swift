@@ -39,7 +39,7 @@ import Cocoa
             }
         }
         else {
-            NSLog("App has the date!!!")
+            NSLog("App has the update!!!")
             // show alert message
             let mText: String = NSLocalizedString("AppUpdateMessage", comment: "")
             let infoText: String = NSLocalizedString("AppUpdatenformativeText", comment: "")

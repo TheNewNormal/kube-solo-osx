@@ -4,7 +4,6 @@
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-
 function pause(){
     read -p "$*"
 }
@@ -40,16 +39,20 @@ status=$(/usr/local/sbin/corectl ssh k8solo-01 "curl -s -I https://coreos.com 2>
 
 if [[ $(echo "${status//[$'\t\r\n ']}") = "200" ]]; then
     echo "Yes, internet is available ..."
+    echo " "
 else
     echo "There is no internet access from the VM !!!"
     echo " "
-    echo "Please check you Mac's firewall, network setup, stop dnsmasq (if you have installed such) "
+    echo "Please check your Mac's firewall, network setup, stop dnsmasq (if you have installed such) "
     echo "and try to fix the problem !!!"
     echo " "
     echo "k8solo-01 VM is still running, so you can troubleshoot the network problem "
-    echo "and when you done fixing it, just 'Halt' and 'Up' via menu and the installation will continue ... "
+    echo " "
+    echo "When you done fixing it, do via menu 'Halt' and 'Up' and the installation will start again ... "
     echo " "
     pause 'Press [Enter] key to abort installation ...'
+    # create file 'unfinished_setup' so on next boot fresh install gets triggered again !!!
+    touch ~/kube-solo/logs/unfinished_setup > /dev/null 2>&1
     exit 1
 fi
 }
@@ -63,10 +66,10 @@ file="$HOME/.ssh/id_rsa.pub"
 
 while [ ! -f "$file" ]
 do
-echo " "
-echo "$file not found."
-echo "please run 'ssh-keygen -t rsa' before you continue !!!"
-pause 'Press [Enter] key to continue...'
+    echo " "
+    echo "$file not found."
+    echo "please run 'ssh-keygen -t rsa' before you continue !!!"
+    pause 'Press [Enter] key to continue...'
 done
 
 echo " "
@@ -127,48 +130,51 @@ done
 }
 
 
-create_data_disk() {
-# path to the bin folder where we store our binary files
-export PATH=${HOME}/kube-solo/bin:$PATH
-
+function create_data_disk() {
 # create persistent disk
 cd ~/kube-solo/
 echo "  "
 echo "Please type Data disk size in GBs followed by [ENTER]:"
-echo -n "[default is 15]: "
+echo -n "[default is 20]: "
 read disk_size
 if [ -z "$disk_size" ]
 then
     echo " "
-    echo "Creating 15GB disk ..."
-##    mkfile 10g data.img
-    ~/kube-solo/bin/pv -s 15g -S < /dev/zero > data.img
-    echo "Created 15GB Data disk"
+    echo "Creating 20GB sparse disk (QCow2)..."
+    /usr/local/sbin/qcow-tool create --size=20GiB data.img
+    echo "-"
+    echo "Created 20GB Data disk"
+    # create file 'unfinished_setup' so on next boot fresh install gets triggered again !!!
+    touch ~/kube-solo/logs/unfinished_setup > /dev/null 2>&1
 else
     echo " "
-    echo "Creating "$disk_size"GB disk (it could take a while for big disks)..."
-##    mkfile "$disk_size"g data.img
-    ~/kube-solo/bin/pv -s "$disk_size"g -S < /dev/zero > data.img
-    echo "Created "$disk_size"GB Data disk"
+    echo "Creating "$disk_size"GB sparse disk (QCow2)..."
+    /usr/local/sbin/qcow-tool create --size="$disk_size"GiB data.img
+    echo "-"
+    echo "Created $disk_sizeGB Data disk"
+    # create file 'unfinished_setup' so on next boot fresh install gets triggered again !!!
+    touch ~/kube-solo/logs/unfinished_setup > /dev/null 2>&1
 fi
-
+#
 }
 
 
-change_vm_ram() {
+function change_vm_ram() {
 echo " "
 echo " "
 echo "Please type VM's RAM size in GBs followed by [ENTER]:"
-echo -n "[default is 2]: "
+echo -n "[default is 3]: "
 read ram_size
 if [ -z "$ram_size" ]
 then
-    ram_size=2
-    echo "Changing VM's RAM to "$ram_size"GB..."
+    ram_size=3
+    echo " "
+    echo "Setting VM's RAM to 3GB..."
     ((new_ram_size=$ram_size*1024))
     /usr/bin/sed -i "" 's/\(memory = \)\(.*\)/\1'$new_ram_size'/g' ~/kube-solo/settings/k8solo-01.toml
     echo " "
 else
+    echo " "
     echo "Changing VM's RAM to "$ram_size"GB..."
     ((new_ram_size=$ram_size*1024))
     /usr/bin/sed -i "" 's/\(memory = \)\(.*\)/\1'$new_ram_size'/g' ~/kube-solo/settings/k8solo-01.toml
@@ -178,73 +184,72 @@ fi
 }
 
 
-start_vm() {
+function start_vm() {
 
 # Start VM
 cd ~/kube-solo
 echo " "
 echo "Starting VM ..."
+echo " "
 #
 /usr/local/sbin/corectl load settings/k8solo-01.toml 2>&1 | tee ~/kube-solo/logs/vm_up.log
 CHECK_VM_STATUS=$(cat ~/kube-solo/logs/vm_up.log | grep "started")
 #
 if [[ "$CHECK_VM_STATUS" == "" ]]; then
     echo " "
-    echo "VM have not booted, please check '~/kube-solo/logs/vm_up.log' and report the problem !!! "
+    echo "VM has not booted, please check '~/kube-solo/logs/vm_up.log' and report the problem !!! "
     echo " "
+    # create file 'unfinished_setup' so on next boot fresh install gets triggered again !!!
+    touch ~/kube-solo/logs/unfinished_setup > /dev/null 2>&1
     pause 'Press [Enter] key to continue...'
     exit 0
 else
     echo "VM successfully started !!!" >> ~/kube-solo/logs/vm_up.log
 fi
-
 # save VM's IP
 /usr/local/sbin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
-# get VM's IP
-vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
 #
-
-# generate kubeconfig file
-if [ ! -f $HOME/kube-solo/kube/kubeconfig ]; then
-    echo " "
-    echo "Generating kubeconfig file ..."
-    "${res_folder}"/bin/gen_kubeconfig $vm_ip
-    echo " "
-fi
 
 }
 
 
-function download_osx_clients() {
-# download fleetctl file
-FLEETCTL_VERSION=$(/usr/local/sbin/corectl ssh k8solo-01 'fleetctl --version' | awk '{print $3}' | tr -d '\r')
-FILE=fleetctl
-if [ ! -f ~/kube-solo/bin/$FILE ]; then
+function download_docker_client() {
+
+# download docker client
+# check docker server version
+DOCKER_VERSION=$(/usr/local/sbin/corectl ssh k8solo-01 'docker version' | grep 'Version:' | awk '{print $2}' | tr -d '\r' | /usr/bin/sed -n 2p )
+# check if the binary exists
+if [ ! -f ~/kube-solo/bin/docker ]; then
     cd ~/kube-solo/bin
-    echo "Downloading fleetctl v$FLEETCTL_VERSION for macOS"
-    curl -L -o fleet.zip "https://github.com/coreos/fleet/releases/download/v$FLEETCTL_VERSION/fleet-v$FLEETCTL_VERSION-darwin-amd64.zip"
-    unzip -j -o "fleet.zip" "fleet-v$FLEETCTL_VERSION-darwin-amd64/fleetctl" > /dev/null 2>&1
-    rm -f fleet.zip
+    echo " "
+    echo "Downloading docker $DOCKER_VERSION client for macOS"
+    curl -o ~/kube-solo/bin/docker https://get.docker.com/builds/Darwin/x86_64/docker-$DOCKER_VERSION
+    # Make it executable
+    chmod +x ~/kube-solo/bin/docker
 else
-    # we check the version of the binary
-    INSTALLED_VERSION=$(~/kube-solo/bin/$FILE --version | awk '{print $3}' | tr -d '\r')
-    MATCH=$(echo "${INSTALLED_VERSION}" | grep -c "${FLEETCTL_VERSION}")
+    # docker client version
+    INSTALLED_VERSION=$(~/kube-solo/bin/docker version | grep 'Version:' | awk '{print $2}' | tr -d '\r' | head -1 )
+    MATCH=$(echo "${INSTALLED_VERSION}" | grep -c "${DOCKER_VERSION}")
     if [ $MATCH -eq 0 ]; then
         # the version is different
         cd ~/kube-solo/bin
-        echo "Downloading fleetctl v$FLEETCTL_VERSION for macOS"
-        curl -L -o fleet.zip "https://github.com/coreos/fleet/releases/download/v$FLEETCTL_VERSION/fleet-v$FLEETCTL_VERSION-darwin-amd64.zip"
-        unzip -j -o "fleet.zip" "fleet-v$FLEETCTL_VERSION-darwin-amd64/fleetctl" > /dev/null 2>&1
-        rm -f fleet.zip
+        echo " "
+        echo "Downloading docker $DOCKER_VERSION client for macOS"
+        curl -o ~/kube-solo/bin/docker https://get.docker.com/builds/Darwin/x86_64/docker-$DOCKER_VERSION
+        # Make it executable
+        chmod +x ~/kube-solo/bin/docker
     else
         echo " "
-        echo "fleetctl is up to date ..."
-        echo " "
+        echo "macOS docker client is up to date with VM's version ..."
     fi
 fi
+}
+
+function download_osx_clients() {
 
 # get lastest macOS helmc cli version
 cd ~/kube-solo/bin
+echo " "
 echo "Downloading latest version of helmc cli for macOS"
 curl -o helmc https://storage.googleapis.com/helm-classic/helmc-latest-darwin-amd64
 chmod +x helmc
@@ -255,7 +260,7 @@ echo "Installed latest helmc cli to ~/kube-solo/bin ..."
 # get lastest macOS deis cli version
 cd ~/kube-solo/bin
 echo " "
-echo "Downloading latest version of Workflow deis cli for macOS"
+echo "Downloading latest version of Deis Workflow 'deis' cli for macOS"
 curl -o deis https://storage.googleapis.com/workflow-cli/deis-latest-darwin-amd64
 chmod +x deis
 echo " "
@@ -268,8 +273,12 @@ function download_k8s_files() {
 #
 cd ~/kube-solo/tmp
 
+echo " "
+echo "Checking for latest stable Kubernetes version..."
+echo " "
+
 # get latest stable k8s version
-function get_latest_version_number {
+ function get_latest_version_number {
     local -r latest_url="https://storage.googleapis.com/kubernetes-release/release/stable.txt"
     curl -Ss ${latest_url}
 }
@@ -332,7 +341,7 @@ echo "Bear in mind if the version you want is lower than the currently installed
 echo "Kubernetes cluster migth not work, so you will need to destroy the cluster first "
 echo "and boot VM again !!! "
 echo " "
-echo "Please type Kubernetes version you want to be installed e.g. v1.2.1 or v1.3.0-alpha.4"
+echo "Please type Kubernetes version you want to be installed e.g. v1.3.2 or v1.4.0-alpha.1"
 echo " "
 echo "Please type the word 'local' to use a local kubernetes.tar.gz file"
 echo " "
@@ -410,24 +419,6 @@ install_k8s_files
 }
 
 
-function deploy_fleet_units() {
-# deploy fleet units from ~/kube-solo/fleet
-cd ~/kube-solo/fleet
-echo "Starting all fleet units in ~/kube-solo/fleet:"
-fleetctl start fleet-ui.service
-fleetctl start kube-apiserver.service
-fleetctl start kube-controller-manager.service
-fleetctl start kube-scheduler.service
-fleetctl start kube-kubelet.service
-fleetctl start kube-proxy.service
-echo " "
-echo "fleetctl list-units:"
-fleetctl list-units
-echo " "
-
-}
-
-
 function install_k8s_files {
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
@@ -446,20 +437,18 @@ then
 fi
 
 # install k8s files on to VM
-echo " "
 echo "Installing Kubernetes files on to VM..."
 cd ~/kube-solo/kube
-###scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet kube.tgz core@$vm_ip:/home/core
 /usr/local/sbin/corectl scp kube.tgz k8solo-01:/home/core/
-/usr/local/sbin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /opt/bin && sudo tar xzf /home/core/kube.tgz -C /opt/bin && sudo chmod 755 /opt/bin/*'
-/usr/local/sbin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /opt/tmp && sudo mv /opt/bin/easy-rsa.tar.gz /opt/tmp'
-
-echo "Done with k8solo-01 "
-echo " "
+echo "Files copied to VM..."
+echo "Installing now ..."
+/usr/local/sbin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /data/opt/bin && sudo tar xzf /home/core/kube.tgz -C /data/opt/bin && sudo chmod 755 /data/opt/bin/*'
+/usr/local/sbin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /data/opt/tmp && sudo mv /data/opt/bin/easy-rsa.tar.gz /data/opt/tmp'
+echo "Done..."
 }
 
 
-function install_k8s_add_ons {
+function install_k8s_add_ons() {
 echo " "
 echo "Creating kube-system namespace ..."
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-system-ns.yaml > /dev/null 2>&1
@@ -485,11 +474,21 @@ rm -f ~/kube-solo/kubernetes/skydns-svc.yaml
 rm -f ~/kube-solo/kubernetes/dashboard-controller.yaml
 rm -f ~/kube-solo/kubernetes/dashboard-service.yaml
 rm -f ~/kube-solo/kubernetes/kubedash.yaml
-echo " "
 }
 
 
-function clean_up_after_vm {
+function install_k8s_add_ons_kubelet() {
+# get App's Resources folder
+res_folder=$(cat ~/kube-solo/.env/resouces_path)
+#
+echo " "
+echo "Installing add-ons: SkyDNS, Kubernetes Dashboard and Kubedash ..."
+/usr/local/sbin/corectl scp "${res_folder}"/k8s/add-ons.tgz k8solo-01:/home/core/
+/usr/local/sbin/corectl ssh k8solo-01 'sudo tar xzf /home/core/add-ons.tgz -C /data/kubernetes/manifests'
+}
+
+
+function clean_up_after_vm() {
 sleep 1
 
 # get App's Resources folder
