@@ -34,7 +34,7 @@ do
         rm -f ~/kube-solo/logs/unfinished_setup > /dev/null 2>&1
 
         echo "-"
-        echo "Done, please start VM with 'Up' and the new VM will be recreated ..."
+        echo "Done, please start VM with 'Up' and the new VM will be created ..."
         echo " "
         pause 'Press [Enter] key to continue...'
         LOOP=0

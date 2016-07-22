@@ -18,7 +18,7 @@
 
     # copy bin files to ~/kube-solo/bin
     cp -f "$1"/bin/* ~/kube-solo/bin
-    rm -f ~/kube-solo/bin/gen_kubeconfig
+    rm -f "$HOME"/kube-solo/bin/gen_kubeconfig
     chmod +x ~/kube-solo/bin/*
 
     # copy user-data

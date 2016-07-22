@@ -36,13 +36,22 @@ How to install Kube-Solo
 
 ###Install:
 
-Open downloaded `dmg` file and drag the App e.g. to your Desktop. Start the `Kube-Solo` App and `Initial setup of Kube-Solo VM` will run.
+- Download [Corectl App](https://github.com/TheNewNormal/corectl.app) `latest dmg` from the [Releases Page](https://github.com/TheNewNormal/corectl.app/releases) and install it to `/Applications` folder, it allows to start/stop/update [corectl](https://github.com/TheNewNormal/corectl) tools needed to run CoreOS VMs on macOS
+- Open downloaded `dmg` file and drag the App e.g. to your Desktop. Start the `Kube-Solo` App and `Initial setup of Kube-Solo VM` will run, then follow the instructions there.
 
+**TL;DR**
+
+- App's files are installed to `~/kube-solo` folder
+- App will bootstrap `master+worker` Kubernetes cluster on the single VM
+- Mac user home folder can be enabled via `Setup\Enable shared NFS user home folder` to automaticly mounted to VM: `/Users/my_user`:`/Users/my_user` on each VM boot
+- macOS `docker` client is installed to `~/kube-solo/bin` and preset in `OS shell` to be used from there, so you can build `docker` images on the VM and use with Kubernetes
+
+**The install will do the following:**
 
 * All dependent files/folders will be put under `~/kube-solo` folder in the user's home folder e.g /Users/someuser/kube-solo. 
 * Will download latest CoreOS ISO image (if there is no such one) and run `corectl` to initialise VM 
 * When you first time do install or `Up` after destroying Kube-Solo setup, k8s binary files (with the version which was available when the App was built) get copied to VM, this allows to speed up Kubernetes setup.
-* It will install `fleetctl and kubectl` to `~/kube-solo/bin/`
+* It will install `docker, helmc, deis and kubectl` clients to `~/kube-solo/bin/`
 * Kubernetes services will be installed with fleet units which are placed in `~/kube-solo/fleet`, this allows very easy updates to fleet units if needed.
 * [Fleet-UI](http://fleetui.com) via unit file will be installed to check running fleet units
 * [Kubernetes Dashboard](http://kubernetes.io/docs/user-guide/ui/), [DNS](https://github.com/kubernetes/kubernetes/blob/release-1.2/cluster/addons/dns/README.md) and [Kubedash](https://github.com/kubernetes/kubedash) will be instlled as add-ons
@@ -52,9 +61,8 @@ Open downloaded `dmg` file and drag the App e.g. to your Desktop. Start the `Kub
 ```
 /data/var/lib/docker -> /var/lib/docker
 /data/var/lib/rkt -> /var/lib/rkt
-/data/kubelet -> /var/lib/kubelet
-/data/opt/bin -> /opt/bin
-/data/mnt -> /mnt
+/var/lib/kubelet sym linked to /data/kubelet
+/data/opt/bin
 /data/var/lib/etcd2
 /data/kubernetes
 ```
@@ -69,11 +77,15 @@ Just start `Kube-Solo` application and you will find a small icon of Kubernetes 
 * `SSH to k8solo-01` will open VM shell
 * Under `Up` OS Shell will be opened after VM boots up and it will have such environment pre-set:
 
-````
-1) kubernetes master - export KUBERNETES_MASTER=http://192.168.64.xxx:8080
-2) etcd endpoint - export ETCDCTL_PEERS=http://192.168.64.xxx:2379
-3) path to ~/kube-solo/bin where scripts are stored
-````
+```
+kubernetes master - export KUBERNETES_MASTER=http://192.168.64.xxx:8080
+etcd endpoint - export ETCDCTL_PEERS=http://192.168.64.xxx:2379
+DOCKER_HOST=tcp://192.168.64.xxx:2375
+```
+
+```
+Path to `~/kube-solo/bin` where macOS clients and shell scripts are stored
+```
 
 ###Other menu options:
 * [Kubernetes Dashboard](http://kubernetes.io/docs/user-guide/ui/) will show nice Kubernetes Dashboard, where you can check Nodes, Pods, Replication, Deployments, Service Controllers, deploy Apps and etc.
@@ -85,11 +97,11 @@ Just start `Kube-Solo` application and you will find a small icon of Kubernetes 
 * `Setup/` will allow you to do:
 
 ```
-Change CoreOS Release Channel
-Change VM's RAM size
-Enable/disable shared NFS user home folder
-Destroy Kube-Solo VM (just deletes data.img file)
-Initial setup of Kube-Solo VM
+- Change CoreOS Release Channel
+- Change VM's RAM size
+- Enable/disable shared NFS user home folder
+- Destroy Kube-Solo VM (just deletes data.img file)
+- Initial setup of Kube-Solo VM
 ```
 
 Example output of succesfull Kubernetes Solo install:

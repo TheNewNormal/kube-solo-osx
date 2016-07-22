@@ -20,10 +20,15 @@ export PATH=${HOME}/kube-solo/bin:$PATH
 
 # set etcd endpoint
 export ETCDCTL_PEERS=http://$vm_ip:2379
-echo " "
+
+# docker daemon
+export DOCKER_HOST=tcp://$vm_ip:2375
+export DOCKER_TLS_VERIFY=
+export DOCKER_CERT_PATH=
 
 # set kubernetes master endpoint
 export KUBERNETES_MASTER=http://$vm_ip:8080
+echo " "
 echo "kubectl get nodes:"
 kubectl get nodes
 echo " "

@@ -15,10 +15,15 @@ vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
 
 # path to the bin folder where we store our binary files
 export PATH=${HOME}/kube-solo/bin:$PATH
+# docker daemon
+export DOCKER_HOST=tcp://$vm_ip:2375
 
 # copy files to ~/kube-solo/bin
 cp -f "${res_folder}"/bin/* ~/kube-solo/bin
 chmod 755 ~/kube-solo/bin/*
+
+# download docker latest version
+download_docker_client
 
 # download latest version of deis and helmc clients
 download_osx_clients

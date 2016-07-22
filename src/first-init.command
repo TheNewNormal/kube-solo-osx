@@ -61,16 +61,26 @@ export ETCDCTL_PEERS=http://$vm_ip:2379
 export KUBERNETES_MASTER=http://$vm_ip:8080
 
 # wait till etcd service is ready
-echo "--------"
+#echo "--------"
+#echo "Restarting etcd service on VM ..."
+#/usr/local/sbin/corectl ssh k8solo-01 "sudo systemctl restart etcd2"
+#echo " "
+#sleep 3
+
 echo "Waiting for etcd service to be ready on VM..."
+sleep 3
 spin='-\|/'
 i=1
 until curl -o /dev/null http://$vm_ip:2379 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 echo "..."
 echo " "
 
+#
+download_docker_client
+
 # generate kubeconfig file
-echo Generate kubeconfig file ...
+echo " "
+echo "Generating kubeconfig file ..."
 "${res_folder}"/bin/gen_kubeconfig $vm_ip
 #
 
@@ -94,6 +104,11 @@ echo " "
 ~/kube-solo/bin/kubectl label nodes k8solo-01 node=worker1
 #
 install_k8s_add_ons
+
+# docker daemon
+export DOCKER_HOST=tcp://$vm_ip:2375
+export DOCKER_TLS_VERIFY=
+export DOCKER_CERT_PATH=
 
 #
 echo " "

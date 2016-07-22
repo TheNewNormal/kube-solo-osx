@@ -213,6 +213,38 @@ fi
 }
 
 
+function download_docker_client() {
+
+# download docker client
+# check docker server version
+DOCKER_VERSION=$(/usr/local/sbin/corectl ssh k8solo-01 'docker version' | grep 'Version:' | awk '{print $2}' | tr -d '\r' | /usr/bin/sed -n 2p )
+# check if the binary exists
+if [ ! -f ~/kube-solo/bin/docker ]; then
+    cd ~/kube-solo/bin
+    echo " "
+    echo "Downloading docker $DOCKER_VERSION client for macOS"
+    curl -o ~/kube-solo/bin/docker https://get.docker.com/builds/Darwin/x86_64/docker-$DOCKER_VERSION
+    # Make it executable
+    chmod +x ~/kube-solo/bin/docker
+else
+    # docker client version
+    INSTALLED_VERSION=$(~/kube-solo/bin/docker version | grep 'Version:' | awk '{print $2}' | tr -d '\r' | head -1 )
+    MATCH=$(echo "${INSTALLED_VERSION}" | grep -c "${DOCKER_VERSION}")
+    if [ $MATCH -eq 0 ]; then
+        # the version is different
+        cd ~/kube-solo/bin
+        echo " "
+        echo "Downloading docker $DOCKER_VERSION client for macOS"
+        curl -o ~/kube-solo/bin/docker https://get.docker.com/builds/Darwin/x86_64/docker-$DOCKER_VERSION
+        # Make it executable
+        chmod +x ~/kube-solo/bin/docker
+    else
+        echo " "
+        echo "macOS docker client is up to date with VM's version ..."
+    fi
+fi
+}
+
 function download_osx_clients() {
 
 # get lastest macOS helmc cli version

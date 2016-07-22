@@ -34,7 +34,7 @@ mkdir ~/kube-solo/logs > /dev/null 2>&1
 
 # copy bin files to ~/kube-solo/bin
 rsync -r --verbose --exclude 'helmc' "${res_folder}"/bin/* ~/kube-solo/bin/ > /dev/null 2>&1
-rm -f ~/kube-solo/bin/gen_kubeconfig
+rm -f "$HOME"/kube-solo/bin/gen_kubeconfig
 chmod 755 ~/kube-solo/bin/*
 
 # add ssh key to Keychain
@@ -86,8 +86,8 @@ fi
 # generate kubeconfig file if there is no such one file
 if [ ! -f "$HOME"/kube-solo/kube/kubeconfig ]; then
     echo " "
-    echo "Generate kubeconfig file ..."
-    "${res_folder}"/bin/gen_kubeconfig "$vm_ip"
+    echo "Generating kubeconfig file ..."
+    "${res_folder}"/bin/gen_kubeconfig $vm_ip
 fi
 #
 
@@ -96,18 +96,39 @@ fi
 export ETCDCTL_PEERS=http://$vm_ip:2379
 # set kubernetes master endpoint
 export KUBERNETES_MASTER=http://$vm_ip:8080
+# docker daemon
+export DOCKER_HOST=tcp://$vm_ip:2375
+export DOCKER_TLS_VERIFY=
+export DOCKER_CERT_PATH=
+
+# restart etcd2 on VM
+#if [[ "${new_vm}" == "1" ]]
+#then
+#    echo " "
+#    echo "Restarting etcd service on VM ..."
+#    /usr/local/sbin/corectl ssh k8solo-01 "sudo systemctl restart etcd2"
+#    sleep 3
+#fi
 
 # wait till etcd service is ready
 echo " "
 echo "Waiting for etcd service to be ready on VM..."
+sleep 3
 spin='-\|/'
 i=1
 until curl -o /dev/null http://"$vm_ip":2379 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 echo "..."
-echo " "
 #
 
+# download docker client
+if [[ "${new_vm}" == "1" ]]
+then
+    #
+    download_docker_client
+fi
+
 # wait for Kubernetes cluster readiness
+echo " "
 echo "Waiting for Kubernetes cluster to be ready. This can take a bit..."
 spin='-\|/'
 i=1

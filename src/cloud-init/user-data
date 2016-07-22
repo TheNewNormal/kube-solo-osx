@@ -55,9 +55,9 @@ coreos:
       command: start
       content: |
         [Unit]
-        Description=prepare for etcd,docker,rkt,opt
-        Requires=data.mount etcd2.service
-        Before=etcd2.service
+        Description=prepare for etcd,docker,rkt,opt,kubernetes
+        Requires=data.mount etcd2.service docker.service rkt-metadata.socket
+        Before=etcd2.service docker.service rkt-metadata.socket
         After=data.mount
         [Service]
         Type=oneshot
@@ -70,20 +70,7 @@ coreos:
         ExecStart=/bin/sh -c '[[ -d /data/opt/bin ]] || mkdir -p /data/opt/bin'
         ExecStart=/bin/sh -c '[[ -d /data/kubernetes/manifests ]] || mkdir -p /data/kubernetes/manifests'
         ExecStart=/bin/sh -c '[[ -d /data/kubelet ]] || mkdir -p /data/kubelet'
-        ExecStart=/bin/sh -c '[[ -d /data/mnt ]] || mkdir -p /data/mnt'
-    - name: opt-bin.mount
-      command: start
-      content: |
-        [Unit]
-        Description=Binds /data/opt/bin to /opt/bin
-        Requires=persistent-data-checks.service docker.service rkt-metadata.socket
-        After=persistent-data-checks.service
-        Before=docker.service rkt-metadata.socket
-        [Mount]
-        What=/data/opt/bin
-        Where=/opt/bin
-        Type=none
-        Options=bind
+        ExecStart=/bin/sh -c 'sudo ln -s /data/kubelet /var/lib/kubelet'
     - name: var-lib-docker.mount
       command: start
       content: |
@@ -97,6 +84,8 @@ coreos:
         Where=/var/lib/docker
         Type=none
         Options=bind
+        [Install]
+        RequiredBy=docker.service
     - name: var-lib-rkt.mount
       command: start
       content: |
@@ -110,32 +99,8 @@ coreos:
         Where=/var/lib/rkt
         Type=none
         Options=bind
-    - name: var-lib-kubelet.mount
-      command: start
-      content: |
-        [Unit]
-        Description=Binds /data/kubelet to /var/lib/kubelet
-        Requires=persistent-data-checks.service docker.service rkt-metadata.socket
-        After=persistent-data-checks.service
-        Before=docker.service rkt-metadata.socket
-        [Mount]
-        What=/data/kubelet
-        Where=/var/lib/kubelet
-        Type=none
-        Options=bind
-    - name: mnt.mount
-      command: start
-      content: |
-        [Unit]
-        Description=Binds /data/mnt to /mnt
-        Requires=persistent-data-checks.service docker.service rkt-metadata.socket
-        After=persistent-data-checks.service
-        Before=docker.service rkt-metadata.socket
-        [Mount]
-        What=/data/mnt
-        Where=/mnt
-        Type=none
-        Options=bind
+        [Install]
+        RequiredBy=rkt-metadata.socket
     - name: etcd2.service
       command: start
     - name: fleet.service
@@ -173,9 +138,9 @@ coreos:
         # Check for certs
         ExecStartPre=/bin/sh -c '[[ -f /data/kubernetes/ca.crt ]] || /opt/sbin/kube-certs.sh'
         # Check for binary
-        ExecStartPre=/bin/sh -c 'while [ ! -f /opt/bin/kube-apiserver ]; do sleep 1; done'
+        ExecStartPre=/bin/sh -c 'while [ ! -f /data/opt/bin/kube-apiserver ]; do sleep 1; done'
         # Start API server
-        ExecStart=/opt/bin/kube-apiserver \
+        ExecStart=/data/opt/bin/kube-apiserver \
           --client-ca-file=/data/kubernetes/ca.crt \
           --tls-cert-file=/data/kubernetes/server.cert \
           --tls-private-key-file=/data/kubernetes/server.key \
@@ -203,10 +168,10 @@ coreos:
         After=kube-apiserver.service
         [Service]
         # Check for binary
-        ExecStartPre=/bin/sh -c 'while [ ! -f /opt/bin/kube-controller-manager ]; do sleep 1; done'
+        ExecStartPre=/bin/sh -c 'while [ ! -f /data/opt/bin/kube-controller-manager ]; do sleep 1; done'
         # Wait for api server
         ExecStartPre=/opt/sbin/wupiao 127.0.0.1:8080
-        ExecStart=/opt/bin/kube-controller-manager \
+        ExecStart=/data/opt/bin/kube-controller-manager \
           --root-ca-file=/data/kubernetes/ca.crt \
           --service-account-private-key-file=/data/kubernetes/server.key \
           --master=127.0.0.1:8080 \
@@ -224,10 +189,10 @@ coreos:
         After=kube-apiserver.service
         [Service]
         # Check for binary
-        ExecStartPre=/bin/sh -c 'while [ ! -f /opt/bin/kube-scheduler ]; do sleep 1; done'
+        ExecStartPre=/bin/sh -c 'while [ ! -f /data/opt/bin/kube-scheduler ]; do sleep 1; done'
         # Wait for api server
         ExecStartPre=/opt/sbin/wupiao 127.0.0.1:8080
-        ExecStart=/opt/bin/kube-scheduler \
+        ExecStart=/data/opt/bin/kube-scheduler \
           --master=127.0.0.1:8080 \
           --logtostderr=true
         Restart=always
@@ -240,10 +205,10 @@ coreos:
         Documentation=https://github.com/GoogleCloudPlatform/kubernetes
         [Service]
         # Check for binary
-        ExecStartPre=/bin/sh -c 'while [ ! -f /opt/bin/kube-proxy ]; do sleep 1; done'
+        ExecStartPre=/bin/sh -c 'while [ ! -f /data/opt/bin/kube-proxy ]; do sleep 1; done'
         # Wait for api server
         ExecStartPre=/opt/sbin/wupiao 127.0.0.1:8080
-        ExecStart=/opt/bin/kube-proxy \
+        ExecStart=/data/opt/bin/kube-proxy \
           --master=http://127.0.0.1:8080 \
           --logtostderr=true
         Restart=always
@@ -259,11 +224,11 @@ coreos:
         # small hacks around for Deis Workflow
         ExecStartPre=-/bin/sh -c 'sudo mkdir -p /data/deis/minio && sudo chown 106:107 /data/deis/minio'
         # Check for binary
-        ExecStartPre=/bin/sh -c 'while [ ! -f /opt/bin/kubelet ]; do sleep 1; done'
+        ExecStartPre=/bin/sh -c 'while [ ! -f /data/opt/bin/kubelet ]; do sleep 1; done'
         # Wait for api server
         ExecStartPre=/opt/sbin/wupiao 127.0.0.1:8080
         #
-        ExecStart=/opt/bin/kubelet \
+        ExecStart=/data/opt/bin/kubelet \
           --address=0.0.0.0 \
           --port=10250 \
           --hostname_override=${HOSTNAME} \

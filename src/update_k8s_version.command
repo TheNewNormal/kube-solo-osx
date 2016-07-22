@@ -18,7 +18,7 @@ export PATH=${HOME}/kube-solo/bin:$PATH
 
 # copy files to ~/kube-solo/bin
 cp -f "${res_folder}"/bin/* ~/kube-solo/bin
-rm -f ~/kube-solo/bin/gen_kubeconfig
+rm -f "$HOME"/kube-solo/bin/gen_kubeconfig
 chmod 755 ~/kube-solo/bin/*
 
 echo " "
