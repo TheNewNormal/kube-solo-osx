@@ -36,7 +36,9 @@ import Cocoa
     
     func check_for_corectl_app() {
         
-        if !NSWorkspace.sharedWorkspace().launchApplication("/Applications/corectl.app") {
+        if  !NSWorkspace.sharedWorkspace().launchApplication("/Applications/corectl.app") &&
+            !NSTask.launchedTaskWithLaunchPath("/usr/local/bin/corectld", arguments: ["start])
+        {
             NSLog("corectl failed to launch")
             
             // show alert message

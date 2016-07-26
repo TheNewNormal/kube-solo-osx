@@ -22,9 +22,19 @@ fi
 function check_corectld_server() {
 # check corectld server
 #
-CHECK_SERVER_STATUS=$(/usr/local/sbin/corectld status 2>&1 | grep "Uptime:")
+
+# determine corectld path
+corectld_path=$(which corectld)
+if [ "$corectld_path" == "" ]; then
+  corectld_path=/usr/local/sbin/corectld
+fi
+CHECK_SERVER_STATUS=$($corectld_path status 2>&1 | grep "Uptime:")
 if [[ "$CHECK_SERVER_STATUS" == "" ]]; then
-    open -a /Applications/corectl.app
+    if [ "$corectld_path" == "/usr/local/sbin/corectld" ]; then
+        open -a /Applications/corectl.app
+    else
+        $corectld_path start
+    fi
 fi
 
 if [[ "$CHECK_SERVER_STATUS" == "" ]]; then
@@ -35,7 +45,14 @@ fi
 
 function check_internet_from_vm(){
 #
-status=$(/usr/local/sbin/corectl ssh k8solo-01 "curl -s -I https://coreos.com 2>/dev/null | head -n 1 | cut -d' ' -f2")
+
+# determine corectl path
+corectl_path=$(which corectl)
+if [ "$corectl_path" == "" ]; then
+  corectl_path=/usr/local/sbin/corectl
+fi
+
+status=$($corectl_path ssh k8solo-01 "curl -s -I https://coreos.com 2>/dev/null | head -n 1 | cut -d' ' -f2")
 
 if [[ $(echo "${status//[$'\t\r\n ']}") = "200" ]]; then
     echo "Yes, internet is available ..."

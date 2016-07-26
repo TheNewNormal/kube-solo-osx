@@ -11,8 +11,14 @@ ssh-add -K ~/.ssh/id_rsa &>/dev/null
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
+# determine corectl path
+corectl_path=$(which corectl)
+if [ "$corectl_path" == "" ]; then
+  corectl_path=/usr/local/sbin/corectl
+fi
+
 # get VM IP
-vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
+vm_ip=$($corectl_path q -i k8solo-01)
 
 # Set the shell environment variables
 # path to the bin folder where we store our binary files

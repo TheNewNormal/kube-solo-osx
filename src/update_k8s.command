@@ -10,8 +10,14 @@ source "${DIR}"/functions.sh
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
+# determine corectl path
+corectl_path=$(which corectl)
+if [ "$corectl_path" == "" ]; then
+  corectl_path=/usr/local/sbin/corectl
+fi
+
 # get VM IP
-vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
+vm_ip=$($corectl_path q -i k8solo-01)
 
 # path to the bin folder where we store our binary files
 export PATH=${HOME}/kube-solo/bin:$PATH
@@ -37,7 +43,7 @@ echo Generate kubeconfig file ...
 # trigger k8s units restart on VM
 echo " "
 echo "Restarting Kubernetes systemd units on VM ..."
-/usr/local/sbin/corectl ssh k8solo-01 "sudo /opt/sbin/restart-kube-units.sh"
+$corectl_path ssh k8solo-01 "sudo /opt/sbin/restart-kube-units.sh"
 #&>/dev/null
 echo " "
 
