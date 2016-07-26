@@ -2,5 +2,10 @@
 
 #  halt.command
 
+CORECTL_PATH=$(which corectl)
 # send halt to VM
-/usr/local/sbin/corectl halt k8solo-01
+if [ "$CORECTL_PATH" == "" ]; then
+  /usr/local/sbin/corectl halt k8solo-01
+else
+  $CORECTL_PATH halt k8solo-01
+fi
