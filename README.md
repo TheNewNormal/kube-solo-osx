@@ -10,9 +10,9 @@ Zero to Kubernetes development environment
 
 It leverages macOS native Hypervisor framework of using [xhyve](https://github.com/xhyve-xyz/xhyve) based [corectl](https://github.com/TheNewNormal/corectl) command line tool without any needs to use VirtualBox or similar virtualisation software.
 
-**Includes:** [Helm Classic](https://helm.sh) - The Kubernetes Package Manager
+**New:** After successful install you can control kube-solo VM via `ksolo` cli as well. Cli resides in `~/kube-solo/bin` folder and has simple commands: `ksolo start|stop|status|ip`. Just copy the `ksolo` to your pre-set path and you are good to control Kubernetes solo cluster via cli, it is specially handy for automation tasks.
 
-**Includes:** An option from shell to install [Deis Workflow PaaS](https://deis.com) on top of Kubernetes with a simple: `$ install_deis`
+**Includes:** [Helm Classic](https://helm.sh) - The Kubernetes Package Manager and an option from shell to install [Deis Workflow PaaS](https://deis.com) on top of Kubernetes with a simple: `$ install_deis`
 
 Kube-Solo App can be used together with [CoreOS VM App](https://github.com/TheNewNormal/coreos-osx) which allows to build Docker containers and has a private local Docker registry v2 which is accessible from Kube-Solo App.
 

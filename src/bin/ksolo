@@ -1,0 +1,49 @@
+#!/bin/bash
+# kube-solo cli
+
+#
+app_path=$(cat ~/kube-solo/.env/resouces_path)
+
+#
+start() {
+    "${app_path}"/up.command
+}
+
+
+stop() {
+    "${app_path}"/halt.command
+}
+
+
+status() {
+    echo "$(/usr/local/sbin/corectl q -a k8solo-01)"
+}
+
+
+ip() {
+    echo "$(/usr/local/sbin/corectl q -i k8solo-01)"
+}
+
+
+usage() {
+    echo "Usage: ksolo start|stop|status|ip"
+}
+
+
+case "$1" in
+        start)
+                start
+                ;;
+        stop)
+                stop
+                ;;
+        status)
+                status
+                ;;
+        ip)
+                ip
+                ;;
+        *)
+                usage
+                ;;
+esac
