@@ -24,8 +24,14 @@ do
     then
         VALID_MAIN=1
 
+        # determine corectl path
+        corectl_path=$(which corectl)
+        if [ "$corectl_path" == "" ]; then
+            corectl_path=/usr/local/sbin/corectl
+        fi
+
         # send halt to VM
-        /usr/local/sbin/corectl halt k8solo-01 > /dev/null 2>&1
+        $corectl_path halt k8solo-01 > /dev/null 2>&1
 
         # delete data image
         rm -f ~/kube-solo/data.img > /dev/null 2>&1
