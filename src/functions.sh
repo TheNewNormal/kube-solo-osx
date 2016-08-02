@@ -22,7 +22,7 @@ fi
 function check_corectld_server() {
 # check corectld server
 #
-CHECK_SERVER_STATUS=$(/usr/local/sbin/corectld status 2>&1 | grep "Uptime:")
+CHECK_SERVER_STATUS=$(~/bin/corectld status 2>&1 | grep "Uptime:")
 if [[ "$CHECK_SERVER_STATUS" == "" ]]; then
     open -a /Applications/corectl.app
 fi
@@ -35,7 +35,7 @@ fi
 
 function check_internet_from_vm(){
 #
-status=$(/usr/local/sbin/corectl ssh k8solo-01 "curl -s -I https://coreos.com 2>/dev/null | head -n 1 | cut -d' ' -f2")
+status=$(~/bin/corectl ssh k8solo-01 "curl -s -I https://coreos.com 2>/dev/null | head -n 1 | cut -d' ' -f2")
 
 if [[ $(echo "${status//[$'\t\r\n ']}") = "200" ]]; then
     echo "Yes, internet is available ..."
@@ -141,7 +141,7 @@ if [ -z "$disk_size" ]
 then
     echo " "
     echo "Creating 20GB sparse disk (QCow2)..."
-    /usr/local/sbin/qcow-tool create --size=20GiB data.img
+    ~/bin/qcow-tool create --size=20GiB data.img
     echo "-"
     echo "Created 20GB Data disk"
     # create file 'unfinished_setup' so on next boot fresh install gets triggered again !!!
@@ -149,7 +149,7 @@ then
 else
     echo " "
     echo "Creating "$disk_size"GB sparse disk (QCow2)..."
-    /usr/local/sbin/qcow-tool create --size="$disk_size"GiB data.img
+    ~/bin/qcow-tool create --size="$disk_size"GiB data.img
     echo "-"
     echo "Created $disk_sizeGB Data disk"
     # create file 'unfinished_setup' so on next boot fresh install gets triggered again !!!
@@ -192,7 +192,7 @@ echo " "
 echo "Starting VM ..."
 echo " "
 #
-/usr/local/sbin/corectl load settings/k8solo-01.toml 2>&1 | tee ~/kube-solo/logs/vm_up.log
+~/bin/corectl load settings/k8solo-01.toml 2>&1 | tee ~/kube-solo/logs/vm_up.log
 CHECK_VM_STATUS=$(cat ~/kube-solo/logs/vm_up.log | grep "started")
 #
 if [[ "$CHECK_VM_STATUS" == "" ]]; then
@@ -207,7 +207,7 @@ else
     echo "VM successfully started !!!" >> ~/kube-solo/logs/vm_up.log
 fi
 # save VM's IP
-/usr/local/sbin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
+~/bin/corectl q -i k8solo-01 | tr -d "\n" > ~/kube-solo/.env/ip_address
 #
 
 }
@@ -217,7 +217,7 @@ function download_docker_client() {
 
 # download docker client
 # check docker server version
-DOCKER_VERSION=$(/usr/local/sbin/corectl ssh k8solo-01 'docker version' | grep 'Version:' | awk '{print $2}' | tr -d '\r' | /usr/bin/sed -n 2p )
+DOCKER_VERSION=$(~/bin/corectl ssh k8solo-01 'docker version' | grep 'Version:' | awk '{print $2}' | tr -d '\r' | /usr/bin/sed -n 2p )
 # check if the binary exists
 if [ ! -f ~/kube-solo/bin/docker ]; then
     cd ~/kube-solo/bin
@@ -424,7 +424,7 @@ function install_k8s_files {
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
 # get VM IP
-vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
+vm_ip=$(~/bin/corectl q -i k8solo-01)
 
 # check if file ~/kube-solo/kube/kube.tgz exists
 if [ ! -f ~/kube-solo/kube/kube.tgz ]
@@ -439,11 +439,11 @@ fi
 # install k8s files on to VM
 echo "Installing Kubernetes files on to VM..."
 cd ~/kube-solo/kube
-/usr/local/sbin/corectl scp kube.tgz k8solo-01:/home/core/
+~/bin/corectl scp kube.tgz k8solo-01:/home/core/
 echo "Files copied to VM..."
 echo "Installing now ..."
-/usr/local/sbin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /data/opt/bin && sudo tar xzf /home/core/kube.tgz -C /data/opt/bin && sudo chmod 755 /data/opt/bin/*'
-/usr/local/sbin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /data/opt/tmp && sudo mv /data/opt/bin/easy-rsa.tar.gz /data/opt/tmp'
+~/bin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /data/opt/bin && sudo tar xzf /home/core/kube.tgz -C /data/opt/bin && sudo chmod 755 /data/opt/bin/*'
+~/bin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /data/opt/tmp && sudo mv /data/opt/bin/easy-rsa.tar.gz /data/opt/tmp'
 echo "Done..."
 }
 
@@ -483,8 +483,8 @@ res_folder=$(cat ~/kube-solo/.env/resouces_path)
 #
 echo " "
 echo "Installing add-ons: SkyDNS, Kubernetes Dashboard and Kubedash ..."
-/usr/local/sbin/corectl scp "${res_folder}"/k8s/add-ons.tgz k8solo-01:/home/core/
-/usr/local/sbin/corectl ssh k8solo-01 'sudo tar xzf /home/core/add-ons.tgz -C /data/kubernetes/manifests'
+~/bin/corectl scp "${res_folder}"/k8s/add-ons.tgz k8solo-01:/home/core/
+~/bin/corectl ssh k8solo-01 'sudo tar xzf /home/core/add-ons.tgz -C /data/kubernetes/manifests'
 }
 
 
@@ -501,7 +501,7 @@ export PATH=${HOME}/kube-solo/bin:$PATH
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
 # send halt to VM
-/usr/local/sbin/corectl halt k8solo-01
+~/bin/corectl halt k8solo-01
 
 # kill all other scripts
 pkill -f [K]ube-Solo.app/Contents/Resources/fetch_latest_iso.command

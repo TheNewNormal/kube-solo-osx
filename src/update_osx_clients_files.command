@@ -11,7 +11,7 @@ source "${DIR}"/functions.sh
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
 # get VM IP
-vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
+vm_ip=$(~/bin/corectl q -i k8solo-01)
 
 # path to the bin folder where we store our binary files
 export PATH=${HOME}/kube-solo/bin:$PATH

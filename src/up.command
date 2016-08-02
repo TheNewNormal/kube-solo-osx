@@ -68,7 +68,7 @@ fi
 start_vm
 
 # get VM's IP
-vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
+vm_ip=$(~/bin/corectl q -i k8solo-01)
 
 #
 if [[ "${new_vm}" == "1" ]]
@@ -106,7 +106,7 @@ export DOCKER_CERT_PATH=
 #then
 #    echo " "
 #    echo "Restarting etcd service on VM ..."
-#    /usr/local/sbin/corectl ssh k8solo-01 "sudo systemctl restart etcd2"
+#    ~/bin/corectl ssh k8solo-01 "sudo systemctl restart etcd2"
 #    sleep 3
 #fi
 

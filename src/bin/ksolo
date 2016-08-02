@@ -16,12 +16,12 @@ stop() {
 
 
 status() {
-    echo "$(/usr/local/sbin/corectl q -a k8solo-01)"
+    echo "$(~/bin/corectl q -a k8solo-01)"
 }
 
 
 ip() {
-    echo "$(/usr/local/sbin/corectl q -i k8solo-01)"
+    echo "$(~/bin/corectl q -i k8solo-01)"
 }
 
 

@@ -9,7 +9,7 @@ function pause(){
 
 
 # get VM's IP
-vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
+vm_ip=$(~/bin/corectl q -i k8solo-01)
 
 #
 echo " "

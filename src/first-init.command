@@ -38,7 +38,7 @@ echo " "
 start_vm
 
 # get VM's IP
-vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
+vm_ip=$(~/bin/corectl q -i k8solo-01)
 
 # check internet from VM
 echo " "
@@ -63,7 +63,7 @@ export KUBERNETES_MASTER=http://$vm_ip:8080
 # wait till etcd service is ready
 #echo "--------"
 #echo "Restarting etcd service on VM ..."
-#/usr/local/sbin/corectl ssh k8solo-01 "sudo systemctl restart etcd2"
+#~/bin/corectl ssh k8solo-01 "sudo systemctl restart etcd2"
 #echo " "
 #sleep 3
 
