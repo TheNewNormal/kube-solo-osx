@@ -7,3 +7,4 @@
    memory = 2048
    local = "true"
    offline = "true"
+   shared-homedir = "true"

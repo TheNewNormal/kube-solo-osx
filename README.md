@@ -41,7 +41,7 @@ How to install Kube-Solo
 
 - App's files are installed to `~/kube-solo` folder
 - App will bootstrap `master+worker` Kubernetes cluster on the single VM
-- Mac user home folder can be enabled via `Setup\Enable shared NFS user home folder` to automaticly mounted to VM: `/Users/my_user`:`/Users/my_user` on each VM boot
+- Mac user home folder is automaticly mounted via NFS (it has to work on Mac end of course) to `/Users/my_user`:`/Users/my_user` on each VM boot, check the [PV example](https://github.com/TheNewNormal/kube-solo/blob/master/examples/pv/nfs-pv-mount-on-pod.md) how to use Persistent Volumes.
 - macOS `docker` client is installed to `~/kube-solo/bin` and preset in `OS shell` to be used from there, so you can build `docker` images on the VM and use with Kubernetes
 
 **The install will do the following:**
@@ -52,7 +52,7 @@ How to install Kube-Solo
 * It will install `docker, helmc, deis and kubectl` clients to `~/kube-solo/bin/`
 * Kubernetes services will be installed with fleet units which are placed in `~/kube-solo/fleet`, this allows very easy updates to fleet units if needed.
 * [Fleet-UI](http://fleetui.com) via unit file will be installed to check running fleet units
-* [Kubernetes Dashboard](http://kubernetes.io/docs/user-guide/ui/), [DNS](https://github.com/kubernetes/kubernetes/blob/release-1.2/cluster/addons/dns/README.md) and [Kubedash](https://github.com/kubernetes/kubedash) will be instlled as add-ons
+* [Kubernetes Dashboard](http://kubernetes.io/docs/user-guide/ui/), [DNS](https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/dns) and [Kubedash](https://github.com/kubernetes/kubedash) will be instlled as add-ons
 * Via assigned static IP (it will be shown in first boot and will survive VM's reboots) you can access any port on CoreOS VM
 * Persistent sparse disk (QCow2) `data.img` will be created and mounted to `/data` for these mount binds and other folders:
 
@@ -97,7 +97,6 @@ Path to `~/kube-solo/bin` where macOS clients and shell scripts are stored
 ```
 - Change CoreOS Release Channel
 - Change VM's RAM size
-- Enable/disable shared NFS user home folder
 - Destroy Kube-Solo VM (just deletes data.img file)
 - Initial setup of Kube-Solo VM
 ```

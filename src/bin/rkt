@@ -4,7 +4,7 @@
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
 # get VM's IP
-vm_ip=$(/usr/local/sbin/corectl q -i k8solo-01)
+vm_ip=$(~/bin/corectl q -i k8solo-01)
 
 cmd=(ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o LogLevel=quiet core@$vm_ip sudo /usr/bin/rkt "${@+$@}")
 

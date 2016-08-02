@@ -3,4 +3,4 @@
 #  halt.command
 
 # send halt to VM
-/usr/local/sbin/corectl halt k8solo-01
+~/bin/corectl halt k8solo-01
