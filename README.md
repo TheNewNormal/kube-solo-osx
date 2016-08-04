@@ -41,7 +41,7 @@ How to install Kube-Solo
 
 - App's files are installed to `~/kube-solo` folder
 - App will bootstrap `master+worker` Kubernetes cluster on the single VM
-- Mac user home folder is automaticly mounted via NFS (it has to work on Mac end of course) to `/Users/my_user`:`/Users/my_user` on each VM boot, check the [PV example](https://github.com/TheNewNormal/kube-solo/blob/master/examples/pv/nfs-pv-mount-on-pod.md) how to use Persistent Volumes.
+- Mac user home folder is automaticly mounted via NFS (it has to work on Mac end of course) to `/Users/my_user`:`/Users/my_user` on each VM boot, check the [PV example](https://github.com/TheNewNormal/kube-solo-osx/blob/master/examples/pv/nfs-pv-mount-on-pod.md) how to use Persistent Volumes.
 - macOS `docker` client is installed to `~/kube-solo/bin` and preset in `OS shell` to be used from there, so you can build `docker` images on the VM and use with Kubernetes
 
 **The install will do the following:**
