@@ -24,9 +24,12 @@ ip() {
     echo "$(~/bin/corectl q -i k8solo-01)"
 }
 
+ssh() {
+    ~/bin/corectl ssh k8solo-01
+}
 
 usage() {
-    echo "Usage: ksolo start|stop|status|ip"
+    echo "Usage: ksolo start|stop|status|ip|ssh"
 }
 
 
@@ -42,6 +45,9 @@ case "$1" in
                 ;;
         ip)
                 ip
+                ;;
+        ssh)
+                ssh
                 ;;
         *)
                 usage
