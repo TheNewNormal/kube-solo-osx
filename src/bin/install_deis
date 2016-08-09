@@ -45,6 +45,15 @@ rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo > /dev/n
 
 # fetch Deis Workflow Chart to your helmc's working directory
 helmc fetch deis/workflow-${WORKFLOW_RELEASE} workflow-${WORKFLOW_RELEASE}-kube-solo
+
+# delete monitoring components to save VM's resources
+rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/manifests/deis-monitor-* > /dev/null 2>&1
+rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/tpl/deis-monitor-* > /dev/null 2>&1
+
+# delete workflow-manager components to save VM's resources
+rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/manifests/deis-workflow-manager-* > /dev/null 2>&1
+rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/tpl/deis-workflow-manager-* > /dev/null 2>&1
+
 # run helmc generate
 helmc generate -x manifests workflow-${WORKFLOW_RELEASE}-kube-solo
 
@@ -61,6 +70,7 @@ helmc install workflow-${WORKFLOW_RELEASE}-kube-solo
 
 # get lastest macOS deis cli version
 cd ~/kube-solo/bin
+echo " "
 echo "Downloading latest version of Workflow deis cli for macOS"
 curl -o deis https://storage.googleapis.com/workflow-cli/deis-latest-darwin-amd64
 chmod +x deis
@@ -111,5 +121,5 @@ echo "Deis Workflow IP is http://deis.$vm_ip.nip.io "
 echo " "
 echo "Please read docs how to:" 
 echo "To deploy Applications - https://deis.com/docs/workflow/applications/deploying-apps/"
-echo "Understanding Deis Workflow - https://deis.com/docs/workflow/understanding-workflow/concepts/"
+echo "Deis Workflow concepts - https://deis.com/docs/workflow/understanding-workflow/concepts/"
 echo " "

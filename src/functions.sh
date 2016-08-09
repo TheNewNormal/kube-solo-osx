@@ -135,15 +135,15 @@ function create_data_disk() {
 cd ~/kube-solo/
 echo "  "
 echo "Please type Data disk size in GBs followed by [ENTER]:"
-echo -n "[default is 20]: "
+echo -n "[default is 30]: "
 read disk_size
 if [ -z "$disk_size" ]
 then
     echo " "
-    echo "Creating 20GB sparse disk (QCow2)..."
-    ~/bin/qcow-tool create --size=20GiB data.img
+    echo "Creating 30GB sparse disk (QCow2)..."
+    ~/bin/qcow-tool create --size=30GiB data.img
     echo "-"
-    echo "Created 20GB Data disk"
+    echo "Created 30GB Data disk"
     # create file 'unfinished_setup' so on next boot fresh install gets triggered again !!!
     touch ~/kube-solo/logs/unfinished_setup > /dev/null 2>&1
 else

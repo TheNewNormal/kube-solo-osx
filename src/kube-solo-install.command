@@ -21,6 +21,9 @@
     rm -f "$HOME"/kube-solo/bin/gen_kubeconfig
     chmod +x ~/kube-solo/bin/*
 
+    # copy ksolo file to ~/bin
+    cp -f "${res_folder}"/bin/ksolo ~/bin
+
     # copy user-data
     cp -f "$1"/cloud-init/* ~/kube-solo/cloud-init
 

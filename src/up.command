@@ -37,6 +37,9 @@ rsync -r --verbose --exclude 'helmc' "${res_folder}"/bin/* ~/kube-solo/bin/ > /d
 rm -f "$HOME"/kube-solo/bin/gen_kubeconfig
 chmod 755 ~/kube-solo/bin/*
 
+# copy ksolo file to ~/bin
+cp -f "${res_folder}"/bin/ksolo ~/bin
+
 # add ssh key to Keychain
 if ! ssh-add -l | grep -q ssh/id_rsa; then
   ssh-add -K ~/.ssh/id_rsa &>/dev/null
@@ -101,15 +104,6 @@ export DOCKER_HOST=tcp://$vm_ip:2375
 export DOCKER_TLS_VERIFY=
 export DOCKER_CERT_PATH=
 
-# restart etcd2 on VM
-#if [[ "${new_vm}" == "1" ]]
-#then
-#    echo " "
-#    echo "Restarting etcd service on VM ..."
-#    ~/bin/corectl ssh k8solo-01 "sudo systemctl restart etcd2"
-#    sleep 3
-#fi
-
 # wait till etcd service is ready
 echo " "
 echo "Waiting for etcd service to be ready on VM..."
@@ -119,13 +113,6 @@ i=1
 until curl -o /dev/null http://"$vm_ip":2379 >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 echo "..."
 #
-
-# download docker client
-if [[ "${new_vm}" == "1" ]]
-then
-    #
-    download_docker_client
-fi
 
 # wait for Kubernetes cluster readiness
 echo " "
