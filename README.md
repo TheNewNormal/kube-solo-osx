@@ -3,7 +3,7 @@ Kubernetes Solo cluster for macOS
 
 ![k8s-solo](k8s-singlenode.png)
 
-Zero to Kubernetes development environment
+Zero to Kubernetes development environment setup under two minutes
 ---------------
 
 **Kube-Solo for macOS** is `status bar App` which allows in an easy way to control and bootstrap Kubernetes cluster on a standalone [CoreOS](https://coreos.com) VM machine.
