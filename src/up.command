@@ -33,8 +33,7 @@ fi
 mkdir ~/kube-solo/logs > /dev/null 2>&1
 
 # copy bin files to ~/kube-solo/bin
-rsync -r --verbose --exclude 'helmc' "${res_folder}"/bin/* ~/kube-solo/bin/ > /dev/null 2>&1
-rm -f "$HOME"/kube-solo/bin/gen_kubeconfig
+rsync -r --verbose --exclude 'helmc' --exclude 'helm' --exclude 'gen_kubeconfig' "${res_folder}"/bin/* ~/kube-solo/bin/ > /dev/null 2>&1
 chmod 755 ~/kube-solo/bin/*
 
 # copy ksolo file to ~/bin
@@ -99,6 +98,8 @@ fi
 export ETCDCTL_PEERS=http://$vm_ip:2379
 # set kubernetes master endpoint
 export KUBERNETES_MASTER=http://$vm_ip:8080
+# set kubernetes cluster config file path for Helm
+export KUBECONFIG=~/kube-solo/kube/kubeconfig
 # docker daemon
 export DOCKER_HOST=tcp://$vm_ip:2375
 export DOCKER_TLS_VERIFY=
@@ -136,6 +137,10 @@ then
     # copy add-ons files
     cp "${res_folder}"/k8s/add-ons/*.yaml ~/kube-solo/kubernetes
     install_k8s_add_ons
+    # install Helm Tiller
+    echo " "
+    echo "Installing Helm Tiller..."
+    ~/kube-solo/bin/helm init
     #
     echo " "
     echo "kubectl cluster-info:"

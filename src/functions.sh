@@ -245,7 +245,39 @@ else
 fi
 }
 
+
 function download_osx_clients() {
+
+# get lastest macOS helm cli version
+echo " "
+echo "Checking for latest Helm version..."
+cd ~/kube-solo/tmp
+LATEST_HELM=$(curl -s https://api.github.com/repos/kubernetes/helm/releases/latest | grep "tag_name" | awk '{print $2}' | sed -e 's/"\(.*\)"./\1/')
+
+# check if the binary exists
+if [ ! -f ~/kube-solo/bin/helm ]; then
+    INSTALLED_HELM=v0.0.0
+else
+    INSTALLED_HELM=$(~/kube-solo/bin/helm version)
+fi
+
+#
+MATCH=$(echo "${INSTALLED_HELM}" | grep -c "${LATEST_HELM}")
+if [ $MATCH -ne 0 ]; then
+    echo " "
+    echo "Helm is up to date !!!"
+else
+    echo " "
+    echo "Downloading latest ${LATEST_HELM} of helm cli for macOS"
+    curl -k -L https://github.com/kubernetes/helm/releases/download/$LATEST_HELM/helm-$LATEST_HELM-darwin-amd64.tar > helm.tar
+    tar xvf helm.tar -C ~/kube-solo/tmp --strip=1 darwin-amd64/helm > /dev/null 2>&1
+    chmod +x helm
+    mv -f helm ~/kube-solo/bin/helm
+    rm -f helm.tar
+    echo " "
+    echo "Installed latest ${LATEST_HELM} of helm cli to ~/kube-solo/bin ..."
+fi
+#
 
 # get lastest macOS helmc cli version
 cd ~/kube-solo/bin
@@ -307,7 +339,7 @@ echo " "
 # clean up tmp folder
 rm -rf ~/kube-solo/tmp/*
 
-# download latest version of k8s for CoreOS
+# downloading latest version of k8s for CoreOS
 echo "Downloading Kubernetes $K8S_VERSION"
 bins=( kubectl kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
 for b in "${bins[@]}"; do
