@@ -12,7 +12,7 @@ It leverages macOS native Hypervisor framework of using [xhyve](https://github.c
 
 **New:** After successful install you can control `kube-solo` VM via `ksolo` cli as well. Cli resides in `~/kube-solo/bin` and `/bin`folders and has simple commands: `ksolo start|stop|status|ip|ssh`, just add `/bin` to your pre-set path. This feature is especially handy for automation tasks.
 
-**Includes:** [Helm Classic](https://helm.sh) / [Helm v2](https://github.com/kubernetes/helm) - The Kubernetes Package Manager and an option from shell to install [Deis Workflow PaaS](https://deis.com) on top of Kubernetes with a simple: `$ install_deis`
+**Includes:** [Helm Classic](https://helm.sh) - The Kubernetes Package Manager and an option from shell to install [Deis Workflow PaaS](https://deis.com) on top of Kubernetes with a simple: `$ install_deis`
 
 
 ![Kube-Solo](kube-solo-osx.png "Kubernetes-Solo")
