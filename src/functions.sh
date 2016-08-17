@@ -498,6 +498,12 @@ echo "Installing Kubernetes Dashboard ..."
 echo " "
 echo "Installing Kubedash ..."
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kubedash.yaml
+#
+echo " "
+echo "Installing Helm Tiller service ..."
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/tiller-deploy-service.yaml
+#
+
 sleep 1
 # clean up kubernetes folder
 rm -f ~/kube-solo/kubernetes/kube-system-ns.yaml

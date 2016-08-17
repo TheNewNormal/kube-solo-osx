@@ -33,6 +33,9 @@ for b in "${bins[@]}"; do
     curl -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/$b > kube/$b
 done
 
+# copy socat file
+cp socat/socat kube
+#
 chmod a+x kube/*
 #
 curl -L https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz > kube/easy-rsa.tar.gz
