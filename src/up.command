@@ -100,6 +100,7 @@ export ETCDCTL_PEERS=http://$vm_ip:2379
 export KUBERNETES_MASTER=http://$vm_ip:8080
 # set kubernetes cluster config file path for Helm
 export KUBECONFIG=~/kube-solo/kube/kubeconfig
+export HELM_HOST=$vm_ip:32767
 # docker daemon
 export DOCKER_HOST=tcp://$vm_ip:2375
 export DOCKER_TLS_VERIFY=

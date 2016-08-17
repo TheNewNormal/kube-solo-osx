@@ -71,6 +71,7 @@ coreos:
         ExecStart=/bin/sh -c '[[ -d /data/kubernetes/manifests ]] || mkdir -p /data/kubernetes/manifests'
         ExecStart=/bin/sh -c '[[ -d /data/kubelet ]] || mkdir -p /data/kubelet'
         ExecStart=/bin/sh -c 'sudo ln -s /data/kubelet /var/lib/kubelet'
+        ExecStart=/bin/sh -c 'sudo mkdir -p /opt/bin/ && sudo ln -s /data/opt/bin/socat /opt/bin/socat'
     - name: var-lib-docker.mount
       command: start
       content: |
@@ -221,6 +222,7 @@ coreos:
         Documentation=https://github.com/GoogleCloudPlatform/kubernetes
         [Service]
         EnvironmentFile=/etc/environment
+        Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin
         # small hacks around for Deis Workflow
         ExecStartPre=-/bin/sh -c 'sudo mkdir -p /data/deis/minio && sudo chown 106:107 /data/deis/minio'
         # Check for binary

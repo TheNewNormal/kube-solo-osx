@@ -61,8 +61,10 @@ export ETCDCTL_PEERS=http://$vm_ip:2379
 export KUBERNETES_MASTER=http://$vm_ip:8080
 # set kubernetes cluster config file path for Helm
 export KUBECONFIG=~/kube-solo/kube/kubeconfig
+export HELM_HOST=$vm_ip:32767
 
 #
+echo " "
 echo "Waiting for etcd service to be ready on VM..."
 sleep 3
 spin='-\|/'
