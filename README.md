@@ -8,12 +8,11 @@ Zero to Kubernetes development environment setup under two minutes
 
 It leverages **macOS native Hypervisor virtualisation framework** of using [corectl](https://github.com/TheNewNormal/corectl) command line tool, so there are no needs to use VirtualBox or any other virtualisation software anymore.
 
-
-App's menu looks as per image below:
 ![k8s-solo](k8s-singlenode.png)
 
 **Includes:** [Helm Classic](https://helm.sh) / [Helm v2](https://github.com/kubernetes/helm) - The Kubernetes Package Manager and an option from shell to install [Deis Workflow PaaS](https://deis.com) on top of Kubernetes with a simple: `$ install_deis`
 
+**App's menu** looks as per image below:
 ![Kube-Solo](kube-solo-osx.png "Kubernetes-Solo")
 
 Download
