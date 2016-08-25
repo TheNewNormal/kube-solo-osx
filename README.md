@@ -1,19 +1,16 @@
 Kubernetes Solo cluster for macOS
 ============================
 
-![k8s-solo](k8s-singlenode.png)
-
 Zero to Kubernetes development environment setup under two minutes
 ---------------
 
-**Kube-Solo for macOS** is `status bar App` which allows in an easy way to control and bootstrap Kubernetes cluster on a standalone [CoreOS](https://coreos.com) VM machine.
+**Kube-Solo for macOS** is a `status bar App` which allows in an easy way to bootstrap and control Kubernetes cluster on a standalone [CoreOS](https://coreos.com) VM machine.
 
-It leverages macOS native Hypervisor framework of using [xhyve](https://github.com/xhyve-xyz/xhyve) based [corectl](https://github.com/TheNewNormal/corectl) command line tool without any needs to use VirtualBox or similar virtualisation software.
+It leverages **macOS native Hypervisor virtualisation framework** of using [corectl](https://github.com/TheNewNormal/corectl) command line tool, so there are no needs to use VirtualBox or any other virtualisation software anymore.
 
-**New:** After successful install you can control `kube-solo` VM via `ksolo` cli as well. Cli resides in `~/kube-solo/bin` and `/bin`folders and has simple commands: `ksolo start|stop|status|ip|ssh`, just add `/bin` to your pre-set path. This feature is especially handy for automation tasks.
+![k8s-solo](k8s-singlenode.png)
 
 **Includes:** [Helm Classic](https://helm.sh) / [Helm v2](https://github.com/kubernetes/helm) - The Kubernetes Package Manager and an option from shell to install [Deis Workflow PaaS](https://deis.com) on top of Kubernetes with a simple: `$ install_deis`
-
 
 ![Kube-Solo](kube-solo-osx.png "Kubernetes-Solo")
 
@@ -43,15 +40,14 @@ How to install Kube-Solo
 - App will bootstrap `master+worker` Kubernetes cluster on the single VM
 - Mac user home folder is automaticly mounted via NFS (it has to work on Mac end of course) to `/Users/my_user`:`/Users/my_user` on each VM boot, check the [PV example](https://github.com/TheNewNormal/kube-solo-osx/blob/master/examples/pv/nfs-pv-mount-on-pod.md) how to use Persistent Volumes.
 - macOS `docker` client is installed to `~/kube-solo/bin` and preset in `OS shell` to be used from there, so you can build `docker` images on the VM and use with Kubernetes
+- After successful install you can control `kube-solo` VM via `ksolo` cli as well. Cli resides in `~/kube-solo/bin` and `~/bin`folders and has simple commands: `ksolo start|stop|status|ip|ssh`, just add `~/bin` to your pre-set path.
 
 **The install will do the following:**
 
-* All dependent files/folders will be put under `~/kube-solo` folder in the user's home folder e.g /Users/someuser/kube-solo. 
+* All dependent files/folders will be put under `~/kube-solo` folder in the user's home folder e.g `/Users/someuser/kube-solo`. 
 * Will download latest CoreOS ISO image (if there is no such one) and run `corectl` to initialise VM 
 * When you first time do install or `Up` after destroying Kube-Solo setup, k8s binary files (with the version which was available when the App was built) get copied to VM, this allows to speed up Kubernetes setup.
-* It will install `docker, helmc, deis and kubectl` clients to `~/kube-solo/bin/`
-* Kubernetes services will be installed with fleet units which are placed in `~/kube-solo/fleet`, this allows very easy updates to fleet units if needed.
-* [Fleet-UI](http://fleetui.com) via unit file will be installed to check running fleet units
+* It will install `docker, helmc, helm, deis and kubectl` clients to `~/kube-solo/bin/`
 * [Kubernetes Dashboard](http://kubernetes.io/docs/user-guide/ui/), [DNS](https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/dns) and [Kubedash](https://github.com/kubernetes/kubedash) will be instlled as add-ons
 * Via assigned static IP (it will be shown in first boot and will survive VM's reboots) you can access any port on CoreOS VM
 * Persistent sparse disk (QCow2) `data.img` will be created and mounted to `/data` for these mount binds and other folders:
