@@ -13,6 +13,7 @@ It leverages **macOS native Hypervisor virtualisation framework** of using [core
 **Includes:** [Helm Classic](https://helm.sh) / [Helm v2](https://github.com/kubernetes/helm) - The Kubernetes Package Manager and an option from shell to install [Deis Workflow PaaS](https://deis.com) on top of Kubernetes with a simple: `$ install_deis`
 
 **App's menu** looks as per image below:
+
 ![Kube-Solo](kube-solo-osx.png "Kubernetes-Solo")
 
 Download
