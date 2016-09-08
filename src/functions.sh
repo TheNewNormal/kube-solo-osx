@@ -268,25 +268,36 @@ if [ $MATCH -ne 0 ]; then
     echo "Helm is up to date !!!"
 else
     echo " "
-    echo "Downloading latest ${LATEST_HELM} of helm cli for macOS"
-    curl -k -L https://github.com/kubernetes/helm/releases/download/$LATEST_HELM/helm-$LATEST_HELM-darwin-amd64.tar > helm.tar
-    tar xvf helm.tar -C ~/kube-solo/tmp --strip=1 darwin-amd64/helm > /dev/null 2>&1
+    echo "Downloading latest ${LATEST_HELM} of 'helm' cli for macOS"
+    curl -k -L https://github.com/kubernetes/helm/releases/download/$LATEST_HELM/helm-$LATEST_HELM-darwin-amd64.tar.gz > helm.tar.gz
+    tar xvf helm.tar.gz -C ~/kube-solo/tmp --strip=1 darwin-amd64/helm > /dev/null 2>&1
     chmod +x helm
     mv -f helm ~/kube-solo/bin/helm
-    rm -f helm.tar
+    rm -f helm.tar.gz
     echo " "
-    echo "Installed latest ${LATEST_HELM} of helm cli to ~/kube-solo/bin ..."
+    echo "Installed latest ${LATEST_HELM} of 'helm' cli to ~/kube-solo/bin ..."
+    echo " "
+    # get VM's IP
+    vm_ip=$(~/bin/corectl q -i k8solo-01)
+    # Set the shell environment variables
+    # set kubernetes master endpoint
+    export KUBERNETES_MASTER=http://$vm_ip:8080
+    # set kubernetes cluster config file path for Helm
+    export KUBECONFIG=~/kube-solo/kube/kubeconfig
+    export HELM_HOST=$vm_ip:32767
+    echo "Installing new version of Helm Tiller..."
+    ~/kube-solo/bin/helm init
 fi
 #
 
 # get lastest macOS helmc cli version
 cd ~/kube-solo/bin
 echo " "
-echo "Downloading latest version of helmc cli for macOS"
+echo "Downloading latest version of 'helmc' cli for macOS"
 curl -o helmc https://storage.googleapis.com/helm-classic/helmc-latest-darwin-amd64
 chmod +x helmc
 echo " "
-echo "Installed latest helmc cli to ~/kube-solo/bin ..."
+echo "Installed latest 'helmc' cli to ~/kube-solo/bin ..."
 #
 
 # get lastest macOS deis cli version
@@ -296,7 +307,7 @@ echo "Downloading latest version of Deis Workflow 'deis' cli for macOS"
 curl -o deis https://storage.googleapis.com/workflow-cli/deis-latest-darwin-amd64
 chmod +x deis
 echo " "
-echo "Installed latest deis cli to ~/kube-solo/bin ..."
+echo "Installed latest 'deis cli' to ~/kube-solo/bin ..."
 #
 }
 
