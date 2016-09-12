@@ -16,7 +16,7 @@ import Cocoa
     // check if app runs from dmg
     func check_for_dmg() {
         // get the App's main bundle path
-        let resoucesPathFromApp = NSBundle.mainBundle().resourcePath!
+        let resoucesPathFromApp = Bundle.main.resourcePath!
         NSLog("applicationDirectory: '%@'", resoucesPathFromApp)
         //
         let dmgPath: String = "/Volumes/Kube-Solo/Kube-Solo.app/Contents/Resources"
@@ -36,7 +36,7 @@ import Cocoa
     
     func check_for_corectl_app() {
         
-        if !NSWorkspace.sharedWorkspace().launchApplication("/Applications/corectl.app") {
+        if !NSWorkspace.shared().launchApplication("/Applications/corectl.app") {
             NSLog("corectl failed to launch")
             
             // show alert message
@@ -45,15 +45,15 @@ import Cocoa
             displayWithMessage(mText, infoText: infoText)
             
             // open corectl.app releases URL
-            let url: String = ["https://github.com/TheNewNormal/corectl.app/releases"].componentsJoinedByString("")
-            NSWorkspace.sharedWorkspace().openURL(NSURL(string: url)!)
+            let url: String = "https://github.com/TheNewNormal/corectl.app/releases"
+            NSWorkspace.shared().open(URL(string: url)!)
             
             // show quitting App message
           //  self.notifyUserWithTitle(NSLocalizedString("QuittingNotificationTitle"), text: nil)
             let notification: NSUserNotification = NSUserNotification()
             notification.title = "Kube-Solo"
             notification.informativeText = NSLocalizedString("QuittingNotificationTitle", comment: "")
-            NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification(notification)
+            NSUserNotificationCenter.default.deliver(notification)
             
             // exiting App
             exit(0)
@@ -72,8 +72,8 @@ import Cocoa
     // bundled helper app is Apple's recommended approach, but that
     // has a lot of configuration overhead to get right.
     func addToLoginItems() {
-        NSTask.launchedTaskWithLaunchPath(
-            "/usr/bin/osascript",
+        Process.launchedProcess(
+            launchPath: "/usr/bin/osascript",
             arguments: [
                 "-e",
                 "tell application \"System Events\" to make login item at end with properties {path:\"/Applications/Kube-Solo.app\", hidden:false, name:\"Kube-Solo\"}"
