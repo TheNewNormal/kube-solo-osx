@@ -28,8 +28,6 @@
 "ISOImageWillBeUpdatedNotificationMessage" = "CoreOS ISO image will be updated";
 "ReleaseChannelChangeNotificationMessage" = "CoreOS release channel change";
 "VMRAMChangeNotificationMessage" = "VM RAM size change";
-"NFSChangeNotificationMessage" = "NFS settings change";
-"SudoPasswordChangeNotificationMessage" = "sudo password change";
 "SSHShellWillOpenNotificationMessage" = "VM ssh shell will be opened";
 "ShellWillOpenNotificationMessage" = "macOS shell will be opened";
 "ConsoleWillOpenNotificationMessage" = "VM's console will be opened";
@@ -58,3 +56,8 @@
 "AppUpdatenformativeText" = "The download link will be opened in your browser ...";
 "NoAppUpdateMessage" = "Kube-Solo for macOS";
 "NoAppUpdatenformativeText" = "You are-up-to-date !!!";
+
+// URL
+
+"AppReleaseURL" = "https://github.com/TheNewNormal/kube-solo-osx/releases";
+

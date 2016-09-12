@@ -46,7 +46,7 @@ echo "Checking internet availablity on VM..."
 check_internet_from_vm
 
 # download latest version of deis and helm clients
-download_osx_clients
+###download_osx_clients
 #
 
 echo " "
@@ -102,10 +102,9 @@ echo " "
 #
 install_k8s_add_ons
 
+# download latest version of deis, helmc and helm clients
 # install Helm Tiller
-echo " "
-echo "Installing Helm Tiller..."
-~/kube-solo/bin/helm init
+download_osx_clients
 
 # docker daemon
 export DOCKER_HOST=tcp://$vm_ip:2375

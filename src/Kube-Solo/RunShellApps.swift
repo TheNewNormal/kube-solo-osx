@@ -11,9 +11,9 @@ import Cocoa
 
 
 // run script
-func runScript(scriptName: String, arguments: String) {
-    let task: NSTask = NSTask()
-    let launchPath = NSBundle.mainBundle().resourcePath! + "/" + scriptName
+func runScript(_ scriptName: String, arguments: String) {
+    let task: Process = Process()
+    let launchPath = Bundle.main.resourcePath! + "/" + scriptName
     task.launchPath = launchPath
     task.arguments = [arguments]
     task.launch()
@@ -22,27 +22,27 @@ func runScript(scriptName: String, arguments: String) {
 
 
 // run an app
-func runApp(appName: String, arguments: String) {
+func runApp(_ appName: String, arguments: String) {
     // lunch an external App
-    NSWorkspace.sharedWorkspace().openFile(arguments, withApplication: appName)
+    NSWorkspace.shared().openFile(arguments, withApplication: appName)
 }
 
 
 // shell commands to run
-func shell(launchPath: String, arguments: [String]) -> String
+func shell(_ launchPath: String, arguments: [String]) -> String
 {
-    let task = NSTask()
+    let task = Process()
     task.launchPath = launchPath
     task.arguments = arguments
     
-    let pipe = NSPipe()
+    let pipe = Pipe()
     task.standardOutput = pipe
     task.launch()
     
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
-    let output = String(data: data, encoding: NSUTF8StringEncoding)!
+    let output = String(data: data, encoding: String.Encoding.utf8)!
     if output.characters.count > 0 {
-        return output.substringToIndex(output.endIndex.advancedBy(-1))
+        return output.substring(to: output.characters.index(output.endIndex, offsetBy: -1))
     }
     return output
 }

@@ -12,9 +12,9 @@ import Cocoa
 // to be used from obj-c
 @objc class Updates: NSObject {
     
-    func checkAppVersionGithub(showPopUp:String?=nil) {
+    func checkAppVersionGithub(_ showPopUp:String?=nil) {
         // get latest github version
-        let script = NSBundle.mainBundle().resourcePath! + "/check_app_version_github.command"
+        let script = Bundle.main.resourcePath! + "/check_app_version_github.command"
         let latest_app_version = shell(script, arguments: [])
         print("latest app version: " + latest_app_version)
         //
@@ -24,7 +24,7 @@ import Cocoa
         }
         
         // get installed App version
-        let installed_app_version = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString")as? String
+        let installed_app_version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")as? String
         print("installed app version: " + installed_app_version!)
         
         if (latest_app_version == "v" + installed_app_version!){
@@ -40,21 +40,30 @@ import Cocoa
         }
         else {
             NSLog("App has the update!!!")
-            // show alert message
-            let mText: String = NSLocalizedString("AppUpdateMessage", comment: "")
-            let infoText: String = NSLocalizedString("AppUpdatenformativeText", comment: "")
-            displayWithMessage(mText, infoText: infoText)
-            
-            // open kube-solo.app releases URL
-            let url: String = ["https://github.com/TheNewNormal/kube-solo-osx/releases"].componentsJoinedByString("")
-            NSWorkspace.sharedWorkspace().openURL(NSURL(string: url)!)
+            // show popup on the screen
+            let alert: NSAlert = NSAlert()
+            alert.messageText = NSLocalizedString("AppUpdateMessage", comment: "")
+            alert.informativeText = NSLocalizedString("AppUpdatenformativeText", comment: "")
+            alert.alertStyle = NSAlertStyle.warning
+            alert.addButton(withTitle: "OK")
+            alert.addButton(withTitle: "Cancel")
+            if alert.runModal() == NSAlertFirstButtonReturn {
+                // if OK clicked
+                // open kube-solo.app releases URL in default browser
+                let url: String = NSLocalizedString("AppReleaseURL", comment: "")
+                NSWorkspace.shared().open(URL(string: url)!)
+            }
+            else {
+                // Cancel was pressed
+                NSLog("App update was canceled !!!")
+            }
         }
     }
     
     
     
     // testing function which returns string
-    func sayHello(name: String) -> String {
+    func sayHello(_ name: String) -> String {
         let nameForGreeting = name.characters.count == 0 ? "World" : name;
         let greeting = "Hello " + nameForGreeting + "!";
         return greeting;
