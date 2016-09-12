@@ -485,7 +485,7 @@ cd ~/kube-solo/kube
 ~/bin/corectl scp kube.tgz k8solo-01:/home/core/
 echo "Files copied to VM..."
 echo "Installing now ..."
-~/bin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /data/opt/bin && sudo tar xzf /home/core/kube.tgz -C /data/opt/bin && sudo chmod 755 /data/opt/bin/*'
+~/bin/corectl ssh k8solo-01 'while [ ! -d /data/opt/bin ]; do sleep 1; done && sudo tar xzf /home/core/kube.tgz -C /data/opt/bin && sudo chmod 755 /data/opt/bin/*'
 ~/bin/corectl ssh k8solo-01 'sudo /usr/bin/mkdir -p /data/opt/tmp && sudo mv /data/opt/bin/easy-rsa.tar.gz /data/opt/tmp'
 echo "Done..."
 }
