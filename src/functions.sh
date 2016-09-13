@@ -342,8 +342,8 @@ k8s_upgrade=1
 # download latest version of kubectl for macOS
 cd ~/kube-solo/tmp
 echo "Downloading kubectl $K8S_VERSION for macOS"
-curl -k -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/darwin/amd64/kubectl >  ~/kube-solo/kube/kubectl
-chmod 755 ~/kube-solo/kube/kubectl
+curl -k -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/darwin/amd64/kubectl >  ~/kube-solo/bin/kubectl
+chmod 755 ~/kube-solo/bin/kubectl
 echo "kubectl was copied to ~/kube-solo/kube"
 echo " "
 
@@ -438,7 +438,7 @@ k8s_upgrade=1
 echo "Extracting Kubernetes $K8S_VERSION files ..."
 tar xvf  kubernetes.tar.gz --strip=4 kubernetes/platforms/darwin/amd64/kubectl
 mv -f kubectl ~/kube-solo/kube
-chmod 755 ~/kube-solo/kube/kubectl
+chmod 755 ~/kube-solo/bin/kubectl
 #
 tar xvf kubernetes.tar.gz --strip=2 kubernetes/server/kubernetes-server-linux-amd64.tar.gz
 bins=( kubectl kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
@@ -474,7 +474,7 @@ if [ ! -f ~/kube-solo/kube/kube.tgz ]
 then
     # copy k8s files
     cp -f "${res_folder}"/k8s/kubectl ~/kube-solo/kube
-    chmod +x ~/kube-solo/kube/kubectl
+    chmod +x ~/kube-solo/bin/kubectl
     # linux binaries tar file
     cp -f "${res_folder}"/k8s/kube.tgz ~/kube-solo/kube
 fi

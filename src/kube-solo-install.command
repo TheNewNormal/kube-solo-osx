@@ -31,8 +31,8 @@
     cp -f "$1"/settings/* ~/kube-solo/settings
 
     # copy k8s files
-    cp "$1"/k8s/kubectl ~/kube-solo/kube
-    chmod +x ~/kube-solo/kube/kubectl
+    cp "$1"/k8s/kubectl ~/kube-solo/bin
+    chmod +x ~/kube-solo/bin/kubectl
     cp "$1"/k8s/add-ons/*.yaml ~/kube-solo/kubernetes
     # linux binaries
     cp "$1"/k8s/kube.tgz ~/kube-solo/kube

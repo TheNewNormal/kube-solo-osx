@@ -59,6 +59,13 @@ install_k8s_files
 export ETCDCTL_PEERS=http://$vm_ip:2379
 # set kubernetes master endpoint
 export KUBERNETES_MASTER=http://$vm_ip:8080
+
+# generate kubeconfig file
+echo " "
+echo "Generating kubeconfig file ..."
+"${res_folder}"/bin/gen_kubeconfig $vm_ip
+#
+
 # set kubernetes cluster config file path for Helm
 export KUBECONFIG=~/kube-solo/kube/kubeconfig
 export HELM_HOST=$vm_ip:32767
@@ -74,12 +81,6 @@ echo "..."
 
 #
 download_docker_client
-
-# generate kubeconfig file
-echo " "
-echo "Generating kubeconfig file ..."
-"${res_folder}"/bin/gen_kubeconfig $vm_ip
-#
 
 # wait for Kubernetes cluster readiness
 echo " "
