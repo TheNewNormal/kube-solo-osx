@@ -3,7 +3,7 @@
    channel = "stable"
    volume = "data.img"
    cloud_config = "cloud-init/user-data"
-   cpus = 3
+   cpus = 2
    memory = 3072
    local = "true"
    offline = "true"
