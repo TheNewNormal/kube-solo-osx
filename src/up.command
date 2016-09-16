@@ -98,7 +98,7 @@ fi
 export ETCDCTL_PEERS=http://$vm_ip:2379
 # set kubernetes master endpoint
 export KUBERNETES_MASTER=http://$vm_ip:8080
-# set kubernetes cluster config file path for Helm
+# set kubernetes cluster config file path for k8s API and Helm
 export KUBECONFIG=~/kube-solo/kube/kubeconfig
 export HELM_HOST=$vm_ip:32767
 # docker daemon

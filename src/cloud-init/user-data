@@ -83,7 +83,7 @@ coreos:
         [Mount]
         What=/data/var/lib/docker
         Where=/var/lib/docker
-        Type=none
+        Type=ext4
         Options=bind
         [Install]
         RequiredBy=docker.service
@@ -98,7 +98,7 @@ coreos:
         [Mount]
         What=/data/var/lib/rkt
         Where=/var/lib/rkt
-        Type=none
+        Type=ext4
         Options=bind
         [Install]
         RequiredBy=rkt-metadata.socket
@@ -261,7 +261,7 @@ write-files:
  - path: /opt/sbin/make-certs.sh
    permissions: '0755'
    content: |
-      #!/bin/sh -
+      #!/bin/sh
 
       # Copyright 2014 The Kubernetes Authors All rights reserved.
       #
@@ -285,14 +285,16 @@ write-files:
       fi
 
       tmpdir=$(mktemp -d --tmpdir kubernetes_cacert.XXXXXX)
+      cd $tmpdir
+      
       trap 'rm -rf "${tmpdir}"' EXIT
       #
-      if [ ! -f /opt/tmp/easy-rsa.tar.gz ]
+      if [ ! -f /data/opt/tmp/easy-rsa.tar.gz ]
       then
-         curl -L -O https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz > /dev/null 2>&1
-         tar xzf easy-rsa.tar.gz > /dev/null 2>&1
+         curl -L -o /data/opt/tmp/easy-rsa.tar.gz https://storage.googleapis.com/kubernetes-release/easy-rsa/easy-rsa.tar.gz > /dev/null 2>&1
+         tar xzf /data/opt/tmp/easy-rsa.tar.gz > /dev/null 2>&1
       else
-         tar xzf /opt/tmp/easy-rsa.tar.gz > /dev/null 2>&1
+         tar xzf /data/opt/tmp/easy-rsa.tar.gz > /dev/null 2>&1
       fi
 
       cd easy-rsa-master/easyrsa3
