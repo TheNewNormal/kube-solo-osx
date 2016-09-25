@@ -4,7 +4,7 @@ Kubernetes Solo cluster for macOS
 Zero to Kubernetes development environment setup under two minutes
 ---------------
 
-**Kube-Solo for macOS** is a `status bar App` which allows in an easy way to bootstrap and control Kubernetes cluster on a standalone [CoreOS](https://coreos.com) VM machine.
+**Kube-Solo for macOS** is a `status bar App` which allows in an easy way to bootstrap and control Kubernetes cluster on a standalone [CoreOS](https://coreos.com) VM machine. VM can also be controlled via 'ksolo' cli. Also docker is exposed to macOS, so you can build your docker images with the same app and use them with Kubernetes.
 
 ![k8s-solo](k8s-singlenode.png)
 
@@ -89,7 +89,7 @@ Path to `~/kube-solo/bin` where macOS clients and shell scripts are stored
 * `Check for App updates` will check for a new app version
 * `Updates/Update Kubernetes to the latest version` will update to latest version of Kubernetes.
 * `Updates/Change Kubernetes version` will download and install specified Kubernetes version from GitHub.
-* `Updates/Update macOS helmc and deis clients` will update `helmc` and `deis` to the latest version.
+* `Updates/Update macOS helmc, helm, and deis clients` will update `helmc`, `helm` and `deis` to the latest version.
 * `Setup/` will allow you to do:
 
 ```
