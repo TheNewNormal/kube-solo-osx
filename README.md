@@ -4,7 +4,7 @@ Kubernetes Solo cluster for macOS
 Zero to Kubernetes development environment setup under two minutes
 ---------------
 
-**Kube-Solo for macOS** is a `status bar App` which allows in an easy way to bootstrap and control Kubernetes cluster on a standalone [CoreOS](https://coreos.com) VM machine. VM can also be controlled via 'ksolo' cli. Also docker is exposed to macOS, so you can build your docker images with the same app and use them with Kubernetes.
+**Kube-Solo for macOS** is a `status bar App` which allows in an easy way to bootstrap and control Kubernetes cluster on a standalone [CoreOS](https://coreos.com) VM machine. VM can also be controlled via `ksolo` cli. Also VM's `docker` API is exposed to macOS, so you can build your docker images with the same app and use them with Kubernetes.
 
 ![k8s-solo](k8s-singlenode.png)
 
@@ -83,6 +83,14 @@ DOCKER_HOST=tcp://192.168.64.xxx:2375
 ```
 Path to `~/kube-solo/bin` where macOS clients and shell scripts are stored
 ```
+
+###ksolo cli options:
+* `ksolo start` will start k8solo-01 VM and shell environment pre-set will be preset as above.
+* `ksolo stop` will stop VM
+* `ksolo status`will show VM's status
+* `ksolo ip` will show VM's IP
+* `ksolo ssh` will open VM shell
+
 
 ###Other menu options:
 * [Kubernetes Dashboard](http://kubernetes.io/docs/user-guide/ui/) will show nice Kubernetes Dashboard, where you can check Nodes, Pods, Replication, Deployments, Service Controllers, deploy Apps and etc.
