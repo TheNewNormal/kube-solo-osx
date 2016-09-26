@@ -85,7 +85,7 @@ Path to `~/kube-solo/bin` where macOS clients and shell scripts are stored
 ```
 
 ###ksolo cli options:
-* `ksolo start` will start k8solo-01 VM and shell environment pre-set will be preset as above.
+* `ksolo start` will start k8solo-01 VM and shell environment will be pre-set as above.
 * `ksolo stop` will stop VM
 * `ksolo status`will show VM's status
 * `ksolo ip` will show VM's IP
