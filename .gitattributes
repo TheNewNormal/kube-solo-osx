@@ -1,0 +1,2 @@
+src/k8s/kube.tgz filter=lfs diff=lfs merge=lfs -text
+src/k8s/kubectl filter=lfs diff=lfs merge=lfs -text

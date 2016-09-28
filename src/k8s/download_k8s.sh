@@ -28,7 +28,7 @@ chmod a+x kubectl
 
 # download latest version of linux k8s binaries
 mkdir kube
-bins=( kubectl kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
+bins=( kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
 for b in "${bins[@]}"; do
     curl -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/$b > kube/$b
 done

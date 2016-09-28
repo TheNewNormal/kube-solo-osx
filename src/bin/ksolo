@@ -9,16 +9,9 @@ start() {
     "${app_path}"/up.command
 }
 
-
-stop() {
-    "${app_path}"/halt.command
-}
-
-
 status() {
     echo "$(~/bin/corectl q -a k8solo-01)"
 }
-
 
 ip() {
     echo "$(~/bin/corectl q -i k8solo-01)"
@@ -28,8 +21,12 @@ ssh() {
     ~/bin/corectl ssh k8solo-01
 }
 
+shell() {
+    "${app_path}"/os_shell.command
+}
+
 usage() {
-    echo "Usage: ksolo start|stop|status|ip|ssh"
+    echo "Usage: ksolo start|stop|status|ip|ssh|shell"
 }
 
 
@@ -48,6 +45,9 @@ case "$1" in
                 ;;
         ssh)
                 ssh
+                ;;
+        shell)
+                shell
                 ;;
         *)
                 usage
