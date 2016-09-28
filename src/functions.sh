@@ -352,7 +352,7 @@ rm -rf ~/kube-solo/tmp/*
 
 # downloading latest version of k8s for CoreOS
 echo "Downloading Kubernetes $K8S_VERSION"
-bins=( kubectl kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
+bins=( kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
 for b in "${bins[@]}"; do
     curl -k -L https://storage.googleapis.com/kubernetes-release/release/$K8S_VERSION/bin/linux/amd64/$b > ~/kube-solo/tmp/$b
 done
@@ -441,7 +441,7 @@ mv -f kubectl ~/kube-solo/kube
 chmod 755 ~/kube-solo/bin/kubectl
 #
 tar xvf kubernetes.tar.gz --strip=2 kubernetes/server/kubernetes-server-linux-amd64.tar.gz
-bins=( kubectl kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
+bins=( kubelet kube-proxy kube-apiserver kube-scheduler kube-controller-manager )
 for b in "${bins[@]}"; do
     tar xvf kubernetes-server-linux-amd64.tar.gz -C ~/kube-solo/tmp --strip=3 kubernetes/server/bin/$b
 done
@@ -472,11 +472,17 @@ vm_ip=$(~/bin/corectl q -i k8solo-01)
 # check if file ~/kube-solo/kube/kube.tgz exists
 if [ ! -f ~/kube-solo/kube/kube.tgz ]
 then
-    # copy k8s files
-    cp -f "${res_folder}"/k8s/kubectl ~/kube-solo/kube
-    chmod +x ~/kube-solo/bin/kubectl
     # linux binaries tar file
     cp -f "${res_folder}"/k8s/kube.tgz ~/kube-solo/kube
+fi
+
+# check if file ~/kube-solo/bin/kubectl exists
+if [ ! -f ~/kube-solo/bin/kubectl ]
+then
+    # copy k8s files
+    cp -f "${res_folder}"/k8s/kubectl ~/kube-solo/bin
+    chmod +x ~/kube-solo/bin/kubectl
+
 fi
 
 # install k8s files on to VM
@@ -492,6 +498,16 @@ echo "Done..."
 
 
 function install_k8s_add_ons() {
+
+# check if file ~/kube-solo/bin/kubectl exists
+if [ ! -f ~/kube-solo/bin/kubectl ]
+then
+    # copy k8s files
+    cp -f "${res_folder}"/k8s/kubectl ~/kube-solo/bin
+    chmod +x ~/kube-solo/bin/kubectl
+
+fi
+
 echo " "
 echo "Creating kube-system namespace ..."
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kube-system-ns.yaml > /dev/null 2>&1
@@ -503,12 +519,8 @@ echo "Installing SkyDNS ..."
 #
 echo " "
 echo "Installing Kubernetes Dashboard ..."
-~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/dashboard-controller.yaml
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/dashboard-service.yaml
-#
-echo " "
-echo "Installing Kubedash ..."
-~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/kubedash.yaml
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/dashboard-controller.yaml
 #
 echo " "
 echo "Installing Helm Tiller service ..."
@@ -522,18 +534,6 @@ rm -f ~/kube-solo/kubernetes/skydns-rc.yaml
 rm -f ~/kube-solo/kubernetes/skydns-svc.yaml
 rm -f ~/kube-solo/kubernetes/dashboard-controller.yaml
 rm -f ~/kube-solo/kubernetes/dashboard-service.yaml
-rm -f ~/kube-solo/kubernetes/kubedash.yaml
-}
-
-
-function install_k8s_add_ons_kubelet() {
-# get App's Resources folder
-res_folder=$(cat ~/kube-solo/.env/resouces_path)
-#
-echo " "
-echo "Installing add-ons: SkyDNS, Kubernetes Dashboard and Kubedash ..."
-~/bin/corectl scp "${res_folder}"/k8s/add-ons.tgz k8solo-01:/home/core/
-~/bin/corectl ssh k8solo-01 'sudo tar xzf /home/core/add-ons.tgz -C /data/kubernetes/manifests'
 }
 
 
