@@ -269,7 +269,7 @@ if [ $MATCH -ne 0 ]; then
 else
     echo " "
     echo "Downloading latest ${LATEST_HELM} of 'helm' cli for macOS"
-    curl -k -L https://github.com/kubernetes/helm/releases/download/$LATEST_HELM/helm-$LATEST_HELM-darwin-amd64.tar.gz > helm.tar.gz
+    curl -k -L http://storage.googleapis.com/kubernetes-helm/helm-${LATEST_HELM}-darwin-amd64.tar.gz > helm.tar.gz
     tar xvf helm.tar.gz -C ~/kube-solo/tmp --strip=1 darwin-amd64/helm > /dev/null 2>&1
     chmod +x helm
     mv -f helm ~/kube-solo/bin/helm
@@ -286,7 +286,9 @@ else
     export KUBECONFIG=~/kube-solo/kube/kubeconfig
     export HELM_HOST=$vm_ip:32767
     echo "Installing new version of Helm Tiller..."
+    kubectl --namespace=kube-system delete deployment tiller-deploy > /dev/null 2>&1
     ~/kube-solo/bin/helm init
+    echo "Helm is ready to sail ..."
 fi
 #
 

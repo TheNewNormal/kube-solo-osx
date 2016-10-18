@@ -54,12 +54,12 @@ rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/tpl/deis
 # run helmc generate
 helmc generate -x manifests workflow-${WORKFLOW_RELEASE}-kube-solo
 
-# update minio RC with persistent volume
+# update minio deployment with persistent volume
 cp "${res_folder}"/deis/* ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/manifests
 
 cd ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/manifests
-"${res_folder}"/bin/gsed -i '/readOnly: true/ r deis-minio-rc-1.txt' deis-minio-rc.yaml
-cat deis-minio-rc-2.txt >> deis-minio-rc.yaml
+"${res_folder}"/bin/gsed -i '/readOnly: true/ r deis-minio-ds-1.txt' deis-minio-deployment.yaml
+cat deis-minio-ds-2.txt >> deis-minio-deployment.yaml
 rm -f *.txt
 
 # Install Deis
