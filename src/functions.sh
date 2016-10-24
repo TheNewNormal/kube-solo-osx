@@ -536,6 +536,7 @@ rm -f ~/kube-solo/kubernetes/skydns-rc.yaml
 rm -f ~/kube-solo/kubernetes/skydns-svc.yaml
 rm -f ~/kube-solo/kubernetes/dashboard-controller.yaml
 rm -f ~/kube-solo/kubernetes/dashboard-service.yaml
+rm -f ~/kube-solo/kubernetes/tiller-deploy-service.yaml
 }
 
 
