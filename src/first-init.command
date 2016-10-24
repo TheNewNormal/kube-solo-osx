@@ -103,7 +103,7 @@ echo " "
 #
 install_k8s_add_ons
 
-# download latest version of deis, helmc and helm clients
+# download latest version of docker, deis, helmc and helm clients
 # install Helm Tiller
 download_osx_clients
 
@@ -113,13 +113,14 @@ export DOCKER_TLS_VERIFY=
 export DOCKER_CERT_PATH=
 
 #
+echo "--------- "
 echo " "
 echo "Installation has finished, Kube Solo VM is up and running !!!"
 echo " "
 echo "Assigned static IP to VM/node: $vm_ip"
 echo " "
 echo "You can control this App via status bar icon... "
-echo "--------"
+echo "---------"
 
 # remove unfinished_setup file if there is such one
 rm -f ~/kube-solo/logs/unfinished_setup > /dev/null 2>&1

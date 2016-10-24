@@ -68,7 +68,7 @@ coreos:
         ExecStart=/bin/sh -c '[[ -d /data/var/lib/rkt ]] || mkdir -p /data/var/lib/rkt && /usr/bin/chown root:rkt /data/var/lib/rkt && /usr/bin/chmod g+s /data/var/lib/rkt'
         ExecStart=/bin/sh -c '/usr/bin/chown root:rkt /data/var/lib/rkt && /usr/bin/chmod g+s /data/var/lib/rkt'
         ExecStart=/bin/sh -c '[[ -d /data/opt/bin ]] || mkdir -p /data/opt/bin'
-        ExecStart=/bin/sh -c '[[ -d /data/kubernetes/manifests ]] || mkdir -p /data/kubernetes/manifests'
+        ExecStart=/bin/sh -c '[[ -d /data/kubernetes/manifests ]] || mkdir -p /data/kubernetes/manifests && chmod 777 -R /data/kubernetes'
         ExecStart=/bin/sh -c '[[ -d /data/kubelet ]] || mkdir -p /data/kubelet'
         ExecStart=/bin/sh -c 'sudo ln -s /data/kubelet /var/lib/kubelet'
         ExecStart=/bin/sh -c 'sudo mkdir -p /opt/bin/ && sudo ln -s /data/opt/bin/socat /opt/bin/socat'
@@ -126,18 +126,38 @@ coreos:
             Environment=DOCKER_OPTS='--insecure-registry="0.0.0.0/0"'
     - name: update-engine.service
       command: stop
+    - name: kube-certs.service
+      command: start
+      content: |
+        [Unit]
+        Description=Generate Kubernetes API Server certificates
+        ConditionPathExists=/opt/sbin/make-certs.sh
+        Requires=network-online.target persistent-data-checks.service etcd2.service
+        After=network-online.target persistent-data-checks.service etcd2.service
+        # ConditionPathExists=!/data/kubernetes/ca.crt
+        [Service]
+        EnvironmentFile=/etc/environment
+        ExecStartPre=-/usr/sbin/groupadd -r kube-cert
+        ExecStartPre=/usr/bin/chmod 755 /opt/sbin/make-certs.sh
+        ExecStart=/opt/sbin/make-certs.sh ${COREOS_PUBLIC_IPV4} IP:${COREOS_PUBLIC_IPV4},IP:10.100.0.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local
+        ExecStartPost=/bin/bash -c 'sleep 20'
+        Type=oneshot
+        RemainAfterExit=true
     - name: kube-apiserver.service
       command: start
       content: |
         [Unit]
         Description=Kubernetes API Server
         Documentation=https://github.com/GoogleCloudPlatform/kubernetes
-        Requires=etcd2.service docker.service flanneld.service persistent-data-checks.service
-        After=etcd2.service docker.service flanneld.service persistent-data-checks.service
+        ConditionPathExists=/data/opt/bin/kube-apiserver
+        Requires=etcd2.service docker.service flanneld.service kube-certs.service
+        After=etcd2.service docker.service flanneld.service kube-certs.service
         [Service]
         LimitNOFILE=491521
         # Check for certs
-        ExecStartPre=/bin/sh -c '[[ -f /data/kubernetes/ca.crt ]] || /opt/sbin/kube-certs.sh'
+        ExecStartPre=/bin/sh -c 'while [ ! -f /data/kubernetes/ca.crt ]; do sleep 1; done'
+        ExecStartPre=/bin/sh -c 'while [ ! -f /data/kubernetes/server.cert ]; do sleep 1; done'
+        ExecStartPre=/bin/sh -c 'while [ ! -f /data/kubernetes/server.key ]; do sleep 1; done'
         # Check for binary
         ExecStartPre=/bin/sh -c 'while [ ! -f /data/opt/bin/kube-apiserver ]; do sleep 1; done'
         # Start API server
@@ -158,7 +178,7 @@ coreos:
           --bind-address=0.0.0.0 \
           --logtostderr=true
         Restart=always
-        RestartSec=10
+        RestartSec=5
     - name: kube-controller-manager.service
       command: start
       content: |
@@ -266,9 +286,9 @@ write-files:
       # Copyright 2014 The Kubernetes Authors All rights reserved.
       #
 
-      set -o errexit
-      set -o nounset
-      set -o pipefail
+      #set -o errexit
+      #set -o nounset
+      #set -o pipefail
 
       cert_ip=$1
       extra_sans=${2:-}
@@ -286,7 +306,7 @@ write-files:
 
       tmpdir=$(mktemp -d --tmpdir kubernetes_cacert.XXXXXX)
       cd $tmpdir
-      
+
       trap 'rm -rf "${tmpdir}"' EXIT
       #
       if [ ! -f /data/opt/tmp/easy-rsa.tar.gz ]
@@ -313,17 +333,10 @@ write-files:
       cp -p pki/ca.crt "${cert_dir}/ca.crt"
       cp -p pki/issued/kubecfg.crt "${cert_dir}/kubecfg.crt"
       cp -p pki/private/kubecfg.key "${cert_dir}/kubecfg.key"
+
       # Make server certs accessible to apiserver.
-      echo 3
       chgrp $cert_group "${cert_dir}/server.key" "${cert_dir}/server.cert" "${cert_dir}/ca.crt"
       chmod 660 "${cert_dir}/server.key" "${cert_dir}/server.cert" "${cert_dir}/ca.crt"
-      echo 4
- - path: /opt/sbin/kube-certs.sh
-   permissions: '0755'
-   content: |
-      #!/bin/bash
-      source /etc/environment
-      /opt/sbin/make-certs.sh ${COREOS_PUBLIC_IPV4} IP:${COREOS_PUBLIC_IPV4},IP:10.100.0.1,DNS:kubernetes,DNS:kubernetes.default,DNS:kubernetes.default.svc,DNS:kubernetes.default.svc.cluster.local
  - path: /opt/sbin/restart-kube-units.sh
    permissions: '0755'
    content: |
