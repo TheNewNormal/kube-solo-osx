@@ -45,5 +45,8 @@
     fi
 
     # initial init
-    open -a iTerm.app "$1"/first-init.command
+    tmuxcmd=/usr/local/bin/tmux
+    ${tmuxcmd} list-sessions \
+        && ${tmuxcmd} new-window -n "kube-solo" "$1"/first-init.command \
+        || open -a iTerm.app "$1"/first-init.command
 
