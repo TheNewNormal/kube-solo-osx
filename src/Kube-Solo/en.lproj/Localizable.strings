@@ -12,11 +12,11 @@
 
 // VM States
 
-"VMStateAlreadyRunning" = "VM is already running !!!";
-"VMStateAlreadyOff" = "VM is already Off !!!";
-"VMStateWillStop" = "VM will be stopped";
-"VMStateStopping" = "VM is stopping !!!";
-"VMStateOff" = "VM is OFF !!!";
+"VMStateAlreadyRunning" = "VM is already running";
+"VMStateAlreadyOff" = "VM is already off";
+"VMStateWillStop" = "VM will be stopped…";
+"VMStateStopping" = "VM is stopping…";
+"VMStateOff" = "VM is off";
 "VMStateWillReload" = "VM will be reloaded";
 "VMStateStopped" = "VM is stopped";
 "VMStateRunning" = "VM is running";
@@ -26,11 +26,11 @@
 
 "ClientsWillBeUpdatedNotificationMessage" = "macOS clients will be updated";
 "ISOImageWillBeUpdatedNotificationMessage" = "CoreOS ISO image will be updated";
-"ReleaseChannelChangeNotificationMessage" = "CoreOS release channel change";
+"ReleaseChannelChangeNotificationMessage" = "CoreOS release channel changed";
 "VMRAMChangeNotificationMessage" = "VM RAM size change";
 "SSHShellWillOpenNotificationMessage" = "VM ssh shell will be opened";
 "ShellWillOpenNotificationMessage" = "macOS shell will be opened";
-"ConsoleWillOpenNotificationMessage" = "VM's console will be opened";
+"ConsoleWillOpenNotificationMessage" = "VMs console will be opened";
 "WillSetupNotificationTitle" = "Kube Solo will be up shortly";
 "WillSetupNotificationMessage" = "and OS shell will be opened";
 "KubernetesUpdateNotificationTitle" = "Kube-Solo and";
@@ -40,22 +40,22 @@
 
 // Alerts
 
-"NotSetupAlertMessage" = "Kube Solo was not setup";
+"NotSetupAlertMessage" = "Kube Solo was not set up";
 "NotSetupAlertInformativeText" = "Do you want to set it up?";
 "SetupAlertMessage" = "You can set Kube-Solo from menu 'Setup':";
-"SetupAlertInformativeText" = " 'Initial setup of Kube-Solo' at any time later one !!! ";
-"HomeFolderExistsAlertInformativeText" = "Folder %@ exists, please delete or rename that folder !!!";
+"SetupAlertInformativeText" = " 'Initial setup of Kube-Solo' at any time later one. ";
+"HomeFolderExistsAlertInformativeText" = "Folder %@ exists. Please delete or rename that folder.";
 "AboutAlertMessage" = "Kube-Solo for macOS v%@";
-"AboutInformativeText" = "It is a simple wrapper around corectl + CoreOS VM, which allows to control Kube-Solo via Status Bar !!!";
-"DmgAlertMessage" = "Kube Solo App cannot be started from DMG !!!";
-"DmgAlertInformativeText" = "Please copy the App to your /Applications folder ...";
-"CorectlAppAlertMessage" = "Kube Solo App cannot start !!!";
-"CorectlAppAlertInformativeText" = "corectl.app cannot be found in /Applications folder, the download link will be opened in your browser ...";
-"UpAppAlertMessage" = "Cannot start VM !!!";
-"AppUpdateMessage" = "There is a new Kube-Solo App version available !!!";
-"AppUpdatenformativeText" = "The download link will be opened in your browser ...";
+"AboutInformativeText" = "A simple wrapper around corectl + CoreOS VM, which allows to control Kube-Solo via the Status Bar";
+"DmgAlertMessage" = "Kube Solo App cannot be started from DMG";
+"DmgAlertInformativeText" = "Please copy the App to your /Applications folder…";
+"CorectlAppAlertMessage" = "Kube Solo App cannot start";
+"CorectlAppAlertInformativeText" = "corectl.app cannot be found in the /Applications folder. The download link will be opened in your default browser…";
+"UpAppAlertMessage" = "Cannot start VM";
+"AppUpdateMessage" = "There is a new Kube-Solo App version available";
+"AppUpdatenformativeText" = "The download link will be opened in your browser…";
 "NoAppUpdateMessage" = "Kube-Solo for macOS";
-"NoAppUpdatenformativeText" = "You are-up-to-date !!!";
+"NoAppUpdatenformativeText" = "You are up to date";
 
 // URL
 
