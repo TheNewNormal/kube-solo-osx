@@ -223,9 +223,13 @@ if [ ! -f ~/kube-solo/bin/docker ]; then
     cd ~/kube-solo/bin
     echo " "
     echo "Downloading docker $DOCKER_VERSION client for macOS"
-    curl -o ~/kube-solo/bin/docker https://get.docker.com/builds/Darwin/x86_64/docker-$DOCKER_VERSION
-    # Make it executable
-    chmod +x ~/kube-solo/bin/docker
+    curl -o ~/kube-solo/bin/docker https://get.docker.com/builds/Darwin/x86_64/docker-$DOCKER_VERSION.tgz
+    # tarball with directory docker containing docker executable
+    tar -xzf docker-$DOCKER_VERSION.tgz
+    mv docker dockerdir
+    mv dockerdir/docker .
+    rm docker-$DOCKER_VERSION.tgz
+    rmdir dockerdir
 else
     # docker client version
     INSTALLED_VERSION=$(~/kube-solo/bin/docker version | grep 'Version:' | awk '{print $2}' | tr -d '\r' | head -1 )
@@ -235,9 +239,13 @@ else
         cd ~/kube-solo/bin
         echo " "
         echo "Downloading docker $DOCKER_VERSION client for macOS"
-        curl -o ~/kube-solo/bin/docker https://get.docker.com/builds/Darwin/x86_64/docker-$DOCKER_VERSION
-        # Make it executable
-        chmod +x ~/kube-solo/bin/docker
+        curl -o ~/kube-solo/bin/docker https://get.docker.com/builds/Darwin/x86_64/docker-$DOCKER_VERSION.tgz
+        # tarball with directory docker containing docker executable
+        tar -xzf docker-$DOCKER_VERSION.tgz
+        mv docker dockerdir
+        mv dockerdir/docker .
+        rm docker-$DOCKER_VERSION.tgz
+        rmdir dockerdir
     else
         echo " "
         echo "macOS docker client is up to date with VM's version ..."
