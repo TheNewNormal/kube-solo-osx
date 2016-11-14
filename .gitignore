@@ -18,3 +18,5 @@ DerivedData
 *.xcuserstate
 UserInterfaceState.xcuserstate
 .DS_Store
+kube.tgz
+kubectl

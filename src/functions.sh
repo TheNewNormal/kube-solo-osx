@@ -135,15 +135,15 @@ function create_data_disk() {
 cd ~/kube-solo/
 echo "  "
 echo "Please type Data disk size in GBs followed by [ENTER]:"
-echo -n "[default is 30]: "
+echo -n "[default is 40]: "
 read disk_size
 if [ -z "$disk_size" ]
 then
     echo " "
-    echo "Creating 30GB sparse disk (QCow2)..."
-    ~/bin/qcow-tool create --size=30GiB data.img
+    echo "Creating 40GB sparse disk (QCow2)..."
+    ~/bin/qcow-tool create --size=40GiB data.img
     echo "-"
-    echo "Created 30GB Data disk"
+    echo "Created 40GB Data disk"
     # create file 'unfinished_setup' so on next boot fresh install gets triggered again !!!
     touch ~/kube-solo/logs/unfinished_setup > /dev/null 2>&1
 else
@@ -223,13 +223,15 @@ if [ ! -f ~/kube-solo/bin/docker ]; then
     cd ~/kube-solo/bin
     echo " "
     echo "Downloading docker $DOCKER_VERSION client for macOS"
-    curl -o ~/kube-solo/bin/docker https://get.docker.com/builds/Darwin/x86_64/docker-$DOCKER_VERSION.tgz
+    curl -o ~/kube-solo/bin/docker.tgz https://get.docker.com/builds/Darwin/x86_64/docker-$DOCKER_VERSION.tgz
     # tarball with directory docker containing docker executable
-    tar -xzf docker-$DOCKER_VERSION.tgz
+    tar -xzf docker.tgz
     mv docker dockerdir
     mv dockerdir/docker .
-    rm docker-$DOCKER_VERSION.tgz
-    rmdir dockerdir
+    rm docker.tgz
+    rmdir -p dockerdir
+    # Make it executable
+    chmod +x ~/kube-solo/bin/docker
 else
     # docker client version
     INSTALLED_VERSION=$(~/kube-solo/bin/docker version | grep 'Version:' | awk '{print $2}' | tr -d '\r' | head -1 )
@@ -239,13 +241,15 @@ else
         cd ~/kube-solo/bin
         echo " "
         echo "Downloading docker $DOCKER_VERSION client for macOS"
-        curl -o ~/kube-solo/bin/docker https://get.docker.com/builds/Darwin/x86_64/docker-$DOCKER_VERSION.tgz
+        curl -o ~/kube-solo/bin/docker.tgz https://get.docker.com/builds/Darwin/x86_64/docker-$DOCKER_VERSION.tgz
         # tarball with directory docker containing docker executable
-        tar -xzf docker-$DOCKER_VERSION.tgz
+        tar -xzf docker.tgz
         mv docker dockerdir
         mv dockerdir/docker .
-        rm docker-$DOCKER_VERSION.tgz
-        rmdir dockerdir
+        rm docker.tgz
+        rmdir -p dockerdir
+        # Make it executable
+        chmod +x ~/kube-solo/bin/docker
     else
         echo " "
         echo "macOS docker client is up to date with VM's version ..."
