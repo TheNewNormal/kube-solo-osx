@@ -134,7 +134,7 @@ coreos:
         ConditionPathExists=/opt/sbin/make-certs.sh
         Requires=network-online.target persistent-data-checks.service etcd2.service
         After=network-online.target persistent-data-checks.service etcd2.service
-        # ConditionPathExists=!/data/kubernetes/ca.crt
+        ConditionPathExists=!/data/kubernetes/ca.crt
         [Service]
         EnvironmentFile=/etc/environment
         ExecStartPre=-/usr/sbin/groupadd -r kube-cert
