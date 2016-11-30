@@ -165,7 +165,7 @@ coreos:
           --client-ca-file=/data/kubernetes/ca.crt \
           --tls-cert-file=/data/kubernetes/server.cert \
           --tls-private-key-file=/data/kubernetes/server.key \
-          --admission_control=NamespaceLifecycle,NamespaceAutoProvision,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota \
+          --admission_control=NamespaceLifecycle,NamespaceAutoProvision,LimitRanger,ServiceAccount,ResourceQuota \
           --service_account_key_file=/data/kubernetes/server.key \
           --service_account_lookup=false \
           --allow_privileged=true \
