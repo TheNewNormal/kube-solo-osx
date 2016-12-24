@@ -7,75 +7,41 @@ function pause(){
     read -p "$*"
 }
 
-
 # get VM's IP
 vm_ip=$(~/bin/corectl q -i k8solo-01)
 
-#
-echo " "
-echo "If you want to upgrade already installed version, check out how to do upgrade at https://deis.com/docs/workflow/managing-workflow/upgrading-workflow/ "
-echo " "
-pause 'Press [Enter] key to continue...'
-echo " "
+# get lastest macOS helm cli version
+download_osx_clients
 
-# get lastest macOS helmc cli version
-current_folder=$(pwd)
-cd ~/kube-solo/bin
-echo "Downloading latest version of helmc cli for macOS"
-curl -o helmc https://storage.googleapis.com/helm-classic/helmc-latest-darwin-amd64
-chmod +x helmc
-echo " "
-echo "Installed latest helmc cli to ~/kube-solo/bin ..."
-
-# run helmc for the first time
-helmc up
 # add Deis Chart repo
-helmc repo add deis https://github.com/deis/charts
-# get the latest version of all Charts from all repos
-helmc up
+helm repo add deis https://charts.deis.com/workflow
 
-# get latest Workflow version
-WORKFLOW_RELEASE=$(ls ~/.helmc/cache/deis | grep workflow-v2. | grep -v -e2e | sort -rn | head -1 | cut -d'-' -f2)
+# get the latest chart version from all repos
+helm repo update
 
-# delete the old folder if such exists
-rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo > /dev/null 2>&1
+# fetch latest Workflow version and untar into local folder
+helm fetch deis/workflow --untar
 
-# fetch Deis Workflow Chart to your helmc's working directory
-helmc fetch deis/workflow-${WORKFLOW_RELEASE} workflow-${WORKFLOW_RELEASE}-kube-solo
-
-# delete monitoring components to save VM's resources
-rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/manifests/deis-monitor-* > /dev/null 2>&1
-rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/tpl/deis-monitor-* > /dev/null 2>&1
-
-# delete workflow-manager components to save VM's resources
-rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/manifests/deis-workflow-manager-* > /dev/null 2>&1
-rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/tpl/deis-workflow-manager-* > /dev/null 2>&1
-
-# run helmc generate
-helmc generate -x manifests workflow-${WORKFLOW_RELEASE}-kube-solo
+# files to current folder
+cp "${res_folder}"/deis/* ./
 
 # update minio deployment with persistent volume
-cp "${res_folder}"/deis/* ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/manifests
-
-cd ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/manifests
-"${res_folder}"/bin/gsed -i '/readOnly: true/ r deis-minio-ds-1.txt' deis-minio-deployment.yaml
-cat deis-minio-ds-2.txt >> deis-minio-deployment.yaml
+"${res_folder}"/bin/gsed -i '/readOnly: true/ r deis-minio-ds-1.txt' ./workflow/charts/minio/templates/deis-minio-deployment.yaml
+"${res_folder}"/bin/gsed -i '/secretName: minio-user/ r deis-minio-ds-2.txt' ./workflow/charts/minio/templates/deis-minio-deployment.yaml
 rm -f *.txt
 
-# Install Deis
-helmc install workflow-${WORKFLOW_RELEASE}-kube-solo
+# Install/upgrade Deis Workflow
+echo "Installing/upgrading Workflow ..."
+helm upgrade workflow ./workflow --namespace=deis -i
 
 # get lastest macOS deis cli version
 cd ~/kube-solo/bin
 echo " "
 echo "Downloading latest version of Workflow deis cli for macOS"
-curl -o deis https://storage.googleapis.com/workflow-cli/deis-latest-darwin-amd64
+curl -sSL http://deis.io/deis-cli/install-v2.sh | bash
 chmod +x deis
 echo " "
 echo "Installed latest deis cli to ~/kube-solo/bin ..."
-echo " "
-echo "To learn more about deis client, execute:"
-echo "deis -h"
 echo " "
 #
 echo "Waiting for Deis Workflow to be ready... but first, coffee! "

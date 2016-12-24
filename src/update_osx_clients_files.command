@@ -25,7 +25,7 @@ chmod 755 ~/kube-solo/bin/*
 # download docker latest version
 download_docker_client
 
-# download latest version of deis and helmc clients
+# download latest version of deis and helm clients
 download_osx_clients
 #
 

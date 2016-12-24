@@ -303,25 +303,13 @@ else
     echo "Helm is ready to sail ..."
 fi
 #
-
-# get lastest macOS helmc cli version
-cd ~/kube-solo/bin
 echo " "
-echo "Downloading latest version of 'helmc' cli for macOS"
-curl -o helmc https://storage.googleapis.com/helm-classic/helmc-latest-darwin-amd64
-chmod +x helmc
-echo " "
-echo "Installed latest 'helmc' cli to ~/kube-solo/bin ..."
-#
-
-# get lastest macOS deis cli version
-cd ~/kube-solo/bin
-echo " "
-echo "Downloading latest version of Deis Workflow 'deis' cli for macOS"
-curl -o deis https://storage.googleapis.com/workflow-cli/deis-latest-darwin-amd64
+echo "Downloading latest version of Workflow deis cli for macOS"
+curl -sSL http://deis.io/deis-cli/install-v2.sh | bash
 chmod +x deis
 echo " "
-echo "Installed latest 'deis cli' to ~/kube-solo/bin ..."
+echo "Installed latest deis cli to ~/kube-solo/bin ..."
+echo " "
 #
 }
 
