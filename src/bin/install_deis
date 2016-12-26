@@ -3,6 +3,9 @@
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
+#
+source "${res_folder}"/functions.sh
+
 function pause(){
     read -p "$*"
 }
@@ -10,47 +13,51 @@ function pause(){
 # get VM's IP
 vm_ip=$(~/bin/corectl q -i k8solo-01)
 
-# get lastest macOS helm cli version
+# get lastest macOS helm and deis cli version
 download_osx_clients
 
-# add Deis Chart repo
+# add Deis Workflow Chart repo
 helm repo add deis https://charts.deis.com/workflow
 
-# get the latest chart version from all repos
+# updare repos charts list
 helm repo update
+echo " "
 
-# fetch latest Workflow version and untar into local folder
+# copy files to ~/kube-solo/tmp folder
+cp "${res_folder}"/deis/* ~/kube-solo/tmp
+
+#
+cd ~/kube-solo/tmp
+
+# cleanup previuos install
+rm -rf workflow
+
+# fetch latest Workflow version and untar into the folder
 helm fetch deis/workflow --untar
 
-# files to current folder
-cp "${res_folder}"/deis/* ./
-
 # update minio deployment with persistent volume
-"${res_folder}"/bin/gsed -i '/readOnly: true/ r deis-minio-ds-1.txt' ./workflow/charts/minio/templates/deis-minio-deployment.yaml
-"${res_folder}"/bin/gsed -i '/secretName: minio-user/ r deis-minio-ds-2.txt' ./workflow/charts/minio/templates/deis-minio-deployment.yaml
+"${res_folder}"/bin/gsed -i '/readOnly: true/ r deis-minio-ds-1.txt' ~/kube-solo/tmp/workflow/charts/minio/templates/minio-deployment.yaml
+"${res_folder}"/bin/gsed -i '/secretName: minio-user/ r deis-minio-ds-2.txt' ~/kube-solo/tmp/workflow/charts/minio/templates/minio-deployment.yaml
+
+# update deis router
+"${res_folder}"/bin/gsed -i 's/type: LoadBalancer/#type: LoadBalancer/' ~/kube-solo/tmp/workflow/charts/router/templates/router-service.yaml
+
 rm -f *.txt
 
 # Install/upgrade Deis Workflow
-echo "Installing/upgrading Workflow ..."
+echo "Installing/upgrading Workflow to latest available version ..."
 helm upgrade workflow ./workflow --namespace=deis -i
 
-# get lastest macOS deis cli version
-cd ~/kube-solo/bin
-echo " "
-echo "Downloading latest version of Workflow deis cli for macOS"
-curl -sSL http://deis.io/deis-cli/install-v2.sh | bash
-chmod +x deis
-echo " "
-echo "Installed latest deis cli to ~/kube-solo/bin ..."
-echo " "
+sleep 3
+
 #
 echo "Waiting for Deis Workflow to be ready... but first, coffee! "
 spin='-\|/'
 i=1
+until kubectl --namespace=deis get po | grep [d]eis-minio- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 until kubectl --namespace=deis get po | grep [d]eis-builder- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 until kubectl --namespace=deis get po | grep [d]eis-registry- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 until kubectl --namespace=deis get po | grep [d]eis-database- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-until kubectl --namespace=deis get po | grep [d]eis-minio- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 until kubectl --namespace=deis get po | grep [d]eis-router- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 until kubectl --namespace=deis get po | grep [d]eis-controller- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 #
@@ -60,7 +67,7 @@ sleep 10
 # run deis register user
 echo " "
 echo "Registering admin user ..."
-deis register deis.$vm_ip.nip.io
+deis register http://deis.$vm_ip.nip.io
 
 # add ssh key to Deis PaaS
 echo " "

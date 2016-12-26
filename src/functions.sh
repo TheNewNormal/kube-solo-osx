@@ -307,7 +307,7 @@ echo " "
 echo "Downloading latest version of Workflow deis cli for macOS"
 curl -sSL http://deis.io/deis-cli/install-v2.sh | bash
 chmod +x deis
-echo " "
+mv -f deis ~/kube-solo/bin/deis
 echo "Installed latest deis cli to ~/kube-solo/bin ..."
 echo " "
 #
