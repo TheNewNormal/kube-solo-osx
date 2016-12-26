@@ -103,7 +103,7 @@ echo " "
 #
 install_k8s_add_ons
 
-# download latest version of docker, deis, helmc and helm clients
+# download latest version of docker, deis, and helm clients
 # install Helm Tiller
 download_osx_clients
 

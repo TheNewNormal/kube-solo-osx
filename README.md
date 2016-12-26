@@ -4,13 +4,15 @@ Kubernetes Solo cluster for macOS
 Zero to Kubernetes development environment setup under two minutes
 ---------------
 
-**Kube-Solo for macOS** is a `status bar App` which allows in an easy way to bootstrap and control Kubernetes cluster on a standalone [CoreOS](https://coreos.com) VM machine. VM can also be controlled via `ksolo` cli. Also VM's `docker` API is exposed to macOS, so you can build your docker images with the same app and use them with Kubernetes.
+**Kube-Solo for macOS** is a `status bar App` which allows in an easy way to bootstrap and control Kubernetes cluster on a standalone [CoreOS](https://coreos.com) VM machine. VM can also be controlled via `ksolo` cli. Also VM's `docker` API is exposed to macOS, so you can build your docker images with the same app and use them with Kubernetes. 
+
+**Kube-Solo for macOS** is a similar app to [minikube](https://github.com/kubernetes/minikube), just has more functionality and is an older project. You can run both Apps on your Mac even in parallel.
 
 ![k8s-solo](k8s-singlenode.png)
 
 It leverages **macOS native Hypervisor virtualisation framework** of using [corectl](https://github.com/TheNewNormal/corectl) command line tool, so there are no needs to use VirtualBox or any other virtualisation software anymore.
 
-**Includes:** [Helm Classic](https://helm.sh) / [Helm v2](https://github.com/kubernetes/helm) - The Kubernetes Package Manager and an option from shell to install [Deis Workflow PaaS](https://deis.com) on top of Kubernetes with a simple: `$ install_deis`
+**Includes:** [Helm v2](https://github.com/kubernetes/helm) - The Kubernetes Package Manager and an option from shell to install [Deis Workflow PaaS](https://deis.com/workflow) on top of Kubernetes with a simple: `$ install_deis` command.
 
 **App's menu** looks as per image below:
 
@@ -50,7 +52,7 @@ How to install Kube-Solo
 * All dependent files/folders will be put under `~/kube-solo` folder in the user's home folder e.g `/Users/someuser/kube-solo`. 
 * Will download latest CoreOS ISO image (if there is no such one) and run `corectl` to initialise VM 
 * When you first time do install or `Up` after destroying Kube-Solo setup, k8s binary files (with the version which was available when the App was built) get copied to VM, this allows to speed up Kubernetes setup.
-* It will install `docker, helmc, helm, deis and kubectl` clients to `~/kube-solo/bin/`
+* It will install `docker, helm, deis and kubectl` clients to `~/kube-solo/bin/`
 * [Kubernetes Dashboard](http://kubernetes.io/docs/user-guide/ui/) and  [DNS](https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/dns) will be instlled as add-ons
 * Via assigned static IP (it will be shown in first boot and will survive VM's reboots) you can access any port on CoreOS VM
 * Persistent sparse disk (QCow2) `data.img` will be created and mounted to `/data` for these mount binds and other folders:
@@ -97,7 +99,7 @@ Path to `~/kube-solo/bin` where macOS clients and shell scripts are stored
 * `Check for App updates` will check for a new app version
 * `Updates/Update Kubernetes to the latest version` will update to latest version of Kubernetes.
 * `Updates/Change Kubernetes version` will download and install specified Kubernetes version from GitHub.
-* `Updates/Update macOS helmc, helm, and deis clients` will update `helmc`, `helm` and `deis` to the latest version.
+* `Updates/Update macOS helm and deis clients` will update `helm` and `deis` to the latest version.
 * `Setup/` will allow you to do:
 
 ```
@@ -116,8 +118,8 @@ KubeDNS is running at http://192.168.64.3:8080/api/v1/proxy/namespaces/kube-syst
 kubernetes-dashboard is running at http://192.168.64.3:8080/api/v1/proxy/namespaces/kube-system/services/kubernetes-dashboard
 
 Cluster version:
-Client version: v1.4.0
-Server version: v1.4.0
+Client version: v1.5.1
+Server version: v1.5.1
 
 kubectl get nodes:
 NAME        STATUS    AGE

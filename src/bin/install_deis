@@ -3,88 +3,61 @@
 # get App's Resources folder
 res_folder=$(cat ~/kube-solo/.env/resouces_path)
 
+#
+source "${res_folder}"/functions.sh
+
 function pause(){
     read -p "$*"
 }
 
-
 # get VM's IP
 vm_ip=$(~/bin/corectl q -i k8solo-01)
 
+# get lastest macOS helm and deis cli version
+download_osx_clients
+
+# add Deis Workflow Chart repo
+helm repo add deis https://charts.deis.com/workflow
+
+# updare repos charts list
+helm repo update
+echo " "
+
+# copy files to ~/kube-solo/tmp folder
+cp "${res_folder}"/deis/* ~/kube-solo/tmp
+
 #
-echo " "
-echo "If you want to upgrade already installed version, check out how to do upgrade at https://deis.com/docs/workflow/managing-workflow/upgrading-workflow/ "
-echo " "
-pause 'Press [Enter] key to continue...'
-echo " "
+cd ~/kube-solo/tmp
 
-# get lastest macOS helmc cli version
-current_folder=$(pwd)
-cd ~/kube-solo/bin
-echo "Downloading latest version of helmc cli for macOS"
-curl -o helmc https://storage.googleapis.com/helm-classic/helmc-latest-darwin-amd64
-chmod +x helmc
-echo " "
-echo "Installed latest helmc cli to ~/kube-solo/bin ..."
+# cleanup previuos install
+rm -rf workflow
 
-# run helmc for the first time
-helmc up
-# add Deis Chart repo
-helmc repo add deis https://github.com/deis/charts
-# get the latest version of all Charts from all repos
-helmc up
-
-# get latest Workflow version
-WORKFLOW_RELEASE=$(ls ~/.helmc/cache/deis | grep workflow-v2. | grep -v -e2e | sort -rn | head -1 | cut -d'-' -f2)
-
-# delete the old folder if such exists
-rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo > /dev/null 2>&1
-
-# fetch Deis Workflow Chart to your helmc's working directory
-helmc fetch deis/workflow-${WORKFLOW_RELEASE} workflow-${WORKFLOW_RELEASE}-kube-solo
-
-# delete monitoring components to save VM's resources
-rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/manifests/deis-monitor-* > /dev/null 2>&1
-rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/tpl/deis-monitor-* > /dev/null 2>&1
-
-# delete workflow-manager components to save VM's resources
-rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/manifests/deis-workflow-manager-* > /dev/null 2>&1
-rm -rf ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/tpl/deis-workflow-manager-* > /dev/null 2>&1
-
-# run helmc generate
-helmc generate -x manifests workflow-${WORKFLOW_RELEASE}-kube-solo
+# fetch latest Workflow version and untar into the folder
+helm fetch deis/workflow --untar
 
 # update minio deployment with persistent volume
-cp "${res_folder}"/deis/* ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/manifests
+"${res_folder}"/bin/gsed -i '/readOnly: true/ r deis-minio-ds-1.txt' ~/kube-solo/tmp/workflow/charts/minio/templates/minio-deployment.yaml
+"${res_folder}"/bin/gsed -i '/secretName: minio-user/ r deis-minio-ds-2.txt' ~/kube-solo/tmp/workflow/charts/minio/templates/minio-deployment.yaml
 
-cd ~/.helmc/workspace/charts/workflow-${WORKFLOW_RELEASE}-kube-solo/manifests
-"${res_folder}"/bin/gsed -i '/readOnly: true/ r deis-minio-ds-1.txt' deis-minio-deployment.yaml
-cat deis-minio-ds-2.txt >> deis-minio-deployment.yaml
+# update deis router
+"${res_folder}"/bin/gsed -i 's/type: LoadBalancer/#type: LoadBalancer/' ~/kube-solo/tmp/workflow/charts/router/templates/router-service.yaml
+
 rm -f *.txt
 
-# Install Deis
-helmc install workflow-${WORKFLOW_RELEASE}-kube-solo
+# Install/upgrade Deis Workflow
+echo "Installing/upgrading Workflow to latest available version ..."
+helm upgrade workflow ./workflow --namespace=deis -i
 
-# get lastest macOS deis cli version
-cd ~/kube-solo/bin
-echo " "
-echo "Downloading latest version of Workflow deis cli for macOS"
-curl -o deis https://storage.googleapis.com/workflow-cli/deis-latest-darwin-amd64
-chmod +x deis
-echo " "
-echo "Installed latest deis cli to ~/kube-solo/bin ..."
-echo " "
-echo "To learn more about deis client, execute:"
-echo "deis -h"
-echo " "
+sleep 3
+
 #
 echo "Waiting for Deis Workflow to be ready... but first, coffee! "
 spin='-\|/'
 i=1
+until kubectl --namespace=deis get po | grep [d]eis-minio- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 until kubectl --namespace=deis get po | grep [d]eis-builder- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 until kubectl --namespace=deis get po | grep [d]eis-registry- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 until kubectl --namespace=deis get po | grep [d]eis-database- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
-until kubectl --namespace=deis get po | grep [d]eis-minio- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 until kubectl --namespace=deis get po | grep [d]eis-router- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 until kubectl --namespace=deis get po | grep [d]eis-controller- | grep "1/1"  >/dev/null 2>&1; do i=$(( (i+1) %4 )); printf "\r${spin:$i:1}"; sleep .1; done
 #
@@ -94,7 +67,7 @@ sleep 10
 # run deis register user
 echo " "
 echo "Registering admin user ..."
-deis register deis.$vm_ip.nip.io
+deis register http://deis.$vm_ip.nip.io
 
 # add ssh key to Deis PaaS
 echo " "
