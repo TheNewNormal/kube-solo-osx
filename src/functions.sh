@@ -260,6 +260,15 @@ fi
 
 function download_osx_clients() {
 
+# get VM's IP
+vm_ip=$(~/bin/corectl q -i k8solo-01)
+# Set the shell environment variables
+# set kubernetes master endpoint
+export KUBERNETES_MASTER=http://$vm_ip:8080
+# set kubernetes cluster config file path for Helm
+export KUBECONFIG=~/kube-solo/kube/kubeconfig
+export HELM_HOST=$vm_ip:32767
+
 # get lastest macOS helm cli version
 echo " "
 echo "Checking for latest Helm version..."
@@ -289,14 +298,6 @@ else
     echo " "
     echo "Installed latest ${LATEST_HELM} of 'helm' cli to ~/kube-solo/bin ..."
     echo " "
-    # get VM's IP
-    vm_ip=$(~/bin/corectl q -i k8solo-01)
-    # Set the shell environment variables
-    # set kubernetes master endpoint
-    export KUBERNETES_MASTER=http://$vm_ip:8080
-    # set kubernetes cluster config file path for Helm
-    export KUBECONFIG=~/kube-solo/kube/kubeconfig
-    export HELM_HOST=$vm_ip:32767
     echo "Installing new version of Helm Tiller..."
     kubectl --namespace=kube-system delete deployment tiller-deploy > /dev/null 2>&1
     ~/kube-solo/bin/helm init
@@ -520,6 +521,10 @@ echo "Installing SkyDNS ..."
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/skydns-svc.yaml
 #
 echo " "
+echo "Installing Heapster ..."
+~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/heapster.yaml
+#
+echo " "
 echo "Installing Kubernetes Dashboard ..."
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/dashboard-service.yaml
 ~/kube-solo/bin/kubectl create -f ~/kube-solo/kubernetes/dashboard-controller.yaml
@@ -534,6 +539,7 @@ sleep 1
 rm -f ~/kube-solo/kubernetes/kube-system-ns.yaml
 rm -f ~/kube-solo/kubernetes/skydns-rc.yaml
 rm -f ~/kube-solo/kubernetes/skydns-svc.yaml
+rm -f ~/kube-solo/kubernetes/heapster.yaml
 rm -f ~/kube-solo/kubernetes/dashboard-controller.yaml
 rm -f ~/kube-solo/kubernetes/dashboard-service.yaml
 rm -f ~/kube-solo/kubernetes/tiller-deploy-service.yaml
