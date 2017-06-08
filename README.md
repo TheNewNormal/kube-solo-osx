@@ -34,7 +34,7 @@ How to install Kube-Solo
   - [iTerm2](https://www.iterm2.com/) is required, if not found the app will install it by itself.
 
 
-###Install:
+### Install:
 
 - Download [Corectl App](https://github.com/TheNewNormal/corectl.app) `latest dmg` from the [Releases Page](https://github.com/TheNewNormal/corectl.app/releases) and install it to `/Applications` folder, it allows to start/stop/update [corectl](https://github.com/TheNewNormal/corectl) tools needed to run CoreOS VMs on macOS
 - Open downloaded `dmg` file and drag the App e.g. to your Desktop. Start the `Kube-Solo` App and `Initial setup of Kube-Solo VM` will run, then follow the instructions there.
@@ -71,7 +71,7 @@ How it works
 
 Just start `Kube-Solo` application and you will find a small icon of Kubernetes logo with `S` in the Status Bar.
 
-###Menu options:
+### Menu options:
 * There you can `Up` and `Halt` k8solo-01 VM
 * `SSH to k8solo-01` will open VM shell
 * Under `Up` OS Shell will be opened after VM boots up and it will have such environment pre-set:
@@ -86,7 +86,7 @@ DOCKER_HOST=tcp://192.168.64.xxx:2375
 Path to `~/kube-solo/bin` where macOS clients and shell scripts are stored
 ```
 
-###ksolo cli options:
+### ksolo cli options:
 * `ksolo start` will start k8solo-01 VM and shell environment will be pre-set as above.
 * `ksolo stop` will stop VM
 * `ksolo status`will show VM's status
@@ -94,7 +94,7 @@ Path to `~/kube-solo/bin` where macOS clients and shell scripts are stored
 * `ksolo ssh` will ssh to VM
 * `ksolo shell` will open pre-set shell
 
-###Other menu options:
+### Other menu options:
 * [Kubernetes Dashboard](http://kubernetes.io/docs/user-guide/ui/) will show nice Kubernetes Dashboard, where you can check Nodes, Pods, Replication, Deployments, Service Controllers, deploy Apps and etc.
 * `Check for App updates` will check for a new app version
 * `Updates/Update Kubernetes to the latest version` will update to latest version of Kubernetes.
