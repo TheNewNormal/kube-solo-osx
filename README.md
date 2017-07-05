@@ -32,6 +32,7 @@ How to install Kube-Solo
   - Mac 2010 or later for this to work.
   - **Note: [Corectl App](https://github.com/TheNewNormal/corectl.app) must be installed, which will serve as `corectld` server daemon control.**
   - [iTerm2](https://www.iterm2.com/) is required, if not found the app will install it by itself.
+  - [libev](https://github.com/enki/libev) `brew install libev`
 
 
 ### Install:
