@@ -1,6 +1,8 @@
 Kubernetes Solo cluster for macOS
 ============================
 
+**This project is not maintained anymore, please use [minikube](https://github.com/kubernetes/minikube) instead**
+
 Zero to Kubernetes development environment setup under two minutes
 ---------------
 
